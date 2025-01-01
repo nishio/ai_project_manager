@@ -16,6 +16,22 @@
     - ai
   subtasks: [] # プロジェクトの場合のみ
   related_repos: [] # 関連するリポジトリ
+  dependencies: # 依存関係（オプション）
+    must: # 必須の依存関係
+      - task_id: "TYYYY"
+        reason: "このタスクが必要な理由"
+    nice_to_have: # あると便利な依存関係
+      - task_id: "TZZZZ"
+        reason: "このタスクがあると便利な理由"
+    human: # 人間の操作が必要な依存関係
+      - action: "データのレビュー"
+        assignee: "nishio"
+        status: "waiting" # waiting, approved, rejected
+        reason: "人間による確認が必要"
+  similar_tasks: # 類似タスク（オプション）
+    - task_id: "TAAAA"
+      similarity_score: 0.8 # 類似度スコア（0.0-1.0）
+      note: "一部の内容が重複"
 ```
 
 ## 必須フィールド
@@ -32,3 +48,11 @@
 - `assignable_to`: タスクの実行可能者（human/ai）
 - `subtasks`: サブタスクのリスト（プロジェクトの場合）
 - `related_repos`: 関連するリポジトリのリスト
+- `dependencies`: タスクの依存関係
+  - `must`: 必須の依存関係（完了が必要なタスク）
+  - `nice_to_have`: あると便利な依存関係（オプショナルなタスク）
+  - `human`: 人間の操作が必要な依存関係（レビュー、承認など）
+- `similar_tasks`: 類似または重複するタスク
+  - `task_id`: 類似タスクのID
+  - `similarity_score`: 類似度スコア（0.0-1.0）
+  - `note`: 類似性に関する説明
