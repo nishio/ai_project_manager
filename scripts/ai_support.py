@@ -5,16 +5,14 @@ import json
 import yaml
 from typing import List, Dict, Optional
 from datetime import datetime
-import openai
-
-# OpenAI APIキーの設定（環境変数から取得）
-openai.api_key = os.getenv('OPENAI_API_KEY')
+from openai import OpenAI
 
 class AITaskProcessor:
     def __init__(self):
         self.model = "gpt-4"  # デフォルトモデル
+        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         
-    async def analyze_task(self, task: Dict) -> Dict:
+    def analyze_task(self, task: Dict) -> Dict:
         """
         タスクを分析し、AIによる提案を生成
         
@@ -49,7 +47,7 @@ ID: {task['id']}
 }}
 """
         try:
-            response = await openai.ChatCompletion.acreate(
+            response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "あなたはプロジェクトマネージャーのアシスタントです。"},
@@ -63,7 +61,7 @@ ID: {task['id']}
             print(f"Error analyzing task: {e}")
             return task
 
-    async def suggest_breakdown(self, project: Dict) -> List[Dict]:
+    def suggest_breakdown(self, project: Dict) -> List[Dict]:
         """
         プロジェクトを実行可能なタスクに分解する提案を生成
         
@@ -90,7 +88,7 @@ ID: {project['id']}
 回答はJSON形式で返してください。
 """
         try:
-            response = await openai.ChatCompletion.acreate(
+            response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "あなたはプロジェクトマネージャーのアシスタントです。"},
@@ -103,7 +101,7 @@ ID: {project['id']}
             print(f"Error suggesting breakdown: {e}")
             return []
 
-    async def translate_content(self, content: str, target_langs: List[str]) -> Dict[str, str]:
+    def translate_content(self, content: str, target_langs: List[str]) -> Dict[str, str]:
         """
         コンテンツを指定された言語に翻訳
         
@@ -134,7 +132,7 @@ ID: {project['id']}
 3. 自然な表現を心がける
 """
             try:
-                response = await openai.ChatCompletion.acreate(
+                response = self.client.chat.completions.create(
                     model=self.model,
                     messages=[
                         {"role": "system", "content": "あなたは専門的な翻訳者です。"},
@@ -148,35 +146,4 @@ ID: {project['id']}
         
         return translations
 
-async def main():
-    # テスト用のタスク
-    test_task = {
-        "id": "T0001",
-        "title": "Scrapbox情報の多言語展開",
-        "description": "技術文書やブログ記事を英語、中国語に翻訳し、グローバルに展開する。",
-        "type": "project"
-    }
-    
-    processor = AITaskProcessor()
-    
-    # タスク分析のテスト
-    analyzed_task = await processor.analyze_task(test_task)
-    print("\nTask Analysis:")
-    print(json.dumps(analyzed_task.get('ai_analysis', {}), indent=2, ensure_ascii=False))
-    
-    # プロジェクト分解のテスト
-    subtasks = await processor.suggest_breakdown(test_task)
-    print("\nProject Breakdown:")
-    print(json.dumps(subtasks, indent=2, ensure_ascii=False))
-    
-    # 翻訳のテスト
-    translations = await processor.translate_content(
-        test_task['description'],
-        ["en", "zh"]
-    )
-    print("\nTranslations:")
-    print(json.dumps(translations, indent=2, ensure_ascii=False))
-
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+# End of AITaskProcessor class
