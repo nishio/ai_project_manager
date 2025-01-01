@@ -1,0 +1,7 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Generated files
+tasks/task_graph.png
