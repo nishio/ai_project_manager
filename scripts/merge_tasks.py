@@ -7,12 +7,18 @@ from datetime import datetime
 
 def load_yaml(file_path: str) -> List[Dict]:
     """YAMLファイルからタスクデータを読み込む"""
-    with open(file_path, 'r') as f:
-        return yaml.safe_load(f)
+    with open(file_path, 'r', encoding='utf-8') as f:
+        data = yaml.safe_load(f)
+        if not isinstance(data, dict) or 'tasks' not in data:
+            raise ValueError(f"Expected a dict with 'tasks' key in {file_path}, got {type(data)}")
+        return data['tasks']
 
-def save_yaml(data: List[Dict], file_path: str):
+def save_yaml(tasks: List[Dict], file_path: str):
     """タスクデータをYAMLファイルに保存"""
-    with open(file_path, 'w') as f:
+    with open(file_path, 'r', encoding='utf-8') as f:
+        data = yaml.safe_load(f)
+    data['tasks'] = tasks
+    with open(file_path, 'w', encoding='utf-8') as f:
         yaml.dump(data, f, allow_unicode=True, sort_keys=False)
 
 def merge_tasks(task1: Dict, task2: Dict) -> Dict:
