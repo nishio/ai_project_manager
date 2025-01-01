@@ -1,0 +1,70 @@
+---
+# タスクバックログ
+tasks:
+  - id: T0001
+    title: "Scrapbox情報の多言語展開プロジェクト"
+    status: "Open"
+    type: "project"
+    description: >
+      Scrapboxなどに書いている情報の英語・中国語での発信。
+      韓国語やベトナム語への派生の可能性、イラストを中心としたコンテンツ化の可能性も検討。
+    labels:
+      - multilingual
+      - content-creation
+    assignable_to:
+      - human
+      - ai
+    subtasks: []
+
+  - id: T0002
+    title: "GitHub Issues自動収集システム構築"
+    status: "Open"
+    type: "task"
+    description: >
+      anno-broadeningとconcatPagesのGitHub Issueを定期的に収集し、
+      このリポジトリのタスク管理システムと統合する。
+    labels:
+      - automation
+      - integration
+    assignable_to:
+      - ai
+    related_repos:
+      - anno-broadlistening
+      - concatPages
+
+  - id: T0003
+    title: "Scrapboxコンテンツのタスク自動抽出"
+    status: "Open"
+    type: "task"
+    description: >
+      Scrapboxの内容から新規タスクやプロジェクトを自動的に抽出し、
+      inboxディレクトリに追加する仕組みを構築する。
+    labels:
+      - automation
+      - integration
+    assignable_to:
+      - ai
+    related_repos:
+      - concatPages
+
+  - id: T0004
+    title: "タスク自動化システムの構築プロジェクト"
+    status: "Pending"
+    type: "project"
+    description: >
+      将来的なタスク管理の自動化に向けたプロジェクト。
+      GitHub IssuesやScrapboxなど、多様なチャンネルからの情報を
+      自動的に収集・整理するシステムの設計と実装。
+      現在は手動での情報管理を優先し、将来的な実装を検討する。
+    labels:
+      - automation
+      - integration
+      - future-project
+    assignable_to:
+      - human
+      - ai
+    subtasks:
+      - id: T0002
+        title: "GitHub Issues自動収集システム構築"
+      - id: T0003
+        title: "Scrapboxコンテンツのタスク自動抽出"
