@@ -68,3 +68,45 @@ tasks:
         title: "GitHub Issues自動収集システム構築"
       - id: T0003
         title: "Scrapboxコンテンツのタスク自動抽出"
+
+  - id: T0005
+    title: "KJ法実験結果のレポート化"
+    status: "Open"
+    type: "task"
+    description: >
+      anno-broadlisteningのdenseブランチで試したAIによるKJ法の
+      公開可能結果をレポートや再利用可能なスクリプトにまとめる。
+    labels:
+      - documentation
+      - code-sharing
+    assignable_to:
+      - human
+    related_repos:
+      - anno-broadlistening
+
+  - id: T0006
+    title: "CNからMiroへの可視化変換"
+    status: "Open"
+    type: "task"
+    description: >
+      コミュニティノートの文章とノートの構造をMiroのノードとして変換し、
+      言及関係を矢印で表現する。これにより、情報の視覚的な整理と
+      新しい知見の発見を目指す。
+    labels:
+      - visualization
+      - analysis
+    assignable_to:
+      - human
+      - ai
+
+  - id: T0007
+    title: "LLMによる対立意見の検出"
+    status: "Open"
+    type: "task"
+    description: >
+      LLMを使用して文章中の対立的な意見を自動的に検出する機能の実装。
+    labels:
+      - ai
+      - analysis
+    assignable_to:
+      - ai
