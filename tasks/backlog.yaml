@@ -98,6 +98,13 @@ tasks:
     assignable_to:
       - human
       - ai
+    dependencies:
+      must:
+        - task_id: "T0005"
+          reason: "KJ法の実験結果を参考にして可視化手法を決定する必要がある"
+      nice_to_have:
+        - task_id: "T0007"
+          reason: "対立意見の検出結果も可視化できると有用"
 
   - id: T0007
     title: "LLMによる対立意見の検出"
@@ -110,3 +117,9 @@ tasks:
       - analysis
     assignable_to:
       - ai
+    dependencies:
+      human:
+        - action: "対立意見の定義とサンプルデータの提供"
+          assignee: "nishio"
+          status: "waiting"
+          reason: "対立意見の具体例と判定基準の確認が必要"
