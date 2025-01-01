@@ -1,112 +1,232 @@
----
-# タスクバックログ
 tasks:
-  - id: T0001
-    title: "Scrapbox情報の多言語展開プロジェクト"
-    status: "Open"
-    type: "project"
-    description: >
-      Scrapboxなどに書いている情報の英語・中国語での発信。
-      韓国語やベトナム語への派生の可能性、イラストを中心としたコンテンツ化の可能性も検討。
-    labels:
-      - multilingual
-      - content-creation
-    assignable_to:
-      - human
-      - ai
-    subtasks: []
+- id: T0011
+  title: タスク記録メカニズムの設計
+  status: Open
+  type: task
+  description: 'チャットから出てきたタスクを確実に記録するためのメカニズムを設計する。
+    - タスク追加時のチェックリストの定義
+    - タスク追加の確認プロセスの設計
+    - タスク記録漏れ防止の仕組みの設計
+    - 重複・類似タスクの検出方法の定義
 
+    '
+  labels:
+  - system-design
+  - process
+  - documentation
+  assignable_to:
+  - ai
+  - human
+
+- id: T0012
+  title: AIインスタンス役割定義ドキュメント作成
+  status: Open
+  type: task
+  description: 'タスク管理システムにおける各AIインスタンスの役割を明確に定義するドキュメントを作成する。
+    - タスク受付・整理担当インスタンスの役割定義
+    - システム改善担当インスタンスの役割定義
+    - インスタンス間の連携方法の定義
+    - 役割分担の基準と切り替えタイミングの定義
+
+    '
+  labels:
+  - documentation
+  - ai-roles
+  - system-design
+  assignable_to:
+  - ai
+  dependencies:
+    must:
+    - task_id: T0011
+      reason: タスク記録メカニズムに基づいて各インスタンスの具体的な役割を定義する必要がある
+
+- id: T0013
+  title: タスク管理知見のドキュメント化
+  status: Open
+  type: task
+  description: 'タスク管理システムの開発・運用を通じて得られた知見をドキュメント化する。
+    - DAG構造によるタスク依存関係の管理方法
+    - 人的依存関係の追跡方法
+    - タスクの重複・類似性の検出方法
+    - タスクのマージと履歴管理の方法
+
+    '
+  labels:
+  - documentation
+  - knowledge-base
+  - best-practices
+  assignable_to:
+  - ai
+  dependencies:
+    must:
+    - task_id: T0011
+      reason: タスク記録メカニズムの設計を踏まえた知見の整理が必要
+    - task_id: T0012
+      reason: インスタンスの役割定義を含めた総合的な知見のドキュメント化が必要
+
+- id: T0008
+  title: MVIDデータセットのTTTCでの分析
+  status: Open
+  type: task
+  description: 'MVIDデータセットに対してTTTCを使用した分析を実施する。
+    分析結果は後続のツール開発やドキュメント作成の基礎となる。
+
+    '
+  labels:
+  - MVID
+  - TTTC
+  - analysis
+  assignable_to:
+  - human
+  - ai
+
+- id: T0009
+  title: TTTC設定ファイル生成支援ツール開発
+  status: Open
+  type: task
+  description: 'アンケート結果から自由記述コメントを抽出し、複数のTTTCの
+    コンフィグを作って分析するための支援ツールを開発する。
+
+    '
+  labels:
+  - TTTC
+  - tool-development
+  - automation
+  assignable_to:
+  - ai
+  dependencies:
+    must:
+    - task_id: T0008
+      reason: 分析プロセスの理解が必要なため、MVIDデータセットの分析完了が前提
+
+- id: T0010
+  title: 非公開レポート共有環境のドキュメント作成
+  status: Open
+  type: task
+  description: '結果レポートを非公開のままレビュワーと共有するための環境の
+    手軽な作り方についてのドキュメントを作成する。
+
+    '
+  labels:
+  - documentation
+  - security
+  - sharing
+  assignable_to:
+  - ai
+  dependencies:
+    must:
+    - task_id: T0008
+      reason: 実際のレポート共有プロセスの理解のため、分析作業の完了が必要
+
+- id: T0001
+  title: Scrapbox情報の多言語展開プロジェクト
+  status: Open
+  type: project
+  description: 'Scrapboxなどに書いている情報の英語・中国語での発信。 韓国語やベトナム語への派生の可能性、イラストを中心としたコンテンツ化の可能性も検討。
+
+    '
+  labels:
+  - multilingual
+  - content-creation
+  assignable_to:
+  - human
+  - ai
+  subtasks: []
+- id: T0004
+  title: タスク自動化システムの構築プロジェクト
+  status: Open
+  type: project
+  description: '将来的なタスク管理の自動化に向けたプロジェクト。 GitHub IssuesやScrapboxなど、多様なチャンネルからの情報を 自動的に収集・整理するシステムの設計と実装。
+    現在は手動での情報管理を優先し、将来的な実装を検討する。
+
+    '
+  labels:
+  - automation
+  - integration
+  - future-project
+  assignable_to:
+  - human
+  - ai
+  subtasks:
   - id: T0002
-    title: "GitHub Issues自動収集システム構築"
-    status: "Open"
-    type: "task"
-    description: >
-      anno-broadeningとconcatPagesのGitHub Issueを定期的に収集し、
-      このリポジトリのタスク管理システムと統合する。
-    labels:
-      - automation
-      - integration
-    assignable_to:
-      - ai
-    related_repos:
-      - anno-broadlistening
-      - concatPages
-
+    title: GitHub Issues自動収集システム構築
   - id: T0003
-    title: "Scrapboxコンテンツのタスク自動抽出"
-    status: "Open"
-    type: "task"
-    description: >
-      Scrapboxの内容から新規タスクやプロジェクトを自動的に抽出し、
-      inboxディレクトリに追加する仕組みを構築する。
-    labels:
-      - automation
-      - integration
-    assignable_to:
-      - ai
-    related_repos:
-      - concatPages
+    title: Scrapboxコンテンツのタスク自動抽出
+- id: T0005
+  title: KJ法実験結果のレポート化
+  status: Open
+  type: task
+  description: 'anno-broadlisteningのdenseブランチで試したAIによるKJ法の 公開可能結果をレポートや再利用可能なスクリプトにまとめる。
 
-  - id: T0004
-    title: "タスク自動化システムの構築プロジェクト"
-    status: "Pending"
-    type: "project"
-    description: >
-      将来的なタスク管理の自動化に向けたプロジェクト。
-      GitHub IssuesやScrapboxなど、多様なチャンネルからの情報を
-      自動的に収集・整理するシステムの設計と実装。
-      現在は手動での情報管理を優先し、将来的な実装を検討する。
-    labels:
-      - automation
-      - integration
-      - future-project
-    assignable_to:
-      - human
-      - ai
-    subtasks:
-      - id: T0002
-        title: "GitHub Issues自動収集システム構築"
-      - id: T0003
-        title: "Scrapboxコンテンツのタスク自動抽出"
+    '
+  labels:
+  - documentation
+  - code-sharing
+  assignable_to:
+  - human
+  related_repos:
+  - anno-broadlistening
+- id: T0006
+  title: CNからMiroへの可視化変換
+  status: Open
+  type: task
+  description: 'コミュニティノートの文章とノートの構造をMiroのノードとして変換し、 言及関係を矢印で表現する。これにより、情報の視覚的な整理と
+    新しい知見の発見を目指す。
 
-  - id: T0005
-    title: "KJ法実験結果のレポート化"
-    status: "Open"
-    type: "task"
-    description: >
-      anno-broadlisteningのdenseブランチで試したAIによるKJ法の
-      公開可能結果をレポートや再利用可能なスクリプトにまとめる。
-    labels:
-      - documentation
-      - code-sharing
-    assignable_to:
-      - human
-    related_repos:
-      - anno-broadlistening
+    '
+  labels:
+  - visualization
+  - analysis
+  assignable_to:
+  - human
+  - ai
+  dependencies:
+    must:
+    - task_id: T0005
+      reason: KJ法の実験結果を参考にして可視化手法を決定する必要がある
+    nice_to_have:
+    - task_id: T0007
+      reason: 対立意見の検出結果も可視化できると有用
+- id: T0007
+  title: LLMによる対立意見の検出
+  status: Open
+  type: task
+  description: 'LLMを使用して文章中の対立的な意見を自動的に検出する機能の実装。
 
-  - id: T0006
-    title: "CNからMiroへの可視化変換"
-    status: "Open"
-    type: "task"
-    description: >
-      コミュニティノートの文章とノートの構造をMiroのノードとして変換し、
-      言及関係を矢印で表現する。これにより、情報の視覚的な整理と
-      新しい知見の発見を目指す。
-    labels:
-      - visualization
-      - analysis
-    assignable_to:
-      - human
-      - ai
+    '
+  labels:
+  - ai
+  - analysis
+  assignable_to:
+  - ai
+  dependencies:
+    human:
+    - action: 対立意見の定義とサンプルデータの提供
+      assignee: nishio
+      status: waiting
+      reason: 対立意見の具体例と判定基準の確認が必要
+- id: T0002_merged_T0003
+  title: GitHub Issues自動収集システム構築 + Scrapboxコンテンツのタスク自動抽出
+  status: Open
+  type: task
+  description: 'anno-broadeningとconcatPagesのGitHub Issueを定期的に収集し、 このリポジトリのタスク管理システムと統合する。
 
-  - id: T0007
-    title: "LLMによる対立意見の検出"
-    status: "Open"
-    type: "task"
-    description: >
-      LLMを使用して文章中の対立的な意見を自動的に検出する機能の実装。
-    labels:
-      - ai
-      - analysis
-    assignable_to:
-      - ai
+
+
+    === 統合されたタスクの説明 ===
+
+    Scrapboxの内容から新規タスクやプロジェクトを自動的に抽出し、 inboxディレクトリに追加する仕組みを構築する。
+
+    '
+  merge_history:
+    merged_at: '2025-01-01T08:16:07.269105'
+    original_tasks:
+    - id: T0002
+      title: GitHub Issues自動収集システム構築
+    - id: T0003
+      title: Scrapboxコンテンツのタスク自動抽出
+  labels:
+  - automation
+  - integration
+  assignable_to:
+  - ai
