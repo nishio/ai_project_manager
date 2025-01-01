@@ -15,7 +15,7 @@ tasks:
   subtasks: []
 - id: T0004
   title: タスク自動化システムの構築プロジェクト
-  status: Pending
+  status: Open
   type: project
   description: '将来的なタスク管理の自動化に向けたプロジェクト。 GitHub IssuesやScrapboxなど、多様なチャンネルからの情報を 自動的に収集・整理するシステムの設計と実装。
     現在は手動での情報管理を優先し、将来的な実装を検討する。

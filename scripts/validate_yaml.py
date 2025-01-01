@@ -109,12 +109,17 @@ def validate_yaml(file_path: str) -> bool:
         with open(file_path, 'r') as f:
             data = yaml.safe_load(f)
             
-        if not isinstance(data, list):
-            print(f"Error: {file_path} must contain a list of tasks")
+        if not isinstance(data, dict) or 'tasks' not in data:
+            print(f"Error: {file_path} must contain a dictionary with 'tasks' key")
+            return False
+            
+        tasks = data['tasks']
+        if not isinstance(tasks, list):
+            print(f"Error: 'tasks' in {file_path} must be a list")
             return False
             
         all_errors = []
-        for i, task in enumerate(data):
+        for i, task in enumerate(tasks):
             if not isinstance(task, dict):
                 all_errors.append(f"Task {i} must be a dictionary")
                 continue
