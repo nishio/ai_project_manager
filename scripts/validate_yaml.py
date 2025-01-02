@@ -55,6 +55,21 @@ def validate_dependencies(deps: Dict) -> List[str]:
 
     return errors
 
+def validate_date(date_str: str) -> List[str]:
+    """Validate a date string in YYYY-MM-DD format or weekday format."""
+    errors = []
+    weekdays = ["月曜", "火曜", "水曜", "木曜", "金曜", "土曜", "日曜"]
+    
+    if any(date_str.startswith(day) for day in weekdays):
+        return errors  # Weekday format is valid
+        
+    try:
+        from datetime import datetime
+        datetime.strptime(date_str, "%Y-%m-%d")
+    except ValueError:
+        errors.append(f"Invalid date format: {date_str} (must be YYYY-MM-DD or weekday)")
+    return errors
+
 def validate_similar_tasks(similar: List) -> List[str]:
     """Validate the similar_tasks section of a task."""
     errors = []
@@ -100,6 +115,12 @@ def validate_task(task: Dict) -> List[str]:
     
     if "similar_tasks" in task:
         errors.extend(validate_similar_tasks(task["similar_tasks"]))
+    
+    if "due_date" in task:
+        errors.extend(validate_date(task["due_date"]))
+    
+    if "appointment_date" in task:
+        errors.extend(validate_date(task["appointment_date"]))
     
     return errors
 
