@@ -34,6 +34,8 @@
       note: "一部の内容が重複"
   due_date: "2024-01-15" # 締め切り日（オプション）。前倒しで実行可能なタスクの期限。YYYY-MM-DD形式または曜日指定（例：月曜）
   appointment_date: "2024-01-16" # 予定日（オプション）。指定された日時にのみ実行可能なタスク。YYYY-MM-DD形式または曜日指定（例：月曜）
+  visibility: "private" # タスクの公開範囲（public/private）
+  security_level: "normal" # タスクのセキュリティレベル（normal/sensitive/confidential）
 ```
 
 ## 必須フィールド
@@ -66,3 +68,10 @@
   - 指定された日時にのみ実行可能なタスク
   - YYYY-MM-DD形式の日付
   - または曜日指定（例：月曜）
+- `visibility`: タスクの公開範囲
+  - `public`: 公開可能なタスク
+  - `private`: 非公開タスク
+- `security_level`: タスクのセキュリティレベル
+  - `normal`: 一般的なタスク
+  - `sensitive`: 機密性の高いタスク
+  - `confidential`: 極秘タスク
