@@ -18,6 +18,16 @@ AIによるタスク管理システム。タスクの自動分類、依存関係
 ### スクリプト一覧
 各スクリプトの機能と使用方法について説明します。
 
+#### collect_scrapbox_updates.py
+- 目的：Scrapboxの更新ページを収集
+- 機能：
+  - 指定期間の更新ページを取得
+  - 作成日時・更新日時を含めて保存
+  - Markdown形式でローカルファイルに出力
+- 使用方法：
+  - 過去N日の更新を取得：`python scripts/collect_scrapbox_updates.py nishio --days N`
+  - 特定日の更新を取得：`python scripts/collect_scrapbox_updates.py nishio --date YYYY-MM-DD`
+
 #### validate_yaml.py
 - 目的：タスクデータのYAMLファイルを検証
 - 機能：
