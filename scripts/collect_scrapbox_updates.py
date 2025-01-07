@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import requests
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import argparse
 import sys
@@ -35,15 +35,16 @@ def fetch_pages(project_name: str, since: Optional[datetime] = None, until: Opti
     for page in pages:
         # APIから返されるタイムスタンプはミリ秒単位のUNIXタイムスタンプ
         # accessed（最終アクセス日時）を使用して最新の更新を判断
-        updated = datetime.fromtimestamp(page.get("accessed", page["updated"]) / 1000)
+        timestamp = page.get("accessed", page["updated"]) / 1000
+        updated = datetime.fromtimestamp(timestamp, tz=timezone.utc)
         print(f"Debug: Page '{page.get('title')}' accessed/updated at {updated}, comparing with since={since} and until={until}")
         
         # 日付の比較（UTCタイムスタンプとして比較）
-        if since and updated.replace(tzinfo=None) < since.replace(tzinfo=None):
-            print(f"Debug: Skipping - {updated} is before since {since}")
+        if since and updated < since:
+            print(f"Debug: Skipping - {updated} is before {since}")
             continue
-        if until and updated.replace(tzinfo=None) > until.replace(tzinfo=None):
-            print(f"Debug: Skipping - {updated} is after until {until}")
+        if until and updated > until:
+            print(f"Debug: Skipping - {updated} is after {until}")
             continue
             
         filtered_pages.append(page)
@@ -88,17 +89,20 @@ def main():
     
     args = parser.parse_args()
     
-    # 期間の設定（現在時刻をUTCで取得）
-    now = datetime.utcnow()
+    # 期間の設定（UTCで取得）
+    now = datetime.now(timezone.utc)  # 直接UTCで取得
     if args.days:
-        # 過去の日付を計算
+        # 過去の日付を計算（UTCで計算）
         until = now
         since = now - timedelta(days=args.days)
+        print(f"Debug: Filtering pages between {since} and {until} (UTC)")
     elif args.date:
         try:
-            target_date = datetime.strptime(args.date, "%Y-%m-%d")
+            # 指定された日付をUTCとして解釈
+            target_date = datetime.strptime(args.date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
             since = target_date
             until = target_date + timedelta(days=1)
+            print(f"Debug: Filtering pages for date {args.date} (UTC range: {since} to {until})")
         except ValueError:
             print("Error: Invalid date format. Use YYYY-MM-DD")
             sys.exit(1)
