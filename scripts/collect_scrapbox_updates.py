@@ -112,18 +112,17 @@ def main():
     
     # 期間の設定（UTCで取得）
     # 現在時刻をUNIXタイムスタンプ（ミリ秒）として取得
-    import time
-    now_ts = int(time.time() * 1000)  # 現在のUNIXタイムスタンプ（ミリ秒）
+    now_dt = datetime.now(timezone.utc)
+    now_ts = int(now_dt.timestamp() * 1000)  # 現在のUNIXタイムスタンプ（ミリ秒）
     if args.days:
         # 現在時刻から過去の日付を計算（現在時刻を含む）
         until_ts = now_ts
-        since_ts = now_ts - (args.days * 24 * 60 * 60 * 1000)  # days -> ミリ秒
-        now_dt = datetime.fromtimestamp(now_ts/1000, tz=timezone.utc)
+        since_ts = int((now_dt - timedelta(days=args.days)).timestamp() * 1000)  # days -> ミリ秒
         since_dt = datetime.fromtimestamp(since_ts/1000, tz=timezone.utc)
         print(f"Debug: Current time (UTC): {now_dt}")
         print(f"Debug: Filtering pages between {since_dt} and {now_dt} (UTC)")
         print(f"Debug: Using timestamps: since={since_ts}, until={until_ts}")
-        print(f"Debug: Date range: {datetime.fromtimestamp(since_ts/1000, tz=timezone.utc)} to {datetime.fromtimestamp(until_ts/1000, tz=timezone.utc)}")
+        print(f"Debug: Date range: {since_dt} to {now_dt}")
     elif args.date:
         try:
             # 指定された日付をUTCとして解釈（その日の開始から終了まで）
