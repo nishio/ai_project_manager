@@ -16,7 +16,7 @@ def fetch_pages(project_name: str, since_ts: Optional[int] = None, until_ts: Opt
         until_ts: 取得終了時刻（UNIXタイムスタンプ、ミリ秒単位）
     """
     import urllib.parse
-    encoded_project = urllib.parse.quote(project_name, safe='')
+    encoded_project = urllib.parse.quote(project_name, safe="")
     base_url = f"https://scrapbox.io/api/pages/{encoded_project}"
     params = {
         "limit": 1000,  # 十分大きな値を設定
@@ -68,8 +68,8 @@ def fetch_pages(project_name: str, since_ts: Optional[int] = None, until_ts: Opt
 def fetch_page_content(project_name: str, page_title: str) -> str:
     """個別ページの内容を取得"""
     import urllib.parse
-    encoded_project = urllib.parse.quote(project_name, safe='')
-    encoded_title = urllib.parse.quote(page_title, safe='')
+    encoded_project = urllib.parse.quote(project_name, safe="")
+    encoded_title = urllib.parse.quote(page_title, safe="")
     url = f"https://scrapbox.io/api/pages/{encoded_project}/{encoded_title}/text"
     
     print(f"Debug: Fetching content from URL: {url}")

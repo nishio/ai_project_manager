@@ -8,11 +8,11 @@ import os
 
 def load_tasks(file_path: str) -> List[Dict]:
     """YAMLファイルからタスクデータを読み込む"""
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
-        if not isinstance(data, dict) or 'tasks' not in data:
-            raise ValueError(f"Expected a dict with 'tasks' key in {file_path}")
-        return data['tasks']
+        if not isinstance(data, dict) or "tasks" not in data:
+            raise ValueError(f"Expected a dict with \"tasks\" key in {file_path}")
+        return data["tasks"]
 
 def create_task_graph(tasks: List[Dict]) -> nx.DiGraph:
     """タスクの依存関係からグラフを作成"""
@@ -59,11 +59,11 @@ def create_task_graph(tasks: List[Dict]) -> nx.DiGraph:
 
 def visualize_task_graph(G: nx.DiGraph, output: str = "task_graph"):
     """グラフを可視化してファイルに出力"""
-    dot = Digraph('Tasks')
-    dot.attr(rankdir='LR')  # 左から右へのレイアウト
+    dot = Digraph("Tasks")
+    dot.attr(rankdir="LR")  # 左から右へのレイアウト
     
     # ノードスタイルの定義
-    dot.attr('node', shape='box', style='rounded')
+    dot.attr("node", shape="box", style="rounded")
     
     # ノードの追加
     for node in G.nodes:

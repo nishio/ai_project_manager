@@ -20,10 +20,10 @@ def load_yaml_tasks(file_path: str) -> Tuple[List[Dict], Set[str]]:
         Tuple of (task list, set of task IDs)
     """
     try:
-        with open(file_path, 'r') as f:
+        with open(file_path, "r") as f:
             data = yaml.safe_load(f)
-            tasks = data.get('tasks', [])
-            task_ids = {task['id'] for task in tasks if 'id' in task}
+            tasks = data.get("tasks", [])
+            task_ids = {task["id"] for task in tasks if "id" in task}
             return tasks, task_ids
     except Exception as e:
         print(f"Error loading {file_path}: {e}")
@@ -50,16 +50,16 @@ def compare_tasks(public_path: str, private_path: str) -> bool:
         return False
     
     # Compare task contents
-    private_tasks_dict = {task['id']: task for task in private_tasks if 'id' in task}
+    private_tasks_dict = {task["id"]: task for task in private_tasks if "id" in task}
     for task in public_tasks:
-        if 'id' not in task:
+        if "id" not in task:
             continue
         
-        task_id = task['id']
+        task_id = task["id"]
         if task_id in private_tasks_dict:
             private_task = private_tasks_dict[task_id]
             # Compare essential fields
-            for field in ['title', 'status']:
+            for field in ["title", "status"]:
                 if field in task and task[field] != private_task.get(field):
                     print(f"WARNING: Task {task_id} has different {field}:")
                     print(f"  Public: {task.get(field)}")
