@@ -86,10 +86,18 @@ class MiroVisualizer:
             "data": {"content": content},
             "position": {"x": position[0], "y": position[1]}
         }
-        resp = requests.post(f"{self.base_url}/sticky_notes", 
-                           json=data, headers=self.headers)
-        resp.raise_for_status()
-        return resp.json()["id"]
+        print(f"Creating sticky note for task {task['id']}...")
+        try:
+            resp = requests.post(f"{self.base_url}/sticky_notes", 
+                               json=data, headers=self.headers)
+            resp.raise_for_status()
+            print(f"Successfully created sticky note for task {task['id']}")
+            return resp.json()["id"]
+        except requests.exceptions.RequestException as e:
+            print(f"Error creating sticky note for task {task['id']}: {str(e)}")
+            if hasattr(e, 'response') and e.response is not None:
+                print(f"Response text: {e.response.text}")
+            raise
 
     def create_connector(self, start_id: str, end_id: str, dep_type: str) -> None:
         """Create a connector between sticky notes."""
@@ -104,9 +112,17 @@ class MiroVisualizer:
             "endItem": {"id": end_id},
             "style": style
         }
-        resp = requests.post(f"{self.base_url}/connectors", 
-                           json=data, headers=self.headers)
-        resp.raise_for_status()
+        print(f"Creating {dep_type} connector between {start_id} and {end_id}...")
+        try:
+            resp = requests.post(f"{self.base_url}/connectors", 
+                               json=data, headers=self.headers)
+            resp.raise_for_status()
+            print(f"Successfully created {dep_type} connector")
+        except requests.exceptions.RequestException as e:
+            print(f"Error creating connector: {str(e)}")
+            if hasattr(e, 'response') and e.response is not None:
+                print(f"Response text: {e.response.text}")
+            raise
 
     def visualize(self, yaml_path: str) -> None:
         """Main method to visualize tasks on Miro board."""
@@ -126,13 +142,19 @@ class MiroVisualizer:
         # レート制限を考慮して一定間隔で処理
         for task_id, pos in positions.items():
             if task_id.startswith("HUMAN_"):
-                task = G.nodes[task_id]
-                sticky_ids[task_id] = self.create_sticky(
-                    {"id": task_id, "title": task["title"], 
-                     "status": "N/A", "type": "human"}, pos)
+                task_data = G.nodes[task_id]
+                sticky_ids[task_id] = self.create_sticky({
+                    "id": task_id,
+                    "title": task_data.get("title", f"Human: {task_id.replace('HUMAN_', '')}"),
+                    "status": "N/A",
+                    "type": "human"
+                }, pos)
             else:
-                task = [t for t in tasks if t["id"] == task_id][0]
-                sticky_ids[task_id] = self.create_sticky(task, pos)
+                try:
+                    task = next(t for t in tasks if t["id"] == task_id)
+                    sticky_ids[task_id] = self.create_sticky(task, pos)
+                except StopIteration:
+                    print(f"Warning: Task {task_id} not found in tasks list")
             time.sleep(0.5)  # レート制限対策
             
         # 依存関係の描画
