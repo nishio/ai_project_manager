@@ -12,7 +12,12 @@ def fetch_pages(project_name: str, since: Optional[datetime] = None, until: Opti
     import urllib.parse
     encoded_project = urllib.parse.quote(project_name, safe='')
     base_url = f"https://scrapbox.io/api/pages/{encoded_project}"
-    params = {"limit": 1000}  # 十分大きな値を設定
+    params = {
+        "limit": 1000,  # 十分大きな値を設定
+        "skip": 0
+    }
+    if since:
+        params["since"] = int(since.timestamp())
     
     response = requests.get(base_url, params=params)
     print(f"Debug: Requesting URL: {base_url}")
@@ -54,10 +59,18 @@ def fetch_pages(project_name: str, since: Optional[datetime] = None, until: Opti
 
 def fetch_page_content(project_name: str, page_title: str) -> str:
     """個別ページの内容を取得"""
-    url = f"https://scrapbox.io/api/{project_name}/pages/{page_title}/text"
+    import urllib.parse
+    encoded_project = urllib.parse.quote(project_name, safe='')
+    encoded_title = urllib.parse.quote(page_title, safe='')
+    url = f"https://scrapbox.io/api/pages/{encoded_project}/{encoded_title}/text"
+    
+    print(f"Debug: Fetching content from URL: {url}")
     response = requests.get(url)
+    print(f"Debug: Content response status: {response.status_code}")
+    
     if response.status_code != 200:
-        print(f"Warning: Failed to fetch content for {page_title}")
+        print(f"Warning: Failed to fetch content for '{page_title}'")
+        print(f"Response: {response.text}")
         return ""
     return response.text
 
@@ -92,10 +105,11 @@ def main():
     # 期間の設定（UTCで取得）
     now = datetime.now(timezone.utc)  # 直接UTCで取得
     if args.days:
-        # 過去の日付を計算（UTCで計算）
+        # 現在時刻から過去の日付を計算（UTCで計算）
         until = now
         since = now - timedelta(days=args.days)
         print(f"Debug: Filtering pages between {since} and {until} (UTC)")
+        print(f"Debug: Using timestamps: since={int(since.timestamp())}, until={int(until.timestamp())}")
     elif args.date:
         try:
             # 指定された日付をUTCとして解釈
@@ -103,6 +117,7 @@ def main():
             since = target_date
             until = target_date + timedelta(days=1)
             print(f"Debug: Filtering pages for date {args.date} (UTC range: {since} to {until})")
+            print(f"Debug: Using timestamps: since={int(since.timestamp())}, until={int(until.timestamp())}")
         except ValueError:
             print("Error: Invalid date format. Use YYYY-MM-DD")
             sys.exit(1)
