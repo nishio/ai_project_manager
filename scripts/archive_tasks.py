@@ -50,8 +50,10 @@ def load_yaml(filepath: str) -> List[Dict]:
     """
     if os.path.exists(filepath):
         with open(filepath, 'r', encoding='utf-8') as f:
-            data = yaml.safe_load(f) or []
-            return data if isinstance(data, list) else []
+            data = yaml.safe_load(f) or {}
+            if isinstance(data, dict) and 'tasks' in data:
+                return data['tasks']
+            return []
     return []
 
 def save_yaml(data: List[Dict], filepath: str) -> None:
@@ -63,7 +65,7 @@ def save_yaml(data: List[Dict], filepath: str) -> None:
     """
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, 'w', encoding='utf-8') as f:
-        yaml.safe_dump(data, f, allow_unicode=True, sort_keys=False)
+        yaml.safe_dump({'tasks': data}, f, allow_unicode=True, sort_keys=False)
 
 def check_expired_tasks(tasks: List[Dict], target_date: datetime.date) -> Tuple[List[Dict], List[Dict]]:
     """
