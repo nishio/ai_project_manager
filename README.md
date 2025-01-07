@@ -95,10 +95,14 @@ AIによるタスク管理システム。タスクの自動分類、依存関係
 
 ### 役割別セットアップガイド
 
-#### 1. タスク管理者（Task Manager）
+#### 1. AIタスク管理者（AI Task Manager）
+
+この役割はAIがSlackで人間からの指示を受けてタスクのデータを更新するものである。
+Pythonソースコードの編集は担当しない、機能追加やバグ修正が必要になった場合は、タスクリストに追加する
+
 必要な設定：
 - システムコードリポジトリのクローン
-- タスクデータリポジトリのクローン（書き込み権限必要）
+- タスクデータリポジトリのクローン（権限必要）
 - OpenAI APIキーの設定
 - Pythonパッケージのインストール
 
@@ -118,10 +122,10 @@ cd ai_project_manager_data
 ls tasks/backlog.yaml
 ```
 
-#### 2. 開発者（Developer）
+#### 2. AI開発者（AI Developer）
 必要な設定：
 - システムコードリポジトリのクローン
-- テストデータの利用
+- タスクデータリポジトリのクローン（権限必要）
 - 開発環境のセットアップ
 
 ```bash
@@ -131,27 +135,22 @@ git clone https://github.com/nishio/ai_project_manager.git
 # 2. パッケージのインストール
 pip install pyyaml networkx openai
 
-# 3. テストデータの確認
-ls tasks/test_advanced.yaml
-
 # 4. 開発用環境変数の設定
 export OPENAI_API_KEY=your_api_key
 export USE_TEST_DATA=true  # テストデータを使用
 ```
 
-#### 3. 閲覧者（Viewer）
+#### 3. 人間（Human）
 必要な設定：
-- システムコードリポジトリのクローン（読み取り専用）
-- タスクデータリポジトリのクローン（読み取り専用）
+- システムコードリポジトリのクローン
+- タスクデータリポジトリのクローン（権限必要）
+- 開発環境のセットアップ
 
 ```bash
 # 1. リポジトリのクローン
 git clone https://github.com/nishio/ai_project_manager.git
+cd ai_project_manager  # 単一のVSCodeウィンドウで開きたいため
 git clone https://github.com/nishio/ai_project_manager_data.git
-
-# 2. タスクの閲覧
-cd ai_project_manager_data
-cat tasks/backlog.yaml
 ```
 
 ## 使用方法
@@ -161,10 +160,14 @@ cat tasks/backlog.yaml
 python scripts/gather_tasks.py
 ```
 
+nishio: エラーは出ないが機能しているか不明
+
 2. タスクの分析・処理
 ```bash
 python scripts/ai_support.py
 ```
+
+nishio: エラーは出ないが機能しているか不明
 
 ## ドキュメント
 
@@ -179,8 +182,9 @@ python scripts/ai_support.py
 
 2. タスクデータの更新
    - ai_project_manager_dataリポジトリで管理
-   - プライバシーに配慮した運用
+   - 公開してはいけないタスクが含まれる可能性があるので公開リポジトリに書かないように配慮した運用をせよ
 
 ## ライセンス
 
 Copyright (c) 2024 Nishio
+MIT License
