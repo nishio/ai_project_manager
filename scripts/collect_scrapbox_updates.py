@@ -9,24 +9,45 @@ from typing import List, Optional
 
 def fetch_pages(project_name: str, since: Optional[datetime] = None, until: Optional[datetime] = None) -> List[dict]:
     """指定された期間のScrapboxページを取得"""
-    base_url = f"https://scrapbox.io/api/{project_name}/pages"
+    import urllib.parse
+    encoded_project = urllib.parse.quote(project_name, safe='')
+    base_url = f"https://scrapbox.io/api/pages/{encoded_project}"
     params = {"limit": 1000}  # 十分大きな値を設定
     
     response = requests.get(base_url, params=params)
+    print(f"Debug: Requesting URL: {base_url}")
+    print(f"Debug: Response status: {response.status_code}")
+    try:
+        response_data = response.json()
+        print(f"Debug: Response data: {json.dumps(response_data, indent=2, ensure_ascii=False)}")
+    except json.JSONDecodeError:
+        print(f"Debug: Raw response: {response.text}")
+        
     if response.status_code != 200:
-        print(f"Error: Failed to fetch pages. Status code: {response.status_code}")
+        print(f"Error: Failed to fetch pages from {base_url}")
+        print(f"Status code: {response.status_code}")
+        print(f"Response: {response.text}")
         sys.exit(1)
     
-    pages = response.json()["pages"]
+    pages = response.json().get("pages", [])
     filtered_pages = []
     
     for page in pages:
-        updated = datetime.fromtimestamp(page["updated"] / 1000)
-        if since and updated < since:
+        # APIから返されるタイムスタンプはミリ秒単位のUNIXタイムスタンプ
+        # accessed（最終アクセス日時）を使用して最新の更新を判断
+        updated = datetime.fromtimestamp(page.get("accessed", page["updated"]) / 1000)
+        print(f"Debug: Page '{page.get('title')}' accessed/updated at {updated}, comparing with since={since} and until={until}")
+        
+        # 日付の比較（UTCタイムスタンプとして比較）
+        if since and updated.replace(tzinfo=None) < since.replace(tzinfo=None):
+            print(f"Debug: Skipping - {updated} is before since {since}")
             continue
-        if until and updated > until:
+        if until and updated.replace(tzinfo=None) > until.replace(tzinfo=None):
+            print(f"Debug: Skipping - {updated} is after until {until}")
             continue
+            
         filtered_pages.append(page)
+        print(f"Debug: Added page '{page.get('title')}' to filtered pages")
     
     return filtered_pages
 
@@ -67,11 +88,12 @@ def main():
     
     args = parser.parse_args()
     
-    # 期間の設定
-    now = datetime.now()
+    # 期間の設定（現在時刻をUTCで取得）
+    now = datetime.utcnow()
     if args.days:
-        since = now - timedelta(days=args.days)
+        # 過去の日付を計算
         until = now
+        since = now - timedelta(days=args.days)
     elif args.date:
         try:
             target_date = datetime.strptime(args.date, "%Y-%m-%d")
