@@ -69,8 +69,8 @@ def save_to_file(pages: list, output_dir: Path, project_name: str):
     with open(output_file, "w", encoding="utf-8") as f:
         for page in pages:
             title = page["title"]
-            created = datetime.fromtimestamp(page["created"] / 1000)
-            updated = datetime.fromtimestamp(page["updated"] / 1000)
+            created = datetime.fromtimestamp(page["created"] / 1000, tz=timezone.utc)
+            updated = datetime.fromtimestamp(page["updated"] / 1000, tz=timezone.utc)
             content = fetch_page_content(project_name, title)
             
             f.write(f"# {title}\n")
