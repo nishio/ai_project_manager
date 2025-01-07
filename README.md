@@ -110,6 +110,7 @@ python scripts/ai_support.py
 ```
 
 nishio: エラーは出ないが機能しているか不明
+TODO: どのように使ってどのような結果が出るのか記述する
 
 ## ドキュメント
 
