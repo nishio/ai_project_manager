@@ -46,6 +46,9 @@
 - AIによる実行：自動化システムによる実行
   - GitHub Issues自動収集
   - Scrapboxからのタスク抽出
+    - collect_scrapbox_updates.pyを使用して更新ページを収集
+    - 収集したページをChatGPT o1 Proで分析
+    - 抽出されたタスクをシステムに追加
   - 多言語翻訳など
 
 ## 4. 多言語コンテンツ管理
