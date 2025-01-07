@@ -12,8 +12,8 @@ def fetch_pages(project_name: str, since_ts: Optional[int] = None, until_ts: Opt
     
     Args:
         project_name: プロジェクト名
-        since_ts: 取得開始時刻（UNIXタイムスタンプ、秒単位）
-        until_ts: 取得終了時刻（UNIXタイムスタンプ、秒単位）
+        since_ts: 取得開始時刻（UNIXタイムスタンプ、ミリ秒単位）
+        until_ts: 取得終了時刻（UNIXタイムスタンプ、ミリ秒単位）
     """
     import urllib.parse
     encoded_project = urllib.parse.quote(project_name, safe='')
@@ -48,16 +48,16 @@ def fetch_pages(project_name: str, since_ts: Optional[int] = None, until_ts: Opt
     for page in pages:
         # APIから返されるタイムスタンプはミリ秒単位のUNIXタイムスタンプ
         # accessed（最終アクセス日時）を使用して最新の更新を判断
-        timestamp = int(page.get("accessed", page["updated"]) / 1000)  # ミリ秒から秒に変換
-        updated_dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
-        print(f"Debug: Page '{page.get('title')}' accessed/updated at {updated_dt}")
+        page_ts = int(page.get("accessed", page["updated"]))  # ミリ秒単位のタイムスタンプを使用
+        updated_dt = datetime.fromtimestamp(page_ts / 1000, tz=timezone.utc)  # ミリ秒から秒に変換して日時に
+        print(f"Debug: Page '{page.get('title')}' accessed/updated at {updated_dt} (timestamp: {page_ts})")
         
-        # タイムスタンプで直接比較（すべてUNIXタイムスタンプ、秒単位）
-        if since_ts and timestamp < since_ts:
-            print(f"Debug: Skipping - timestamp {timestamp} is before {since_ts}")
+        # タイムスタンプで直接比較（すべてミリ秒単位）
+        if since_ts and page_ts < since_ts:
+            print(f"Debug: Skipping - page timestamp {page_ts} ({datetime.fromtimestamp(page_ts/1000, tz=timezone.utc)}) is before {since_ts} ({datetime.fromtimestamp(since_ts/1000, tz=timezone.utc)})")
             continue
-        if until_ts and timestamp > until_ts:
-            print(f"Debug: Skipping - timestamp {timestamp} is after {until_ts}")
+        if until_ts and page_ts > until_ts:
+            print(f"Debug: Skipping - page timestamp {page_ts} ({datetime.fromtimestamp(page_ts/1000, tz=timezone.utc)}) is after {until_ts} ({datetime.fromtimestamp(until_ts/1000, tz=timezone.utc)})")
             continue
             
         filtered_pages.append(page)
@@ -111,23 +111,29 @@ def main():
     args = parser.parse_args()
     
     # 期間の設定（UTCで取得）
-    now = int(datetime.now(timezone.utc).timestamp())  # 現在のUNIXタイムスタンプを取得
+    # 現在時刻をUNIXタイムスタンプ（ミリ秒）として取得
+    import time
+    now_ts = int(time.time() * 1000)  # 現在のUNIXタイムスタンプ（ミリ秒）
     if args.days:
-        # 現在時刻から過去の日付を計算
-        until = now
-        since = now - (args.days * 24 * 60 * 60)  # days -> seconds
-        until_dt = datetime.fromtimestamp(until, tz=timezone.utc)
-        since_dt = datetime.fromtimestamp(since, tz=timezone.utc)
-        print(f"Debug: Filtering pages between {since_dt} and {until_dt} (UTC)")
-        print(f"Debug: Using timestamps: since={since}, until={until}")
+        # 現在時刻から過去の日付を計算（現在時刻を含む）
+        until_ts = now_ts
+        since_ts = now_ts - (args.days * 24 * 60 * 60 * 1000)  # days -> ミリ秒
+        now_dt = datetime.fromtimestamp(now_ts/1000, tz=timezone.utc)
+        since_dt = datetime.fromtimestamp(since_ts/1000, tz=timezone.utc)
+        print(f"Debug: Current time (UTC): {now_dt}")
+        print(f"Debug: Filtering pages between {since_dt} and {now_dt} (UTC)")
+        print(f"Debug: Using timestamps: since={since_ts}, until={until_ts}")
+        print(f"Debug: Date range: {datetime.fromtimestamp(since_ts/1000, tz=timezone.utc)} to {datetime.fromtimestamp(until_ts/1000, tz=timezone.utc)}")
     elif args.date:
         try:
-            # 指定された日付をUTCとして解釈
+            # 指定された日付をUTCとして解釈（その日の開始から終了まで）
             target_date = datetime.strptime(args.date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-            since = int(target_date.timestamp())
-            until = int((target_date + timedelta(days=1)).timestamp())
+            # タイムスタンプをミリ秒単位で生成
+            since_ts = int(target_date.timestamp() * 1000)
+            until_ts = int((target_date + timedelta(days=1)).timestamp() * 1000)
             print(f"Debug: Filtering pages for date {args.date}")
-            print(f"Debug: Using timestamps: since={since}, until={until}")
+            print(f"Debug: Using timestamps: since={since_ts}, until={until_ts}")
+            print(f"Debug: Date range: {datetime.fromtimestamp(since_ts/1000, tz=timezone.utc)} to {datetime.fromtimestamp(until_ts/1000, tz=timezone.utc)}")
         except ValueError:
             print("Error: Invalid date format. Use YYYY-MM-DD")
             sys.exit(1)
@@ -141,7 +147,7 @@ def main():
     
     # ページの取得と保存
     # ページの取得（UNIXタイムスタンプを使用）
-    pages = fetch_pages(args.project, since, until)
+    pages = fetch_pages(args.project, since_ts, until_ts)
     if not pages:
         print("No updates found for the specified period")
         return
