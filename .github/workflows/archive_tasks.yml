@@ -43,5 +43,9 @@ jobs:
           echo "No changes to commit"
           exit 0
         fi
+        
+        # 他の変更との衝突を防ぐため、最新の変更を取得
+        git pull --rebase origin main
+        
         git commit -m "Archive completed tasks (automated)"
-        git push
+        git push origin HEAD

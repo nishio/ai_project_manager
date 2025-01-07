@@ -117,14 +117,27 @@ python scripts/ai_support.py
 - タスク説明の多言語対応：必要に応じて説明を他言語に翻訳
 - 依存関係の最適化提案：タスクの実行順序や並列化の可能性を提案
 
-### 3. タスクの検証
+### 3. タスクの検証とアーカイブ
 ```bash
 # タスク構造の検証
 python scripts/validate_yaml.py tasks/backlog.yaml
 
 # 依存関係の可視化
 python scripts/visualize_graph.py
+
+# 完了タスクのアーカイブ（手動実行）
+python scripts/archive_tasks.py [--date YYYY-MM-DD]
 ```
+実行結果：
+- タスク構造の検証：YAMLファイルの形式と必須フィールドを確認
+- 依存関係の可視化：タスク間の関係をグラフとして表示
+- 完了タスクのアーカイブ：
+  - 完了タスク（status: Done）を日付別ファイルに移動
+  - バックアップの自動作成（tasks/backup/）
+  - 期限切れタスクの検出と通知
+  - アーカイブファイル生成（tasks/archive/YYYY-MM-DD.yaml）
+
+注：完了タスクは毎朝5時（JST）に自動的にアーカイブされます。手動実行時は --date オプションで日付を指定できます。
 
 ## ドキュメントガイド
 
