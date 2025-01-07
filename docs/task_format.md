@@ -49,6 +49,15 @@
 ## オプションフィールド
 
 - `labels`: タスクのラベル（配列）
+  - `prototype`: 検証用の小規模実装
+  - `human-required`: 人間の作業が必要
+  - `integration`: 外部システムとの連携
+  - `enhancement`: 機能改善
+  - `feature`: 新機能
+  - `documentation`: ドキュメント関連
+  - `automation`: 自動化関連
+  - `performance`: パフォーマンス改善
+  - `security`: セキュリティ関連
 - `assignable_to`: タスクの実行可能者（human/ai）
 - `subtasks`: サブタスクのリスト（プロジェクトの場合）
 - `related_repos`: 関連するリポジトリのリスト
