@@ -96,26 +96,54 @@ git clone https://github.com/nishio/ai_project_manager_data.git
 
 ## 使用方法
 
-1. タスクの収集
+### 1. タスクの収集と分析
 ```bash
+# タスクの収集と整理
 python scripts/gather_tasks.py
 ```
+実行結果：
+- タスクの読み込みと整理：backlog.yamlからタスクを読み込み、構造を分析
+- プロジェクトの分解：大きなプロジェクトを管理可能なサブタスクに分解
+- 類似タスクの検出：重複や関連するタスクを自動的に特定
+- 依存関係の分析：タスク間の依存関係をグラフとして可視化（task_graph.pngが生成）
 
-nishio: エラーは出ないが機能しているか不明
-TODO: どのように使ってどのような結果が出るのか記述する
-
-2. タスクの分析・処理
+### 2. AIによるタスク分析と支援
 ```bash
 python scripts/ai_support.py
 ```
+実行結果：
+- タスクの複雑さと工数の分析：各タスクの規模と必要な作業量を推定
+- プロジェクトの自動分解：大規模タスクを実行可能な単位に分割
+- タスク説明の多言語対応：必要に応じて説明を他言語に翻訳
+- 依存関係の最適化提案：タスクの実行順序や並列化の可能性を提案
 
-nishio: エラーは出ないが機能しているか不明
-TODO: どのように使ってどのような結果が出るのか記述する
+### 3. タスクの検証
+```bash
+# タスク構造の検証
+python scripts/validate_yaml.py tasks/backlog.yaml
 
-## ドキュメント
+# 依存関係の可視化
+python scripts/visualize_graph.py
+```
 
-- [タスク形式ガイドライン](tasks/docs/policies/task_format.md)
-- [システム概要](tasks/docs/knowledge_base/system_overview.md)
+## ドキュメントガイド
+
+### 役割別ガイド
+
+#### AIタスク管理者向け
+- [タスク形式ガイドライン](docs/task_format.md) - タスクの構造と必須フィールドの説明
+- [タスク管理ガイドライン](docs/task_management.md) - タスク管理の基本原則と運用方法
+- [スクリプト説明](docs/scripts.md) - 利用可能なスクリプトの一覧と使用方法
+
+#### 開発者向け
+- [スクリプト説明](docs/scripts.md) - スクリプトの詳細な実装と使用方法
+- [システムの知見](docs/knowledge_base.md) - システムの基本構造と設計思想
+- [タスク形式ガイドライン](docs/task_format.md) - タスクデータ構造の詳細
+
+#### 人間向け
+- [タスク管理ガイドライン](docs/task_management.md) - タスク管理の基本的な考え方
+- [タスク形式ガイドライン](docs/task_format.md) - タスクの作成方法
+- [システムの知見](docs/knowledge_base.md) - システム全体の理解
 
 ## 開発ガイドライン
 

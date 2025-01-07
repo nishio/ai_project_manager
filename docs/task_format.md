@@ -5,7 +5,7 @@
 ```yaml
 - id: "TXXXX"
   title: "タスクのタイトル"
-  status: "Open" # Open, In Progress, Done, Blocked
+  status: "Open" # タスクの状態については docs/knowledge_base.md の「タスクの状態管理」を参照
   type: "task" # task, project
   description: >
     タスクの詳細な説明。
