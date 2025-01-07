@@ -20,12 +20,12 @@ def load_tasks(tasks_dir: str) -> dict:
     Returns:
         読み込んだタスク情報
     """
-    backlog_path = os.path.join(tasks_dir, 'backlog.yaml')
+    backlog_path = os.path.join(tasks_dir, "backlog.yaml")
     if not os.path.exists(backlog_path):
-        return {'tasks': []}
+        return {"tasks": []}
         
-    with open(backlog_path, 'r', encoding='utf-8') as f:
-        return yaml.safe_load(f) or {'tasks': []}
+    with open(backlog_path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {"tasks": []}
 
 def break_down_project(project: dict) -> list:
     """
@@ -244,11 +244,15 @@ def analyze_task_dependencies(G: nx.DiGraph) -> Tuple[List[str], Dict[str, List[
     return executable_tasks, blocked_tasks
 
 def main():
-    # タスクディレクトリのパス
-    tasks_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'tasks')
-    
-    # タスクの読み込み
-    data = load_tasks(tasks_dir)
+    # タスクファイルのパス（コマンドライン引数から取得）
+    if len(sys.argv) > 1:
+        tasks_file = sys.argv[1]
+        with open(tasks_file, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {"tasks": []}
+    else:
+        # デフォルトのタスクディレクトリ
+        tasks_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "tasks")
+        data = load_tasks(tasks_dir)
     
     # プロジェクトの分解とタスクの収集
     all_tasks = []

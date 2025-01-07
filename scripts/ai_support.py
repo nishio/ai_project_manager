@@ -10,7 +10,7 @@ from openai import OpenAI
 class AITaskProcessor:
     def __init__(self):
         self.model = "gpt-4"  # デフォルトモデル
-        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         
     def analyze_task(self, task: Dict) -> Dict:
         """
@@ -24,9 +24,9 @@ class AITaskProcessor:
         """
         prompt = f"""
 タスク分析:
-ID: {task['id']}
-タイトル: {task['title']}
-説明: {task.get('description', '')}
+ID: {task["id"]}
+タイトル: {task["title"]}
+説明: {task.get("description", "")}
 
 以下の観点で分析してください：
 1. タスクの複雑さと見積もり時間
@@ -55,7 +55,7 @@ ID: {task['id']}
                 ]
             )
             analysis = json.loads(response.choices[0].message.content)
-            task['ai_analysis'] = analysis
+            task["ai_analysis"] = analysis
             return task
         except Exception as e:
             print(f"Error analyzing task: {e}")

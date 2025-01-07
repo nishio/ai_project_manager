@@ -106,19 +106,31 @@ Pythonソースコードの編集は担当しない、機能追加やバグ修�
 - OpenAI APIキーの設定
 - Pythonパッケージのインストール
 
+注意：このシステムは Ubuntu 22.04.5 LTS (x86_64) で開発・テストされています。
+Macユーザーは追加の設定が必要です。
+
 ```bash
 # 1. リポジトリのクローン
 git clone https://github.com/nishio/ai_project_manager.git
 git clone https://github.com/nishio/ai_project_manager_data.git
+cd ai_project_manager
 
-# 2. パッケージのインストール
-pip install pyyaml networkx openai
+# 2. 環境のセットアップ
+## Ubuntu/Debian の場合
+sudo apt-get update
+sudo apt-get install -y graphviz
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+## Mac の場合
+./setup_mac.sh  # graphvizのインストールとvenv環境のセットアップを行います
 
 # 3. OpenAI APIキーの設定
 export OPENAI_API_KEY=your_api_key
 
 # 4. タスクデータの確認
-cd ai_project_manager_data
+cd ../ai_project_manager_data
 ls tasks/backlog.yaml
 ```
 
