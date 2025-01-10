@@ -77,7 +77,7 @@ def validate_backlog(filepath: str) -> bool:
 
 def main():
     """Main entry point"""
-    filepath = "../ai_project_manager_data/tasks/backlog.yaml"
+    filepath = "/home/ubuntu/repos/ai_project_manager_data/tasks/backlog.yaml"
     if not validate_backlog(filepath):
         sys.exit(1)
     sys.exit(0)
