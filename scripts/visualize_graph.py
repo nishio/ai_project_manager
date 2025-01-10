@@ -83,8 +83,11 @@ def visualize_task_graph(G: nx.DiGraph, output: str = "task_graph"):
             )
         else:
             # タスクノード
-            label = f"{node}: {attrs['title']}\n({attrs['status']})"
-            fillcolor = "lightgreen" if attrs["type"] == "project" else "white"
+            title = attrs.get('title', 'No Title')
+            status = attrs.get('status', 'Unknown')
+            node_type = attrs.get('type', 'task')
+            label = f"{node}: {title}\n({status})"
+            fillcolor = "lightgreen" if node_type == "project" else "white"
             dot.node(
                 node,
                 label,
@@ -111,19 +114,15 @@ def visualize_task_graph(G: nx.DiGraph, output: str = "task_graph"):
 
 def main():
     """メイン処理"""
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    backlog_path = os.path.join(
-        script_dir, "..", "ai_project_manager_data", "tasks", "backlog.yaml"
-    )
-    if not os.path.exists(backlog_path):
-        backlog_path = os.path.join(
-            script_dir, "..", "..", "ai_project_manager_data", "tasks", "backlog.yaml"
-        )
+    import argparse
+    parser = argparse.ArgumentParser(description='Generate task dependency graph')
+    parser.add_argument('--input_file', required=True, help='Input YAML file path')
+    parser.add_argument('--output_file', required=True, help='Output file path (without extension)')
+    args = parser.parse_args()
 
-    output_path = os.path.join(script_dir, "..", "tasks", "task_graph")
-
-    tasks = load_tasks(backlog_path)
+    tasks = load_tasks(args.input_file)
     G = create_task_graph(tasks)
+    output_path = os.path.splitext(args.output_file)[0]  # Remove extension if present
     visualize_task_graph(G, output_path)
     print(f"タスクグラフを {output_path}.png に出力しました")
 
