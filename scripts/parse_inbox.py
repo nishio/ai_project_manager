@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import re
 import yaml
+import uuid
 from datetime import datetime
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 def detect_date(text: str) -> Tuple[Optional[str], Optional[str], str]:
     """
@@ -44,15 +45,20 @@ def detect_date(text: str) -> Tuple[Optional[str], Optional[str], str]:
     
     return None, None, text
 
-def generate_task_id() -> str:
-    """Generate a unique task ID in TXXXX format."""
-    # In a real implementation, this would need to check existing IDs
-    # For now, we'll use a timestamp-based ID
-    from datetime import datetime
-    timestamp = datetime.now().strftime("%H%M%S")
-    return f"T{timestamp}"
+def generate_task_id(existing_tasks: List[Dict]) -> str:
+    """
+    Generate a unique task ID in TXXXX format.
+    Ensures uniqueness by checking existing IDs and finding the next available number.
+    """
+    used_numbers = {int(task['id'][1:]) for task in existing_tasks if task['id'].startswith('T')}
+    next_number = 0
+    while next_number < 10000:  # 4-digit limit
+        if next_number not in used_numbers:
+            return f"T{str(next_number).zfill(4)}"
+        next_number += 1
+    raise ValueError("All 4-digit task IDs (0000-9999) are in use")
 
-def convert_freeform_to_yaml(text: str) -> Dict:
+def convert_freeform_to_yaml(text: str, existing_tasks: List[Dict]) -> Dict:
     """
     Convert freeform text to a structured task dictionary.
     Example input: "月曜に歯医者の予約の電話をする"
@@ -62,7 +68,8 @@ def convert_freeform_to_yaml(text: str) -> Dict:
     
     # Create basic task structure
     task = {
-        "id": generate_task_id(),
+        "id": generate_task_id(existing_tasks),
+        "permanent_id": str(uuid.uuid4()),  # Add permanent UUID
         "title": text_without_date,
         "status": "Open",
         "type": "task",
@@ -77,11 +84,24 @@ def convert_freeform_to_yaml(text: str) -> Dict:
     
     return task
 
+def load_existing_tasks(backlog_path: str = "/home/ubuntu/repos/ai_project_manager_data/tasks/backlog.yaml") -> List[Dict]:
+    """
+    Load existing tasks from backlog.yaml
+    Returns empty list if file doesn't exist
+    """
+    try:
+        with open(backlog_path, 'r', encoding='utf-8') as f:
+            data = yaml.safe_load(f)
+            return data.get('tasks', []) if isinstance(data, dict) else []
+    except (FileNotFoundError, yaml.YAMLError):
+        return []
+
 def parse_inbox_text(text: str) -> str:
     """
     Parse freeform text and return YAML string.
     """
-    task = convert_freeform_to_yaml(text)
+    existing_tasks = load_existing_tasks()
+    task = convert_freeform_to_yaml(text, existing_tasks)
     return yaml.dump({"tasks": [task]}, allow_unicode=True, sort_keys=False)
 
 if __name__ == "__main__":
