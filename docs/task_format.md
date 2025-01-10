@@ -42,9 +42,10 @@
         reason: "このタスクがあると便利な理由"
     human: # 人間の操作が必要な依存関係
       - action: "データのレビュー"
-        assignee: "nishio"
+        assignee: "nishio"  # 自分以外のassigneeは他者待ちを意味する
         status: "waiting" # waiting, approved, rejected
         reason: "人間による確認が必要"
+        last_check_time: "2025-01-09T10:30:00"  # 最後に状態を確認した時刻（ISO 8601形式）
   similar_tasks: # 類似タスク（オプション）
     - task_id: "TAAAA"
       similarity_score: 0.8 # 類似度スコア（0.0-1.0）
