@@ -1,1 +1,51 @@
-name: Archive Done Tasks\n\non:\n  schedule:\n    # 毎朝5時に実行（UTC 20:00 = JST 05:00）\n    - cron: '0 20 * * *'\n  workflow_dispatch:  # 手動実行用\n\njobs:\n  archive:\n    runs-on: ubuntu-latest\n    \n    steps:\n    - uses: actions/checkout@v3\n      with:\n        fetch-depth: 0\n    \n    - name: Set up Python\n      uses: actions/setup-python@v4\n      with:\n        python-version: '3.12'\n    \n    - name: Install dependencies\n      run: |\n        python -m pip install --upgrade pip\n        pip install pyyaml\n    \n    - name: Configure Git\n      run: |\n        git config --global user.name 'GitHub Actions'\n        git config --global user.email 'actions@github.com'\n    \n    - name: Archive tasks\n      run: |\n        # 前日の日付を取得（JST = UTC+9を考慮）\n        yesterday=$(TZ=Asia/Tokyo date -d "yesterday" +%Y-%m-%d)\n        python scripts/archive_tasks.py --date "$yesterday"\n    \n    - name: Commit and push changes\n      run: |\n        git add tasks/\n        if git diff --staged --quiet; then\n          echo "No changes to commit"\n          exit 0\n        fi\n        \n        # 他の変更との衝突を防ぐため、最新の変更を取得\n        git pull --rebase origin main\n        \n        git commit -m "Archive completed tasks (automated)"\n        git push origin HEAD
+name: Archive Done Tasks
+
+on:
+  schedule:
+    # 毎朝5時に実行（UTC 20:00 = JST 05:00）
+    - cron: '0 20 * * *'
+  workflow_dispatch:  # 手動実行用
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyyaml
+    
+    - name: Configure Git
+      run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'actions@github.com'
+    
+    - name: Archive tasks
+      run: |
+        # 前日の日付を取得（JST = UTC+9を考慮）
+        yesterday=$(TZ=Asia/Tokyo date -d "yesterday" +%Y-%m-%d)
+        python scripts/archive_tasks.py --date "$yesterday"
+    
+    - name: Commit and push changes
+      run: |
+        git add tasks/
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+          exit 0
+        fi
+        
+        # 他の変更との衝突を防ぐため、最新の変更を取得
+        git pull --rebase origin main
+        
+        git commit -m "Archive completed tasks (automated)"
+        git push origin HEAD
