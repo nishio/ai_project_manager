@@ -35,8 +35,8 @@ def create_backup(filepath: str, backup_dir: str) -> str:
     )
     
     if os.path.exists(filepath):
-        with open(filepath, 'r', encoding='utf-8') as src:
-            with open(backup_path, 'w', encoding='utf-8') as dst:
+        with open(filepath, "r", encoding="utf-8") as src:
+            with open(backup_path, "w", encoding="utf-8") as dst:
                 dst.write(src.read())
     return backup_path
 
@@ -80,7 +80,7 @@ def check_expired_tasks(tasks: List[Dict], target_date: datetime.date) -> Tuple[
     valid = []
     
     for task in tasks:
-        due_date = task.get('due_date')
+        due_date = task.get("due_date")
         if due_date:
             try:
                 if isinstance(due_date, str):
@@ -119,7 +119,7 @@ def move_done_tasks(target_date: Optional[str] = None) -> None:
     active_tasks = []
     
     for task in tasks:
-        if task.get('status') == 'Done':
+        if task.get("status") == "Done":
             done_tasks.append(task)
         else:
             active_tasks.append(task)
@@ -130,7 +130,7 @@ def move_done_tasks(target_date: Optional[str] = None) -> None:
     if expired_tasks:
         print("\n期限切れタスクが見つかりました：")
         for task in expired_tasks:
-            print(f"- {task.get('id', 'NO_ID')}: {task.get('title', 'NO_TITLE')} (期限: {task.get('due_date', 'NO_DUE_DATE')})")
+            print(f"- {task.get('id', 'NO_ID')}: {task.get('title', 'NO_TITLE')} (期限: {task.get('due_date', 'NO_DUE_DATE')}")
         print("\n期限切れタスクは人間の確認が必要です。")
         print("期限切れタスクはアーカイブされません。")
     
@@ -152,8 +152,8 @@ def move_done_tasks(target_date: Optional[str] = None) -> None:
     print(f"- バックアップファイル: {backup_path}")
 
 def main():
-    parser = argparse.ArgumentParser(description='完了タスクを日付別アーカイブに移動')
-    parser.add_argument('--date', help='アーカイブ日付（YYYY-MM-DD形式）')
+    parser = argparse.ArgumentParser(description="完了タスクを日付別アーカイブに移動")
+    parser.add_argument("--date", help="アーカイブ日付（YYYY-MM-DD形式）")
     args = parser.parse_args()
     
     try:

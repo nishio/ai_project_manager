@@ -16,44 +16,60 @@
    - 範囲：実質無制限
    - 用途：内部参照、データ関係の永続的な管理
 
-## 基本形式 (YAML)
+## 基本形式 (JSON)
 
-```yaml
-- id: "TXXXX"
-  permanent_id: "550e8400-e29b-41d4-a716-446655440000"
-  title: "タスクのタイトル"
-  status: "Open" # タスクの状態については docs/knowledge_base.md の「タスクの状態管理」を参照
-  type: "task" # task, project
-  description: >
-    タスクの詳細な説明。
-    複数行可能。
-  labels: []
-  assignable_to:
-    - human
-    - ai
-  subtasks: [] # プロジェクトの場合のみ
-  related_repos: [] # 関連するリポジトリ
-  dependencies: # 依存関係（オプション）
-    must: # 必須の依存関係
-      - task_id: "TYYYY"
-        reason: "このタスクが必要な理由"
-    nice_to_have: # あると便利な依存関係
-      - task_id: "TZZZZ"
-        reason: "このタスクがあると便利な理由"
-    human: # 人間の操作が必要な依存関係
-      - action: "データのレビュー"
-        assignee: "nishio"  # 自分以外のassigneeは他者待ちを意味する
-        status: "waiting" # waiting, approved, rejected
-        reason: "人間による確認が必要"
-        last_check_time: "2025-01-09T10:30:00"  # 最後に状態を確認した時刻（ISO 8601形式）
-  similar_tasks: # 類似タスク（オプション）
-    - task_id: "TAAAA"
-      similarity_score: 0.8 # 類似度スコア（0.0-1.0）
-      note: "一部の内容が重複"
-  due_date: "2024-01-15" # 締め切り日（オプション）。前倒しで実行可能なタスクの期限。YYYY-MM-DD形式または曜日指定（例：月曜）
-  appointment_date: "2024-01-16" # 予定日（オプション）。指定された日時にのみ実行可能なタスク。YYYY-MM-DD形式または曜日指定（例：月曜）
-  visibility: "private" # タスクの公開範囲（public/private）
-  security_level: "normal" # タスクのセキュリティレベル（normal/sensitive/confidential）
+```json
+{
+  "tasks": [{
+    "id": "TXXXX",
+    "permanent_id": "550e8400-e29b-41d4-a716-446655440000",
+    "title": "タスクのタイトル",
+    "status": "Open", 
+    "type": "task",
+    "description": "タスクの詳細な説明。\n複数行可能。",
+    "labels": [],
+    "assignable_to": [
+      "human",
+      "ai"
+    ],
+    "subtasks": [],
+    "related_repos": [],
+    "dependencies": {
+      "must": [
+        {
+          "task_id": "TYYYY",
+          "reason": "このタスクが必要な理由"
+        }
+      ],
+      "nice_to_have": [
+        {
+          "task_id": "TZZZZ",
+          "reason": "このタスクがあると便利な理由"
+        }
+      ],
+      "human": [
+        {
+          "action": "データのレビュー",
+          "assignee": "nishio",
+          "status": "waiting",
+          "reason": "人間による確認が必要",
+          "last_check_time": "2025-01-09T10:30:00"
+        }
+      ]
+    },
+    "similar_tasks": [
+      {
+        "task_id": "TAAAA",
+        "similarity_score": 0.8,
+        "note": "一部の内容が重複"
+      }
+    ],
+    "due_date": "2024-01-15",
+    "appointment_date": "2024-01-16",
+    "visibility": "private",
+    "security_level": "normal"
+  }]
+}
 ```
 
 ## 必須フィールド

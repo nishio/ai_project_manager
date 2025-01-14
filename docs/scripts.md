@@ -13,13 +13,13 @@
 - 過去N日の更新を取得：`python scripts/collect_scrapbox_updates.py nishio --days N`
 - 特定日の更新を取得：`python scripts/collect_scrapbox_updates.py nishio --date YYYY-MM-DD`
 
-#### validate_yaml.py
-- 目的：タスクデータのYAMLファイルを検証
+#### validate_json.py
+- 目的：タスクデータのJSONファイルを検証
 - 機能：
 - タスクの必須フィールドの存在確認
 - 依存関係の構造の検証
 - 類似タスクの情報の検証
-- 使用方法：`python scripts/validate_yaml.py <yaml_file>`
+- 使用方法：`python scripts/validate_json.py <json_file>`
 
 #### verify_env.py
 - 目的：必要なパッケージのインストール状態を確認
@@ -74,21 +74,21 @@
 - タスクの統合
 - 依存関係の結合
 - 履歴の保持
-- 使用方法：`python scripts/merge_tasks.py <backlog.yaml> <task_id1> <task_id2>`
+- 使用方法：`python scripts/merge_tasks.py <backlog.json> <task_id1> <task_id2>`
 
 #### archive_tasks.py
 - 目的：完了タスクを日付別アーカイブに移動
 - 機能：
   - 完了タスク（status: Done）の抽出
-  - 日付別アーカイブファイルの作成（YYYY-MM-DD.yaml）
+  - 日付別アーカイブファイルの作成（YYYY-MM-DD.json）
   - バックアップの自動作成（tasks/backup/）
   - 期限切れタスクの検出と通知
 - 使用方法：
   - 手動実行：`python scripts/archive_tasks.py [--date YYYY-MM-DD]`
   - 自動実行：GitHub Actionsにより毎朝5時（JST）に実行
 - 実行結果：
-  - バックアップファイルの作成（tasks/backup/backlog.yaml.YYYYMMDD_HHMMSS.bak）
-  - アーカイブファイルの更新（tasks/archive/YYYY-MM-DD.yaml）
+  - バックアップファイルの作成（tasks/backup/backlog.json.YYYYMMDD_HHMMSS.bak）
+  - アーカイブファイルの更新（tasks/archive/YYYY-MM-DD.json）
   - 処理結果の表示（完了タスク数、アーカイブ済み数、期限切れ数）
 - 注意事項：
   - 期限切れタスクは自動的にアーカイブされず、人間の確認が必要

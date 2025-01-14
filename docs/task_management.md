@@ -7,13 +7,13 @@
 - 一般タスク：プロジェクトの具体的な作業や目標に関するタスク
 
 ### 1.2 タスクの保存場所
-- プライベートリポジトリ（`ai_project_manager_data`）の`tasks/backlog.yaml`がメインの保存場所
+- プライベートリポジトリ（`ai_project_manager_data`）の`tasks/backlog.json`がメインの保存場所
 - パブリックなIssueは、システム改善タスクの場合のみ使用を検討
 
 ## 2. パブリック/プライベートタスクの区別
 
 ### 2.1 基本原則
-- デフォルトではすべてのタスクをプライベート（`backlog.yaml`）で管理
+- デフォルトではすべてのタスクをプライベート（`backlog.json`）で管理
 - パブリックな情報開示が必要な場合のみ、システム改善タスクをIssueとして作成
 
 ### 2.2 判断基準
@@ -23,7 +23,7 @@
 
 ## 3. タスクの追加手順
 
-### 3.1 backlog.yamlへのタスク追加
+### 3.1 backlog.jsonへのタスク追加
 1. 一意のタスクID（例：T0016）を割り当て
 2. タスクのステータスを設定（docs/knowledge_base.md の「タスクの状態管理」を参照）
 3. タスクの説明を記述
@@ -31,17 +31,22 @@
 5. 担当可能な役割（assignable_to）を設定
 
 ### 3.2 タスクの構造
-```yaml
-T0016:
-  status: Open
-  type: task
-  description: タスクの詳細な説明
-  labels:
-    - カテゴリ
-    - 重要度
-  assignable_to:
-    - ai
-    - human
+```json
+{
+  "T0016": {
+    "status": "Open",
+    "type": "task",
+    "description": "タスクの詳細な説明",
+    "labels": [
+      "カテゴリ",
+      "重要度"
+    ],
+    "assignable_to": [
+      "ai",
+      "human"
+    ]
+  }
+}
 ```
 
 ## 4. 学んだ教訓と注意点

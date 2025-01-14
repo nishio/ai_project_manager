@@ -51,7 +51,7 @@ def create_task_graph(tasks: List[Dict]) -> nx.DiGraph:
 
         # 人的依存
         for dep in deps.get("human", []):
-            human_id = f"HUMAN_{dep['assignee']}_{task_id}"
+            human_id = f"HUMAN_{dep.get('assignee')}_{task_id}"
             G.add_node(
                 human_id,
                 type="human",
@@ -77,15 +77,15 @@ def visualize_task_graph(G: nx.DiGraph, output: str = "task_graph"):
         attrs = G.nodes[node]
         if attrs.get("type") == "human":
             # 人的依存のノード
-            label = f"{attrs['action']}\n({attrs['status']})"
+            label = f"{attrs.get('action')}\n({attrs.get('status')})"
             dot.node(
                 node, label, shape="ellipse", style="filled", fillcolor="lightblue"
             )
         else:
             # タスクノード
-            title = attrs.get('title', 'No Title')
-            status = attrs.get('status', 'Unknown')
-            node_type = attrs.get('type', 'task')
+            title = attrs.get("title", "No Title")
+            status = attrs.get("status", "Unknown")
+            node_type = attrs.get("type", "task")
             label = f"{node}: {title}\n({status})"
             fillcolor = "lightgreen" if node_type == "project" else "white"
             dot.node(
@@ -115,9 +115,9 @@ def visualize_task_graph(G: nx.DiGraph, output: str = "task_graph"):
 def main():
     """メイン処理"""
     import argparse
-    parser = argparse.ArgumentParser(description='Generate task dependency graph')
+    parser = argparse.ArgumentParser(description="Generate task dependency graph")
     parser.add_argument("--input_file", required=True, help="Input JSON file path")
-    parser.add_argument('--output_file', required=True, help='Output file path (without extension)')
+    parser.add_argument("--output_file", required=True, help="Output file path (without extension)")
     args = parser.parse_args()
 
     tasks = load_tasks(args.input_file)

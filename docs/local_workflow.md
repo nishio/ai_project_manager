@@ -36,33 +36,33 @@ git pull
 月曜に眼科検診
 ```
 
-2. parse_inbox.pyを使用してYAMLに変換
+2. parse_inbox.pyを使用してJSONに変換
 ```bash
-python scripts/parse_inbox.py < new_tasks.txt >> ai_project_manager_data/tasks/backlog.yaml
+python scripts/parse_inbox.py < new_tasks.txt >> ai_project_manager_data/tasks/backlog.json
 ```
 
-#### B. 直接YAMLを編集
-1. VSCodeでbacklog.yamlを開く
-2. タスク形式ガイドライン（tasks/docs/policies/task_format.md）に従って編集
+#### B. 直接JSONを編集
+1. VSCodeでbacklog.jsonを開く
+2. タスク形式ガイドライン（docs/task_format.md）に従って編集
 
 ### 3. バリデーション
-変更を保存する前に、YAMLの形式が正しいことを確認：
+変更を保存する前に、JSONの形式が正しいことを確認：
 ```bash
-python scripts/validate_yaml.py ai_project_manager_data/tasks/backlog.yaml
+python scripts/validate_json.py ai_project_manager_data/tasks/backlog.json
 ```
 
 ### 4. 変更のコミットとプッシュ
 ```bash
 cd ai_project_manager_data
-git add tasks/backlog.yaml
+git add tasks/backlog.json
 git commit -m "Add new tasks"
 git push
 ```
 
 ## 便利なVSCode機能
 
-1. YAMLの構文ハイライト
-   - VSCodeは自動的にYAMLファイルを認識し、構文をハイライト表示
+1. JSONの構文ハイライト
+   - VSCodeは自動的にJSONファイルを認識し、構文をハイライト表示
 
 2. インデントのガイド
    - スペースの数が重要なので、VSCodeのインデントガイドを活用
@@ -81,7 +81,7 @@ git push
    ```bash
    git pull  # 最新の変更を取得
    # コンフリクトを解決
-   git add tasks/backlog.yaml
+   git add tasks/backlog.json
    git commit -m "Resolve conflicts"
    git push
    ```
