@@ -1,16 +1,16 @@
 import call_chatgpt_api
-import yaml
+import json
 
 
-# backlog.yamlの内容を読み込む
+# backlog.jsonの内容を読み込む
 def read_backlog(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
-        return yaml.safe_load(file)
+        return json.load(file)
 
 
 SYSTEM = """
 あなたは「今日のタスク」を選定・提案するAIアシスタントです。  
-ユーザーから与えられたYAML形式のタスク一覧（backlog.yaml）を解析し、以下の方針で出力してください。
+ユーザーから与えられたJSON形式のタスク一覧（backlog.json）を解析し、以下の方針で出力してください。
 
 【方針】
 1. 依存関係や締め切りなどを考慮し、今日中に取り組むべきタスクを優先度の高い順にリストアップする  
@@ -22,7 +22,7 @@ SYSTEM = """
 6. 必要に応じて、今日取り組むタスクと明日以降でもよいタスクを分けて提案する
 
 【入力データ】
-- ユーザーは YAML形式のタスクリストを与えます
+- ユーザーは JSON形式のタスクリストを与えます
   - 各タスクには `id`, `title`, `status`, `type`, `description`, `labels`, `assignable_to`, `dependencies`, `due_date` などが含まれます
   - タスクによっては `merge_history` や `subtasks` など他のフィールドがある場合もあります
 - これらのフィールドを使ってタスクの優先順位や実行可否を判断してください
@@ -50,7 +50,7 @@ def main():
     system_prompt = call_chatgpt_api.role_system(SYSTEM)
 
     # backlog.yamlの内容を取得
-    backlog_data = read_backlog("ai_project_manager_data/tasks/backlog.yaml")
+    backlog_data = read_backlog("ai_project_manager_data/tasks/backlog.json")
 
     # メッセージを構築
     messages = [system_prompt, {"role": "user", "content": str(backlog_data)}]

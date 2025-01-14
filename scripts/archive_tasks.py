@@ -10,11 +10,11 @@ import argparse
 import datetime
 import os
 import sys
-import yaml
+import json
 from typing import Dict, List, Optional, Tuple
 
 # 設定
-BACKLOG_FILE = "tasks/backlog.yaml"  # タスクファイルのパス
+BACKLOG_FILE = "tasks/backlog.json"  # タスクファイルのパス
 ARCHIVE_DIR = "tasks/archive"        # アーカイブディレクトリ
 BACKUP_DIR = "tasks/backup"          # バックアップディレクトリ
 
@@ -40,32 +40,32 @@ def create_backup(filepath: str, backup_dir: str) -> str:
                 dst.write(src.read())
     return backup_path
 
-def load_yaml(filepath: str) -> List[Dict]:
+def load_json(filepath: str) -> List[Dict]:
     """
-    YAMLファイルを読み込む
+    JSONファイルを読み込む
     Args:
-        filepath: YAMLファイルのパス
+        filepath: JSONファイルのパス
     Returns:
         読み込んだデータ（リスト形式）
     """
     if os.path.exists(filepath):
-        with open(filepath, 'r', encoding='utf-8') as f:
-            data = yaml.safe_load(f) or {}
-            if isinstance(data, dict) and 'tasks' in data:
-                return data['tasks']
+        with open(filepath, "r", encoding="utf-8") as f:
+            data = json.load(f) or {}
+            if isinstance(data, dict) and "tasks" in data:
+                return data["tasks"]
             return []
     return []
 
-def save_yaml(data: List[Dict], filepath: str) -> None:
+def save_json(data: List[Dict], filepath: str) -> None:
     """
-    データをYAMLファイルに保存
+    データをJSONファイルに保存
     Args:
         data: 保存するデータ（リスト形式）
         filepath: 保存先のファイルパス
     """
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    with open(filepath, 'w', encoding='utf-8') as f:
-        yaml.safe_dump({'tasks': data}, f, allow_unicode=True, sort_keys=False)
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump({"tasks": data}, f, ensure_ascii=False, indent=2)
 
 def check_expired_tasks(tasks: List[Dict], target_date: datetime.date) -> Tuple[List[Dict], List[Dict]]:
     """
@@ -107,14 +107,14 @@ def move_done_tasks(target_date: Optional[str] = None) -> None:
     else:
         archive_date = datetime.date.today()
     
-    archive_file = os.path.join(ARCHIVE_DIR, f"{archive_date.strftime('%Y-%m-%d')}.yaml")
+    archive_file = os.path.join(ARCHIVE_DIR, f"{archive_date.strftime('%Y-%m-%d')}.json")
     
     # バックアップ作成
     backup_path = create_backup(BACKLOG_FILE, BACKUP_DIR)
     print(f"Created backup: {backup_path}")
     
     # タスクの読み込みと分類
-    tasks = load_yaml(BACKLOG_FILE)
+    tasks = load_json(BACKLOG_FILE)
     done_tasks = []
     active_tasks = []
     
@@ -135,13 +135,13 @@ def move_done_tasks(target_date: Optional[str] = None) -> None:
         print("期限切れタスクはアーカイブされません。")
     
     # アーカイブの更新
-    archive_tasks = load_yaml(archive_file)
+    archive_tasks = load_json(archive_file)
     archive_tasks.extend(valid_done_tasks)
-    save_yaml(archive_tasks, archive_file)
+    save_json(archive_tasks, archive_file)
     
     # バックログの更新
     active_tasks.extend(expired_tasks)  # 期限切れタスクはバックログに残す
-    save_yaml(active_tasks, BACKLOG_FILE)
+    save_json(active_tasks, BACKLOG_FILE)
     
     # 結果の表示
     print(f"\n処理結果:")

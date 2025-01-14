@@ -1,4 +1,4 @@
-import yaml
+import json
 import sys
 from typing import Dict, List, Union
 
@@ -124,11 +124,11 @@ def validate_task(task: Dict) -> List[str]:
     
     return errors
 
-def validate_yaml(file_path: str) -> bool:
-    """Validate YAML file containing tasks."""
+def validate_json(file_path: str) -> bool:
+    """Validate JSON file containing tasks."""
     try:
-        with open(file_path, "r") as f:
-            data = yaml.safe_load(f)
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
             
         if not isinstance(data, dict) or "tasks" not in data:
             print(f"Error: {file_path} must contain a dictionary with \"tasks\" key")
@@ -155,17 +155,17 @@ def validate_yaml(file_path: str) -> bool:
                 print(f"  - {error}")
             return False
             
-        print(f"YAML validation OK for {file_path}")
+        print(f"JSON validation OK for {file_path}")
         return True
         
-    except yaml.YAMLError as e:
-        print(f"YAML syntax error in {file_path}: {e}")
+    except json.JSONDecodeError as e:
+        print(f"JSON syntax error in {file_path}: {e}")
         return False
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python validate_yaml.py <yaml_file>")
+        print("Usage: python validate_json.py <json_file>")
         sys.exit(1)
     
-    success = validate_yaml(sys.argv[1])
+    success = validate_json(sys.argv[1])
     sys.exit(0 if success else 1)
