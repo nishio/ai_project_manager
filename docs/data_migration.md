@@ -15,7 +15,7 @@ This document outlines the procedures for safely migrating data between the publ
 1. Create a new branch in both repositories
 2. Run verify_tasks.py to establish baseline:
    ```bash
-   python3 scripts/verify_tasks.py path/to/public/yaml path/to/private/yaml
+   python3 scripts/verify_tasks.py path/to/public/json path/to/private/json
    ```
 3. Make the planned changes
 4. Run verify_tasks.py again to validate changes
@@ -29,7 +29,7 @@ When removing a significant amount of data:
 
 1. Check the diff before committing:
    ```bash
-   git diff -- tasks/backlog.yaml
+   git diff -- tasks/backlog.json
    ```
 
 2. If removing more than 5 tasks:
@@ -41,7 +41,7 @@ When removing a significant amount of data:
 3. For accidental removals:
    ```bash
    # View the specific changes
-   git diff <old-commit> <new-commit> -- tasks/backlog.yaml
+   git diff <old-commit> <new-commit> -- tasks/backlog.json
    
    # Partial revert if needed
    git revert <commit_hash>
@@ -53,13 +53,13 @@ When removing a significant amount of data:
 ### Before Creating a PR
 1. Run local validation:
    ```bash
-   python3 scripts/backup_and_validate.py tasks/backlog.yaml
-   python3 scripts/verify_tasks.py path/to/public/yaml path/to/private/yaml
+   python3 scripts/backup_and_validate.py tasks/backlog.json
+   python3 scripts/verify_tasks.py path/to/public/json path/to/private/json
    ```
 
 2. Review the changes:
    ```bash
-   git diff --cached -- tasks/backlog.yaml
+   git diff --cached -- tasks/backlog.json
    ```
 
 3. Update documentation if needed
@@ -74,7 +74,7 @@ When removing a significant amount of data:
 
 ### Review Checklist
 - [ ] Backup exists
-- [ ] YAML validation passes
+- [ ] JSON validation passes
 - [ ] No unintended task removals
 - [ ] Cross-repo validation passes
 - [ ] Documentation is updated
@@ -91,7 +91,7 @@ If data loss is detected:
 
 2. Compare with current version:
    ```bash
-   diff backups/latest.yaml current.yaml
+   diff backups/latest.json current.json
    ```
 
 3. Restore missing data:

@@ -1,5 +1,5 @@
-pyyaml
-networkx
-openai
-graphviz
-requests
+networkx>=2.8.4
+openai>=1.0.0
+graphviz>=0.20.3
+requests>=2.31.0
+python-dotenv>=1.0.0

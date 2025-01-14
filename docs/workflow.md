@@ -12,7 +12,7 @@
 ### プライベートタスク
 - 機密情報や個人情報を含むタスク
 - ビジネス戦略に関わる重要なタスク
-- プライベートリポジトリの`backlog.yaml`で管理
+- プライベートリポジトリの`backlog.json`で管理
 
 ### 判断基準
 1. 情報の機密性
@@ -70,12 +70,12 @@
 類似タスクを1つのタスクに統合するには、`merge_tasks.py`スクリプトを使用します：
 
 ```bash
-python3 scripts/merge_tasks.py tasks/backlog.yaml <task_id1> <task_id2>
+python3 scripts/merge_tasks.py tasks/backlog.json <task_id1> <task_id2>
 ```
 
 例：
 ```bash
-python3 scripts/merge_tasks.py tasks/backlog.yaml T0001 T0002
+python3 scripts/merge_tasks.py tasks/backlog.json T0001 T0002
 ```
 
 統合されたタスクには以下の特徴があります：

@@ -40,11 +40,11 @@ class MiroVisualizer:
                         G.add_edge(dep["task_id"], task["id"], type="nice_to_have")
                 if "human" in deps:
                     for dep in deps["human"]:
-                        G.add_edge(f"HUMAN_{dep['assignee']}", task["id"], type="human")
-                        if not G.has_node(f"HUMAN_{dep['assignee']}"):
-                            G.add_node(f"HUMAN_{dep['assignee']}", 
+                        G.add_edge(f"HUMAN_{dep.get('assignee')}", task["id"], type="human")
+                        if not G.has_node(f"HUMAN_{dep.get('assignee')}"):
+                            G.add_node(f"HUMAN_{dep.get('assignee')}", 
                                      type="human", 
-                                     title=f"Human: {dep['assignee']}")
+                                     title=f"Human: {dep.get('assignee')}")
         return G
 
     def calculate_positions(self, G: nx.DiGraph) -> Dict[str, Tuple[float, float]]:
@@ -81,21 +81,21 @@ class MiroVisualizer:
 
     def create_sticky(self, task: Dict, position: Tuple[float, float]) -> str:
         """Create a sticky note on the Miro board."""
-        content = f"{task['id']}\n{task['title']}\nStatus: {task['status']}"
+        content = f"{task.get('id')}\n{task.get('title')}\nStatus: {task.get('status')}"
         data = {
             "data": {"content": content},
             "position": {"x": position[0], "y": position[1]}
         }
-        print(f"Creating sticky note for task {task['id']}...")
+        print(f"Creating sticky note for task {task.get('id')}...")
         try:
             resp = requests.post(f"{self.base_url}/sticky_notes", 
                                json=data, headers=self.headers)
             resp.raise_for_status()
-            print(f"Successfully created sticky note for task {task['id']}")
+            print(f"Successfully created sticky note for task {task.get('id')}")
             return resp.json()["id"]
         except requests.exceptions.RequestException as e:
-            print(f"Error creating sticky note for task {task['id']}: {str(e)}")
-            if hasattr(e, 'response') and e.response is not None:
+            print(f"Error creating sticky note for task {task.get('id')}: {str(e)}")
+            if hasattr(e, "response") and e.response is not None:
                 print(f"Response text: {e.response.text}")
             raise
 
@@ -120,7 +120,7 @@ class MiroVisualizer:
             print(f"Successfully created {dep_type} connector")
         except requests.exceptions.RequestException as e:
             print(f"Error creating connector: {str(e)}")
-            if hasattr(e, 'response') and e.response is not None:
+            if hasattr(e, "response") and e.response is not None:
                 print(f"Response text: {e.response.text}")
             raise
 

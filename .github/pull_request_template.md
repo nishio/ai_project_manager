@@ -3,14 +3,14 @@
 
 ## Type of Change
 - [ ] Documentation Update
-- [ ] Data Change (backlog.yaml)
+- [ ] Data Change (backlog.json)
 - [ ] Feature Addition
 - [ ] Bug Fix
 - [ ] Other (please specify)
 
 ## Data Changes (if applicable)
-<!-- For changes to backlog.yaml or other data files -->
-- [ ] I have validated the YAML format
+<!-- For changes to backlog.json or other data files -->
+- [ ] I have validated the JSON format
 - [ ] I have checked for unintended data removal
 - [ ] I have created a backup of the data before making changes
 

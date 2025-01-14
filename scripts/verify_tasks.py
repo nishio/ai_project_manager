@@ -5,23 +5,23 @@ This script ensures no tasks are accidentally removed during data transfers.
 """
 import os
 import sys
-import yaml
+import json
 from pathlib import Path
 from typing import Dict, Set, List, Tuple
 
-def load_yaml_tasks(file_path: str) -> Tuple[List[Dict], Set[str]]:
+def load_json_tasks(file_path: str) -> Tuple[List[Dict], Set[str]]:
     """
-    Load tasks from a YAML file and return both the task list and set of task IDs.
+    Load tasks from a JSON file and return both the task list and set of task IDs.
     
     Args:
-        file_path: Path to the YAML file
+        file_path: Path to the JSON file
     
     Returns:
         Tuple of (task list, set of task IDs)
     """
     try:
         with open(file_path, "r") as f:
-            data = yaml.safe_load(f)
+            data = json.load(f)
             tasks = data.get("tasks", [])
             task_ids = {task["id"] for task in tasks if "id" in task}
             return tasks, task_ids
@@ -40,8 +40,8 @@ def compare_tasks(public_path: str, private_path: str) -> bool:
     Returns:
         bool: True if validation passes
     """
-    public_tasks, public_ids = load_yaml_tasks(public_path)
-    private_tasks, private_ids = load_yaml_tasks(private_path)
+    public_tasks, public_ids = load_json_tasks(public_path)
+    private_tasks, private_ids = load_json_tasks(private_path)
     
     # Check for missing tasks
     missing_in_private = public_ids - private_ids
@@ -72,7 +72,7 @@ def compare_tasks(public_path: str, private_path: str) -> bool:
 def main():
     """Main function to verify tasks between repositories."""
     if len(sys.argv) != 3:
-        print("Usage: verify_tasks.py <public_yaml> <private_yaml>")
+        print("Usage: verify_tasks.py <public_json> <private_json>")
         sys.exit(1)
     
     public_path = sys.argv[1]

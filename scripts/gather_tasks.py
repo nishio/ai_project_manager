@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-import yaml
+import json
 import os
 import sys
-import json
 from datetime import datetime
 import networkx as nx
 from typing import Dict, List, Optional, Tuple
@@ -20,12 +19,12 @@ def load_tasks(tasks_dir: str) -> dict:
     Returns:
         読み込んだタスク情報
     """
-    backlog_path = os.path.join(tasks_dir, "backlog.yaml")
+    backlog_path = os.path.join(tasks_dir, "backlog.json")
     if not os.path.exists(backlog_path):
         return {"tasks": []}
         
     with open(backlog_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f) or {"tasks": []}
+        return json.load(f) or {"tasks": []}
 
 def break_down_project(project: dict) -> list:
     """
@@ -248,7 +247,7 @@ def main():
     if len(sys.argv) > 1:
         tasks_file = sys.argv[1]
         with open(tasks_file, "r", encoding="utf-8") as f:
-            data = yaml.safe_load(f) or {"tasks": []}
+            data = json.load(f) or {"tasks": []}
     else:
         # デフォルトのタスクディレクトリ
         tasks_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "tasks")
