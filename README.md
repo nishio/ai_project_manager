@@ -10,7 +10,7 @@ AIによるタスク管理システム。タスクの自動分類、依存関係
   - AIによるタスク分析・管理機能
 
 - **タスクデータ**: [ai_project_manager_data](https://github.com/nishio/ai_project_manager_data)（プライベートリポジトリ）
-  - 実際のタスクデータ（backlog.yaml）
+  - 実際のタスクデータ（backlog.json）
   - プライバシーを考慮し、別リポジトリで管理
 
 ## スクリプトの説明
@@ -60,7 +60,7 @@ export OPENAI_API_KEY=your_api_key
 
 # 4. タスクデータの確認
 cd ../ai_project_manager_data
-ls tasks/backlog.yaml
+ls tasks/backlog.json
 ```
 
 #### 2. AI開発者（AI Developer）
@@ -74,7 +74,7 @@ ls tasks/backlog.yaml
 git clone https://github.com/nishio/ai_project_manager.git
 
 # 2. パッケージのインストール
-pip install pyyaml networkx openai
+pip install networkx openai
 
 # 4. 開発用環境変数の設定
 export OPENAI_API_KEY=your_api_key
@@ -102,7 +102,7 @@ git clone https://github.com/nishio/ai_project_manager_data.git
 python scripts/gather_tasks.py
 ```
 実行結果：
-- タスクの読み込みと整理：backlog.yamlからタスクを読み込み、構造を分析
+- タスクの読み込みと整理：backlog.jsonからタスクを読み込み、構造を分析
 - プロジェクトの分解：大きなプロジェクトを管理可能なサブタスクに分解
 - 類似タスクの検出：重複や関連するタスクを自動的に特定
 - 依存関係の分析：タスク間の依存関係をグラフとして可視化（task_graph.pngが生成）
@@ -120,7 +120,7 @@ python scripts/ai_support.py
 ### 3. タスクの検証とアーカイブ
 ```bash
 # タスク構造の検証
-python scripts/validate_yaml.py tasks/backlog.yaml
+python scripts/validate_json.py tasks/backlog.json
 
 # 依存関係の可視化
 python scripts/visualize_graph.py
@@ -135,7 +135,7 @@ python scripts/archive_tasks.py [--date YYYY-MM-DD]
   - 完了タスク（status: Done）を日付別ファイルに移動
   - バックアップの自動作成（tasks/backup/）
   - 期限切れタスクの検出と通知
-  - アーカイブファイル生成（tasks/archive/YYYY-MM-DD.yaml）
+  - アーカイブファイル生成（tasks/archive/YYYY-MM-DD.json）
 
 注：完了タスクは毎朝5時（JST）に自動的にアーカイブされます。手動実行時は --date オプションで日付を指定できます。
 
