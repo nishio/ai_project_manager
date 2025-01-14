@@ -1,4 +1,12 @@
 import call_chatgpt_api
+import yaml
+
+
+# backlog.yamlの内容を読み込む
+def read_backlog(file_path):
+    with open(file_path, "r", encoding="utf-8") as file:
+        return yaml.safe_load(file)
+
 
 SYSTEM = """
 あなたは「今日のタスク」を選定・提案するAIアシスタントです。  
@@ -35,3 +43,22 @@ SYSTEM = """
 
 あなたはこの方針を厳密に守り、回答を生成してください。
 """
+
+
+def main():
+    # システムプロンプトを設定
+    system_prompt = call_chatgpt_api.role_system(SYSTEM)
+
+    # backlog.yamlの内容を取得
+    backlog_data = read_backlog("ai_project_manager_data/tasks/backlog.yaml")
+
+    # メッセージを構築
+    messages = [system_prompt, {"role": "user", "content": str(backlog_data)}]
+
+    # ChatGPT APIを呼び出し、結果を取得
+    result = call_chatgpt_api.call_chatgpt_api(messages)
+    print("API Result:", result)
+
+
+if __name__ == "__main__":
+    main()

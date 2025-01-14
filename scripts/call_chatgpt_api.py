@@ -1,46 +1,42 @@
-import openai
 import os
-import yaml
+import dotenv
+from openai import OpenAI
 
-# ChatGPT APIキーとエンドポイントを環境変数から取得
+dotenv.load_dotenv(verbose=True)
+# ChatGPT APIキーを環境変数から取得
 api_key = os.getenv("OPENAI_API_KEY")
-api_endpoint = os.getenv(
-    "OPENAI_API_ENDPOINT", "https://api.openai.com/v1/chat/completions"
+assert api_key is not None, "API key is not set"
+
+# クライアントのインスタンスを作る
+client = OpenAI(
+    api_key=api_key,
+    # 必要があればエンドポイントやヘッダーもセット可能
+    # base_url="https://api.openai.com/v1"
+    # default_headers={"User-Agent": "my-app"}
 )
 
 
-# システムプロンプトを設定する関数
-def set_system_prompt(prompt):
+def call_chatgpt_api(messages, model="gpt-4o"):
+    # v1 以降は chat.completions.create(...) を呼ぶ
+    response = client.chat.completions.create(model=model, messages=messages)
+    # 返ってくるオブジェクトの構造は同じようなイメージ
+    return response.choices[0].message.content
+
+
+def role_system(prompt):
     return {"role": "system", "content": prompt}
 
 
-# backlog.yamlの内容を読み込む
-def read_backlog(file_path):
-    with open(file_path, "r", encoding="utf-8") as file:
-        return yaml.safe_load(file)
+def role_user(prompt):
+    return {"role": "user", "content": prompt}
 
 
-# ChatGPT APIを呼び出す関数
-def call_chatgpt_api(messages, model="gpt-4o"):
-    openai.api_key = api_key
-    response = openai.ChatCompletion.create(model=model, messages=messages)
-    return response.choices[0].message["content"]
-
-
-# メイン処理
 def main():
-    # システムプロンプトを設定
-    system_prompt = set_system_prompt("ここにシステムプロンプトを設定してください")
-
-    # backlog.yamlの内容を取得
-    backlog_data = read_backlog("ai_project_manager_data/tasks/backlog.yaml")
-
-    # メッセージを構築
-    messages = [system_prompt, {"role": "user", "content": str(backlog_data)}]
-
-    # ChatGPT APIを呼び出し、結果を取得
-    result = call_chatgpt_api(messages)
-    print("API Result:", result)
+    print(
+        call_chatgpt_api(
+            [role_system("Translate into Japanese"), role_user("Hello, world!")]
+        )
+    )
 
 
 if __name__ == "__main__":
