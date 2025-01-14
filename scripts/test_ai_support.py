@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import yaml
+import json
 from ai_support import AITaskProcessor
 
 def test_ai_support():
-    # Load a real task from backlog.yaml
-    with open("tests/data/test_backlog.yaml", "r") as f:
-        data = yaml.safe_load(f)
+    # Load a real task from backlog.json
+    with open("tests/data/test_backlog.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
     
     # Use PROJ-001 as our test case
     tasks = data.get("tasks", [])
@@ -15,18 +15,18 @@ def test_ai_support():
     processor = AITaskProcessor()
     print("\n=== Testing Task Analysis ===")
     analyzed = processor.analyze_task(test_task)
-    print(yaml.dump(analyzed.get("ai_analysis", {}), allow_unicode=True))
+    print(json.dumps(analyzed.get("ai_analysis", {}), ensure_ascii=False, indent=2))
     
     print("\n=== Testing Project Breakdown ===")
     subtasks = processor.suggest_breakdown(test_task)
-    print(yaml.dump(subtasks, allow_unicode=True))
+    print(json.dumps(subtasks, ensure_ascii=False, indent=2))
     
     print("\n=== Testing Content Translation ===")
     translations = processor.translate_content(
         test_task["description"],
         ["en", "zh"]
     )
-    print(yaml.dump(translations, allow_unicode=True))
+    print(json.dumps(translations, ensure_ascii=False, indent=2))
 
 if __name__ == "__main__":
     test_ai_support()

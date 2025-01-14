@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 
-import yaml
+import json
 import sys
 from typing import Dict, List, Optional
 from datetime import datetime
 
-def load_yaml(file_path: str) -> List[Dict]:
-    """YAMLファイルからタスクデータを読み込む"""
-    with open(file_path, 'r', encoding='utf-8') as f:
-        data = yaml.safe_load(f)
-        if not isinstance(data, dict) or 'tasks' not in data:
-            raise ValueError(f"Expected a dict with 'tasks' key in {file_path}, got {type(data)}")
-        return data['tasks']
+def load_json(file_path: str) -> List[Dict]:
+    """JSONファイルからタスクデータを読み込む"""
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        if not isinstance(data, dict) or "tasks" not in data:
+            raise ValueError(f"Expected a dict with \"tasks\" key in {file_path}, got {type(data)}")
+        return data["tasks"]
 
-def save_yaml(tasks: List[Dict], file_path: str):
-    """タスクデータをYAMLファイルに保存"""
-    with open(file_path, 'r', encoding='utf-8') as f:
-        data = yaml.safe_load(f)
-    data['tasks'] = tasks
-    with open(file_path, 'w', encoding='utf-8') as f:
-        yaml.dump(data, f, allow_unicode=True, sort_keys=False)
+def save_json(tasks: List[Dict], file_path: str):
+    """タスクデータをJSONファイルに保存"""
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    data["tasks"] = tasks
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 def merge_tasks(task1: Dict, task2: Dict) -> Dict:
     """2つのタスクを1つに統合"""
@@ -75,15 +75,15 @@ def remove_task(tasks: List[Dict], task_id: str) -> List[Dict]:
 
 def main():
     if len(sys.argv) != 4:
-        print("使用方法: python merge_tasks.py <backlog.yaml> <task_id1> <task_id2>")
+        print("使用方法: python merge_tasks.py <backlog.json> <task_id1> <task_id2>")
         sys.exit(1)
 
-    yaml_path = sys.argv[1]
+    json_path = sys.argv[1]
     task_id1 = sys.argv[2]
     task_id2 = sys.argv[3]
 
     # タスクデータの読み込み
-    tasks = load_yaml(yaml_path)
+    tasks = load_json(json_path)
 
     # タスクの検索
     task1 = find_task_by_id(tasks, task_id1)
@@ -102,7 +102,7 @@ def main():
     tasks.append(merged_task)
 
     # 結果の保存
-    save_yaml(tasks, yaml_path)
+    save_json(tasks, json_path)
     print(f"タスク {task_id1} と {task_id2} を統合しました")
     print(f"新しいタスクID: {merged_task['id']}")
 

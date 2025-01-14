@@ -2,17 +2,17 @@
 
 import networkx as nx
 from graphviz import Digraph
-import yaml
+import json
 from typing import Dict, List, Optional
 import os
 
 
 def load_tasks(file_path: str) -> List[Dict]:
-    """YAMLファイルからタスクデータを読み込む"""
+    """JSONファイルからタスクデータを読み込む"""
     with open(file_path, "r", encoding="utf-8") as f:
-        data = yaml.safe_load(f)
+        data = json.load(f)
         if not isinstance(data, dict) or "tasks" not in data:
-            raise ValueError(f"Expected a dict with 'tasks' key in {file_path}")
+            raise ValueError(f"Expected a dict with \"tasks\" key in {file_path}")
         return data["tasks"]
 
 
@@ -116,7 +116,7 @@ def main():
     """メイン処理"""
     import argparse
     parser = argparse.ArgumentParser(description='Generate task dependency graph')
-    parser.add_argument('--input_file', required=True, help='Input YAML file path')
+    parser.add_argument("--input_file", required=True, help="Input JSON file path")
     parser.add_argument('--output_file', required=True, help='Output file path (without extension)')
     args = parser.parse_args()
 

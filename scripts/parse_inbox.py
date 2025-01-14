@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import re
-import yaml
+import json
 import uuid
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
@@ -58,7 +58,7 @@ def generate_task_id(existing_tasks: List[Dict]) -> str:
         next_number += 1
     raise ValueError("All 4-digit task IDs (0000-9999) are in use")
 
-def convert_freeform_to_yaml(text: str, existing_tasks: List[Dict]) -> Dict:
+def convert_freeform_to_json(text: str, existing_tasks: List[Dict]) -> Dict:
     """
     Convert freeform text to a structured task dictionary.
     Example input: "月曜に歯医者の予約の電話をする"
@@ -84,25 +84,25 @@ def convert_freeform_to_yaml(text: str, existing_tasks: List[Dict]) -> Dict:
     
     return task
 
-def load_existing_tasks(backlog_path: str = "/home/ubuntu/repos/ai_project_manager_data/tasks/backlog.yaml") -> List[Dict]:
+def load_existing_tasks(backlog_path: str = "/home/ubuntu/repos/ai_project_manager_data/tasks/backlog.json") -> List[Dict]:
     """
-    Load existing tasks from backlog.yaml
+    Load existing tasks from backlog.json
     Returns empty list if file doesn't exist
     """
     try:
-        with open(backlog_path, 'r', encoding='utf-8') as f:
-            data = yaml.safe_load(f)
-            return data.get('tasks', []) if isinstance(data, dict) else []
-    except (FileNotFoundError, yaml.YAMLError):
+        with open(backlog_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data.get("tasks", []) if isinstance(data, dict) else []
+    except (FileNotFoundError, json.JSONDecodeError):
         return []
 
 def parse_inbox_text(text: str) -> str:
     """
-    Parse freeform text and return YAML string.
+    Parse freeform text and return JSON string.
     """
     existing_tasks = load_existing_tasks()
-    task = convert_freeform_to_yaml(text, existing_tasks)
-    return yaml.dump({"tasks": [task]}, allow_unicode=True, sort_keys=False)
+    task = convert_freeform_to_json(text, existing_tasks)
+    return json.dumps({"tasks": [task]}, ensure_ascii=False, indent=2)
 
 if __name__ == "__main__":
     # Example usage

@@ -5,7 +5,7 @@ This script should be run as a pre-commit hook or in CI.
 """
 import os
 import sys
-import yaml
+import json
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -21,22 +21,22 @@ def create_backup(file_path: str) -> str:
     print(f"Created backup: {backup_path}")
     return str(backup_path)
 
-def validate_yaml(file_path: str, backup_path: str | None = None) -> bool:
+def validate_json(file_path: str, backup_path: str | None = None) -> bool:
     """
-    Validate YAML file and check for large data removals.
+    Validate JSON file and check for large data removals.
     Args:
-        file_path: Path to the YAML file to validate
+        file_path: Path to the JSON file to validate
         backup_path: Optional path to a backup file to compare against
     Returns:
         bool: True if validation passes, False otherwise
     """
     try:
-        with open(file_path, 'r') as f:
-            current_data = yaml.safe_load(f)
+        with open(file_path, "r") as f:
+            current_data = json.load(f)
         
         if backup_path:
-            with open(backup_path, 'r') as f:
-                backup_data = yaml.safe_load(f)
+            with open(backup_path, "r") as f:
+                backup_data = json.load(f)
             
             # Compare task counts
             current_tasks = len(current_data.get('tasks', []))
@@ -67,7 +67,7 @@ def validate_yaml(file_path: str, backup_path: str | None = None) -> bool:
 def main():
     """Main function to backup and validate data files."""
     if len(sys.argv) < 2:
-        print("Usage: backup_and_validate.py <yaml_file>")
+        print("Usage: backup_and_validate.py <json_file>")
         sys.exit(1)
     
     file_path = sys.argv[1]
@@ -78,8 +78,8 @@ def main():
     # Create backup
     backup_path = create_backup(file_path)
     
-    # Validate YAML and check for large removals
-    if not validate_yaml(file_path, backup_path):
+    # Validate JSON and check for large removals
+    if not validate_json(file_path, backup_path):
         print("Validation failed. Please review changes.")
         sys.exit(1)
     

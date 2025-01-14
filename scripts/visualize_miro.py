@@ -1,7 +1,7 @@
 import os
 import time
 from typing import Dict, List, Optional, Tuple
-import yaml
+import json
 from dotenv import load_dotenv
 import requests
 import networkx as nx
@@ -19,10 +19,10 @@ class MiroVisualizer:
         }
         self.base_url = f"https://api.miro.com/v2/boards/{BOARD_ID}"
 
-    def load_tasks(self, yaml_path: str) -> List[Dict]:
-        """Load tasks from YAML file."""
-        with open(yaml_path, "r", encoding="utf-8") as f:
-            data = yaml.safe_load(f)
+    def load_tasks(self, json_path: str) -> List[Dict]:
+        """Load tasks from JSON file."""
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
         return data["tasks"]
 
     def create_dependency_graph(self, tasks: List[Dict]) -> nx.DiGraph:
@@ -124,9 +124,9 @@ class MiroVisualizer:
                 print(f"Response text: {e.response.text}")
             raise
 
-    def visualize(self, yaml_path: str) -> None:
+    def visualize(self, json_path: str) -> None:
         """Main method to visualize tasks on Miro board."""
-        tasks = self.load_tasks(yaml_path)
+        tasks = self.load_tasks(json_path)
         G = self.create_dependency_graph(tasks)
         
         # 循環依存のチェック
@@ -164,4 +164,4 @@ class MiroVisualizer:
 
 if __name__ == "__main__":
     visualizer = MiroVisualizer()
-    visualizer.visualize("/home/ubuntu/repos/ai_project_manager_data/tasks/backlog.yaml")
+    visualizer.visualize("/home/ubuntu/repos/ai_project_manager_data/tasks/backlog.json")
