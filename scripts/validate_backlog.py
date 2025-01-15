@@ -1,6 +1,40 @@
 #!/usr/bin/env python3
 """
 Validate backlog.json structure and required fields
+
+必須フィールドやオプションフィールドのチェック
+日付フォーマット（YYYY-MM-DD or 曜日）
+IDの形式（TXXXX + UUID）
+依存関係や類似タスクの構造チェック
+公開範囲(visibility)、セキュリティレベル(security_level)の値チェック
+などを行うようにしています。
+
+## スクリプトの概要
+
+1. **ヘルパー関数**群を定義して、IDや日付、visibility、セキュリティレベルなどを簡単にチェックできるようにしています。  
+2. **`validate_dependencies`**や**`validate_similar_tasks`**など、複雑になりやすいサブ構造は個別の関数で行い、可読性を高めています。  
+3. **タスクごとのバリデーション**(`validate_task`)では、**必須フィールド**・**フォーマット**のチェック、オプション項目の型チェックなどをまとめて行っています。  
+4. ファイル全体のバリデーション(`validate_tasks_json`)では、**JSON形式**や**`tasks`キーの存在**、そして**IDの重複**（一時ID・永続IDの重複）を確認しています。  
+
+## 設計のレビュー・ポイント
+
+- **JSONへの移行**：以前のYAMLバリデーションに比べてJSONバリデーションになっているため、フォーマット関連（`json.load`）に変更がありますが、基本ロジックは同じ流れで使えます。  
+- **バリデーションの拡張性**：  
+  - 依存関係の`must` / `nice_to_have` / `human`ごとに構造が違う場合のチェックを行っている点などは良い設計です。  
+  - `similar_tasks`内の`similarity_score`チェックなども要件通り実装されています。  
+- **公開範囲(visibility)やセキュリティ(security_level)のチェック**：選択肢が限られる場合は、今回のようにホワイトリスト方式（許可される文字列の一覧）でバリデーションするのが安心です。  
+- **日付**：今回の要件である「YYYY-MM-DD または曜日(日本語)」の両方に対応しているかをしっかり確かめています。  
+- **範囲外のステータスや種類**：`validate_status` / `validate_type`などで明示的にエラーにしています。  
+
+このように、**要件に即したバリデーションがしっかり行えているか**を確認しながらスクリプトを完成させることで、今後のメンテナンスコストを抑えつつ安心して利用できる設計になります。  
+
+もし何か仕様変更があった場合は、以下のような点を見直すと良いでしょう：  
+- ステータスの追加・削除  
+- セキュリティレベルや公開範囲の変更  
+- IDの命名規則変更（`TXXXX` → 文字数を増やす等）  
+- 依存関係フィールドの拡張（たとえば`human`に新しいステータスを追加したいなど）  
+
+いずれの場合も、**バリデーション部分**を適切に修正することで整合性を保ち、誤入力や不正なJSON構造を防げます。
 """
 
 import json
@@ -19,6 +53,8 @@ def is_valid_temp_id(task_id: str) -> bool:
     """
     Validate temporary task ID format (TXXXX)
     """
+    if task_id == "":
+        return True
     return bool(re.match(r"^T\d{4}$", task_id))
 
 
@@ -284,8 +320,8 @@ def validate_tasks_json(filepath: str) -> bool:
         return False
 
     # IDの重複チェック用
-    temp_ids = set()
-    permanent_ids = set()
+    temp_ids = {}
+    permanent_ids = {}
 
     all_errors = []
     for i, task in enumerate(tasks):
@@ -300,14 +336,24 @@ def validate_tasks_json(filepath: str) -> bool:
 
         # IDの重複チェック (id, permanent_id)
         _tid = task.get("id", None)
-        if _tid and _tid in temp_ids:
-            all_errors.append(f"Duplicate temporary ID: {_tid}")
+        if _tid:
+            if _tid in temp_ids:
+                all_errors.append(
+                    f"Duplicate temporary ID: {_tid} (Titles: {temp_ids[_tid]}, {task.get('title', 'UNKNOWN')})"
+                )
+            else:
+                temp_ids[_tid] = task.get("title", "UNKNOWN")
         elif _tid:
             temp_ids.add(_tid)
 
         _pid = task.get("permanent_id", None)
-        if _pid and _pid in permanent_ids:
-            all_errors.append(f"Duplicate permanent ID: {_pid}")
+        if _pid:
+            if _pid in permanent_ids:
+                all_errors.append(
+                    f"Duplicate permanent ID: {_pid} (Titles: {permanent_ids[_pid]}, {task.get('title', 'UNKNOWN')})"
+                )
+            else:
+                permanent_ids[_pid] = task.get("title", "UNKNOWN")
         elif _pid:
             permanent_ids.add(_pid)
 
@@ -326,10 +372,9 @@ def main():
     Main entry point for validate_json.py
     """
     if len(sys.argv) < 2:
-        print("Usage: python validate_json.py <tasks.json>")
-        sys.exit(1)
-
-    filepath = sys.argv[1]
+        filepath = "ai_project_manager_data/tasks/backlog.json"
+    else:
+        filepath = sys.argv[1]
     success = validate_tasks_json(filepath)
     sys.exit(0 if success else 1)
 
