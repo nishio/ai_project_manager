@@ -343,8 +343,6 @@ def validate_tasks_json(filepath: str) -> bool:
                 )
             else:
                 temp_ids[_tid] = task.get("title", "UNKNOWN")
-        elif _tid:
-            temp_ids.add(_tid)
 
         _pid = task.get("permanent_id", None)
         if _pid:
@@ -354,8 +352,6 @@ def validate_tasks_json(filepath: str) -> bool:
                 )
             else:
                 permanent_ids[_pid] = task.get("title", "UNKNOWN")
-        elif _pid:
-            permanent_ids.add(_pid)
 
     if all_errors:
         print("Validation errors:")
