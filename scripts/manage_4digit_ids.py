@@ -1,21 +1,52 @@
 #!/usr/bin/env python3
 """
-Manage the pool of 4-digit task IDs (TXXXX format)
+タスクID管理システム / Task ID Management System
 
-This script provides functionality to:
-1. Track available and used task IDs
-2. Assign next available ID for new tasks
-3. Release IDs from archived tasks
-4. Prevent ID collisions
-5. Manage the ID pool (T0000-T9999)
+このスクリプトは、タスクIDの割り当てと管理を行います。
+This script manages the allocation and tracking of task IDs.
 
-Usage:
+機能 / Features:
+1. タスクIDの追跡管理（使用中・利用可能なID）
+   Track available and used task IDs
+2. 新規タスクへの次のIDの自動割り当て
+   Assign next available ID for new tasks
+3. アーカイブされたタスクのID解放
+   Release IDs from archived tasks
+4. ID重複の防止
+   Prevent ID collisions
+5. IDプール管理（T0000-T9999の範囲）
+   Manage the ID pool (T0000-T9999 range)
+
+IDシステムの仕様 / ID System Specifications:
+- フォーマット/Format: TXXXX（例：T0042）
+- 範囲/Range: T0000-T9999（10,000個のユニークID）
+- 再利用/Reuse: アーカイブされたタスクのIDは再利用可能
+                IDs from archived tasks can be reused
+- 一意性/Uniqueness: システム内で一意のIDを保証
+                     Ensures unique IDs within the system
+
+使用方法 / Usage:
     python manage_4digit_ids.py [command] [args]
-    Commands:
-        next          Get next available ID
-        release ID    Release a specific ID back to the pool
-        status        Show pool status (used/available counts)
-        list         List all used/available IDs
+
+コマンド / Commands:
+    next          次の利用可能なIDを取得 / Get next available ID
+    release ID    指定したIDをプールに戻す / Release specific ID back to pool
+    status        プールの状態を表示 / Show pool status
+    list          使用中のID一覧を表示 / List all used IDs
+
+例 / Examples:
+    python manage_4digit_ids.py next
+    python manage_4digit_ids.py release T0042
+    python manage_4digit_ids.py status
+    python manage_4digit_ids.py list
+
+注意事項 / Notes:
+- バックログとアーカイブの両方からIDを追跡
+  Tracks IDs from both backlog and archives
+- 永続ID(UUID)と併用可能
+  Can be used alongside permanent IDs (UUIDs)
+- IDの重複を自動的に検出・防止
+  Automatically detects and prevents ID collisions
 """
 
 import json

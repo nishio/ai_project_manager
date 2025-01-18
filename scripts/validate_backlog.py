@@ -1,13 +1,54 @@
 #!/usr/bin/env python3
 """
-Validate backlog.json structure and required fields
+バックログ検証システム / Backlog Validation System
 
-必須フィールドやオプションフィールドのチェック
-日付フォーマット（YYYY-MM-DD or 曜日）
-IDの形式（TXXXX + UUID）
-依存関係や類似タスクの構造チェック
-公開範囲(visibility)、セキュリティレベル(security_level)の値チェック
-などを行うようにしています。
+このスクリプトは、backlog.jsonの構造と内容を検証します。
+This script validates the structure and content of backlog.json.
+
+検証項目 / Validation Items:
+1. タスクID / Task IDs:
+   - 一時ID (TXXXX形式) / Temporary ID (TXXXX format)
+   - 永続ID (UUID形式) / Permanent ID (UUID format)
+   - ID重複チェック / Duplicate ID detection
+   - ID形式の検証 / ID format validation
+
+2. 必須フィールド / Required Fields:
+   - id: タスクの一時ID / Temporary task ID
+   - title: タスクのタイトル / Task title
+   - status: タスクの状態 / Task status
+   - type: タスクの種類 / Task type
+   - description: タスクの説明 / Task description
+
+3. オプションフィールド / Optional Fields:
+   - permanent_id: 永続的なUUID / Permanent UUID
+   - labels: タグ・ラベル / Tags and labels
+   - assignable_to: 担当可能者 / Assignable users
+   - dependencies: タスクの依存関係 / Task dependencies
+   - similar_tasks: 類似タスク / Similar tasks
+   - due_date: 期限日 / Due date
+   - appointment_date: 予定日 / Appointment date
+   - visibility: 公開範囲 / Visibility scope
+   - security_level: セキュリティレベル / Security level
+
+フォーマット検証 / Format Validation:
+- 日付: YYYY-MM-DD または 曜日（例：月曜）
+  Dates: YYYY-MM-DD or weekday (e.g., 月曜)
+- ID: TXXXX形式（4桁の数字）
+  IDs: TXXXX format (4 digits)
+- UUID: 標準的なUUID形式
+  UUIDs: Standard UUID format
+
+使用方法 / Usage:
+    python validate_backlog.py [backlog.json path]
+
+注意事項 / Notes:
+- 全てのエラーを収集して一括表示
+  Collects and displays all errors at once
+- バックログ全体の整合性を検証
+  Validates entire backlog consistency
+- ID重複を自動的に検出
+  Automatically detects ID duplicates
+"""
 
 ## スクリプトの概要
 
