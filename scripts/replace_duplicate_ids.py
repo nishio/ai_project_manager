@@ -1,5 +1,6 @@
 import json
 import uuid
+from common_id_utils import find_next_available_id
 
 
 def load_tasks(filepath):
@@ -13,10 +14,7 @@ def save_tasks(filepath, data):
 
 
 def generate_unique_id(existing_ids):
-    while True:
-        new_id = f"T{str(uuid.uuid4().int)[:4]}"
-        if new_id not in existing_ids:
-            return new_id
+    find_next_available_id(existing_ids)
 
 
 def replace_duplicate_ids(filepath):

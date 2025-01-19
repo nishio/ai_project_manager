@@ -1,5 +1,6 @@
 import json
 import re
+from common_id_utils import find_next_available_id
 
 
 def load_backlog(file_path):

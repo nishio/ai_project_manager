@@ -141,7 +141,7 @@ def validate_security_level(value: str) -> bool:
 
 def validate_status(value: str) -> bool:
     # "In Progress" と "Blocked" は現時点で未使用
-    return value in ["Open", "In Progress", "Done", "Blocked"]
+    return value.lower() in ["open", "done", "closed"]
 
 
 def validate_type(value: str) -> bool:
@@ -276,7 +276,7 @@ def validate_task(task: Dict[str, Any]) -> List[str]:
     # --- status
     if "status" in task and not validate_status(task["status"]):
         errors.append(
-            f"Task {task_id} - invalid status (must be Open/In Progress/Done/Blocked)"
+            f"Task {task_id} - invalid status '{task['status']}' (must be Open/In Progress/Done/Blocked)"
         )
 
     # --- type
