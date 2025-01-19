@@ -76,12 +76,21 @@
 
 - `id`: タスク識別子（TXXXXの形式）
 - `title`: タスクのタイトル
-- `status`: タスクの状態
-- `type`: タスクの種類（task/project）
 - `description`: タスクの説明
 
 ## オプションフィールド
 
+defaultと書かれている選択肢の場合はフィールドを追加しない
+
+- `permanent_id`: 永続ID
+  - あなたがUUID生成能力を持たないAIの場合、気にせず空欄にして良い、後でPythonスクリプトが挿入する
+- `type`: タスクの種類（task/project）
+  - defalutは`task`
+  - projectは目的を明確に持つが、単体で完了条件を持たない長期的なタスクの場合が多い
+- `status`: タスクの状態
+  - `Open`: default
+  - `Done`: 完了したタスク
+  - `Closed`: 完了していないがなんらかの理由でOpenでなくなったもの
 - `labels`: タスクのラベル（配列）
   - `prototype`: 検証用の小規模実装
   - `human-required`: 人間の作業が必要
@@ -106,15 +115,14 @@
 - `due_date`: タスクの締め切り日（オプション）
   - 前倒しで実行可能なタスクの期限
   - YYYY-MM-DD形式の日付
-  - または曜日指定（例：月曜）
+  - 日時は特に指定がない場合は日本標準時とする
 - `appointment_date`: タスクの予定日（オプション）
   - 指定された日時にのみ実行可能なタスク
   - YYYY-MM-DD形式の日付
-  - または曜日指定（例：月曜）
 - `visibility`: タスクの公開範囲
+  - `private`: 非公開タスク(default)
   - `public`: 公開可能なタスク
-  - `private`: 非公開タスク
 - `security_level`: タスクのセキュリティレベル
-  - `normal`: 一般的なタスク
+  - `normal`: 一般的なタスク(default)
   - `sensitive`: 機密性の高いタスク
   - `confidential`: 極秘タスク
