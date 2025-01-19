@@ -85,6 +85,19 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # ---------------------------------
+# ユーティリティ関数
+# ---------------------------------
+
+
+def format_task_identifier(task: Dict[str, Any]) -> str:
+    """
+    タスクのIDと名前をフォーマットして返す
+    """
+    task_id = task.get("id", "UNKNOWN")
+    task_title = task.get("title", "UNKNOWN")
+    return f"Task ID: {task_id}, Name: {task_title}"
+
+
 # 1. 形式チェックのための小さなヘルパー関数群
 # ---------------------------------
 
@@ -102,6 +115,8 @@ def is_valid_permanent_id(permanent_id: str) -> bool:
     """
     Validate permanent ID format (UUID)
     """
+    if permanent_id == "":
+        return True
     try:
         uuid.UUID(permanent_id)
         return True
@@ -153,26 +168,28 @@ def validate_type(value: str) -> bool:
 # ---------------------------------
 
 
-def validate_dependencies(deps: Dict[str, Any], task_id: str) -> List[str]:
+def validate_dependencies(deps: Dict[str, Any], task: Dict[str, Any]) -> List[str]:
     """
     Validate the dependencies section of a task.
     戻り値：エラーメッセージのリスト
     """
     errors = []
     if not isinstance(deps, dict):
-        return [f"Task {task_id} - dependencies must be a dictionary"]
+        return [f"{format_task_identifier(task)} - dependencies must be a dictionary"]
 
     # 共通でチェックする関数
     def check_dep_list(dep_list: Any, dep_type: str):
         _errors = []
         if not isinstance(dep_list, list):
-            _errors.append(f"Task {task_id} - dependencies.{dep_type} must be a list")
+            _errors.append(
+                f"{format_task_identifier(task)} - dependencies.{dep_type} must be a list"
+            )
             return _errors
 
         for i, dep in enumerate(dep_list):
             if not isinstance(dep, dict):
                 _errors.append(
-                    f"Task {task_id} - dependencies.{dep_type}[{i}] must be a dictionary"
+                    f"{format_task_identifier(task)} - dependencies.{dep_type}[{i}] must be a dictionary"
                 )
                 continue
 
@@ -180,18 +197,18 @@ def validate_dependencies(deps: Dict[str, Any], task_id: str) -> List[str]:
             if dep_type in ["must", "nice_to_have"]:
                 if "task_id" not in dep:
                     _errors.append(
-                        f"Task {task_id} - dependencies.{dep_type}[{i}] missing task_id"
+                        f"{format_task_identifier(task)} - dependencies.{dep_type}[{i}] missing task_id"
                     )
                 if "reason" not in dep:
                     _errors.append(
-                        f"Task {task_id} - dependencies.{dep_type}[{i}] missing reason"
+                        f"{format_task_identifier(task)} - dependencies.{dep_type}[{i}] missing reason"
                     )
             # humanの場合チェック
             if dep_type == "human":
                 for f in ["action", "assignee", "status", "reason"]:
                     if f not in dep:
                         _errors.append(
-                            f"Task {task_id} - dependencies.human[{i}] missing {f}"
+                            f"{format_task_identifier(task)} - dependencies.human[{i}] missing {f}"
                         )
                 if "status" in dep and dep["status"] not in [
                     "waiting",
@@ -199,7 +216,7 @@ def validate_dependencies(deps: Dict[str, Any], task_id: str) -> List[str]:
                     "rejected",
                 ]:
                     _errors.append(
-                        f"Task {task_id} - dependencies.human[{i}] invalid status (must be waiting/approved/rejected)"
+                        f"{format_task_identifier(task)} - dependencies.human[{i}] invalid status (must be waiting/approved/rejected)"
                     )
         return _errors
 
@@ -211,31 +228,37 @@ def validate_dependencies(deps: Dict[str, Any], task_id: str) -> List[str]:
     return errors
 
 
-def validate_similar_tasks(similar: Any, task_id: str) -> List[str]:
+def validate_similar_tasks(similar: Any, task: Dict[str, Any]) -> List[str]:
     """
     Validate the similar_tasks section of a task.
     戻り値：エラーメッセージのリスト
     """
     errors = []
     if not isinstance(similar, list):
-        return [f"Task {task_id} - similar_tasks must be a list"]
+        return [f"{format_task_identifier(task)} - similar_tasks must be a list"]
 
     for i, task in enumerate(similar):
         if not isinstance(task, dict):
-            errors.append(f"Task {task_id} - similar_tasks[{i}] must be a dictionary")
+            errors.append(
+                f"{format_task_identifier(task)} - similar_tasks[{i}] must be a dictionary"
+            )
             continue
 
         if "task_id" not in task:
-            errors.append(f"Task {task_id} - similar_tasks[{i}] missing task_id")
+            errors.append(
+                f"{format_task_identifier(task)} - similar_tasks[{i}] missing task_id"
+            )
         if "note" not in task:
-            errors.append(f"Task {task_id} - similar_tasks[{i}] missing note")
+            errors.append(
+                f"{format_task_identifier(task)} - similar_tasks[{i}] missing note"
+            )
 
         # similarity_score があったら0.0-1.0の範囲であることをチェック
         if "similarity_score" in task:
             score = task["similarity_score"]
             if not isinstance(score, (int, float)) or score < 0 or score > 1:
                 errors.append(
-                    f"Task {task_id} - similar_tasks[{i}] invalid similarity_score (must be 0.0 <= score <= 1.0)"
+                    f"{format_task_identifier(task)} - similar_tasks[{i}] invalid similarity_score (must be 0.0 <= score <= 1.0)"
                 )
 
     return errors
@@ -257,7 +280,9 @@ def validate_task(task: Dict[str, Any]) -> List[str]:
     required_fields = ["id", "title", "status", "type", "description"]
     for field in required_fields:
         if field not in task:
-            errors.append(f"Missing required field: {field}")
+            errors.append(
+                f"{format_task_identifier(task)} - Missing required field: {field}"
+            )
 
     task_id = task.get("id", "UNKNOWN")  # 不明時はUNKNOWN
 
@@ -265,67 +290,77 @@ def validate_task(task: Dict[str, Any]) -> List[str]:
     if "id" in task:
         if not is_valid_temp_id(task["id"]):
             errors.append(
-                f"Task {task_id} - invalid temporary ID format (must be TXXXX)"
+                f"{format_task_identifier(task)} - invalid temporary ID format: {task.get('id', 'UNKNOWN')} (must be TXXXX)"
             )
 
     # --- title, descriptionは文字列チェック（必須）
     for f in ["title", "description"]:
         if f in task and not isinstance(task[f], str):
-            errors.append(f"Task {task_id} - {f} must be a string")
+            errors.append(
+                f"{format_task_identifier(task)} - {f} must be a string, but got: {task.get(f, 'UNKNOWN')}"
+            )
 
     # --- status
     if "status" in task and not validate_status(task["status"]):
         errors.append(
-            f"Task {task_id} - invalid status '{task['status']}' (must be Open/In Progress/Done/Blocked)"
+            f"{format_task_identifier(task)} - invalid status '{task['status']}' (must be Open/In Progress/Done/Blocked)"
         )
 
     # --- type
     if "type" in task and not validate_type(task["type"]):
-        errors.append(f"Task {task_id} - invalid type (must be task/project)")
+        errors.append(
+            f"{format_task_identifier(task)} - invalid type '{task.get('type', 'UNKNOWN')}' (must be task/project)"
+        )
 
     # --- permanent_id (オプション)
     if "permanent_id" in task:
         if not is_valid_permanent_id(task["permanent_id"]):
             errors.append(
-                f"Task {task_id} - invalid permanent_id format (must be UUID)"
+                f"{format_task_identifier(task)} - invalid permanent_id format (must be UUID)"
             )
 
     # --- labels (オプション)
     if "labels" in task:
         if not isinstance(task["labels"], list):
-            errors.append(f"Task {task_id} - labels must be a list")
+            errors.append(f"{format_task_identifier(task)} - labels must be a list")
 
     # --- assignable_to (オプション)
     if "assignable_to" in task:
         if not isinstance(task["assignable_to"], list):
-            errors.append(f"Task {task_id} - assignable_to must be a list")
+            errors.append(
+                f"{format_task_identifier(task)} - assignable_to must be a list"
+            )
 
     # --- dependencies (オプション)
     if "dependencies" in task:
-        errors.extend(validate_dependencies(task["dependencies"], task_id))
+        errors.extend(validate_dependencies(task["dependencies"], task))
 
     # --- similar_tasks (オプション)
     if "similar_tasks" in task:
-        errors.extend(validate_similar_tasks(task["similar_tasks"], task_id))
+        errors.extend(validate_similar_tasks(task["similar_tasks"], task))
 
     # --- due_date / appointment_date (オプション)
     for date_field in ["due_date", "appointment_date"]:
         if date_field in task:
             if not isinstance(task[date_field], str):
-                errors.append(f"Task {task_id} - {date_field} must be a string")
+                errors.append(
+                    f"{format_task_identifier(task)} - {date_field} must be a string"
+                )
             else:
                 errors.extend(validate_date(task[date_field]))
 
     # --- visibility (オプション)
     if "visibility" in task:
         if not validate_visibility(task["visibility"]):
-            errors.append(f"Task {task_id} - visibility must be public or private")
+            errors.append(
+                f"{format_task_identifier(task)} - visibility must be public or private"
+            )
 
     # --- security_level (オプション)
     if "security_level" in task:
         if not validate_security_level(task["security_level"]):
             errors.append(
-                f"Task {task_id} - security_level must be normal/sensitive/confidential"
+                f"{format_task_identifier(task)} - security_level must be normal/sensitive/confidential"
             )
 
     return errors
@@ -367,7 +402,9 @@ def validate_tasks_json(filepath: str) -> bool:
     all_errors = []
     for i, task in enumerate(tasks):
         if not isinstance(task, dict):
-            all_errors.append(f"Task at index {i} must be a dictionary")
+            all_errors.append(
+                f"{format_task_identifier(task)} - Task at index {i} must be a dictionary"
+            )
             continue
 
         # 個別タスクのバリデーション
@@ -380,7 +417,7 @@ def validate_tasks_json(filepath: str) -> bool:
         if _tid:
             if _tid in temp_ids:
                 all_errors.append(
-                    f"Duplicate temporary ID: {_tid} (Titles: {temp_ids[_tid]}, {task.get('title', 'UNKNOWN')})"
+                    f"Duplicate temporary ID: {_tid} (Task Names: {temp_ids[_tid]}, {format_task_identifier(task)})"
                 )
             else:
                 temp_ids[_tid] = task.get("title", "UNKNOWN")
@@ -389,7 +426,7 @@ def validate_tasks_json(filepath: str) -> bool:
         if _pid:
             if _pid in permanent_ids:
                 all_errors.append(
-                    f"Duplicate permanent ID: {_pid} (Titles: {permanent_ids[_pid]}, {task.get('title', 'UNKNOWN')})"
+                    f"Duplicate permanent ID: {_pid} (Task Names: {permanent_ids[_pid]}, {format_task_identifier(task)})"
                 )
             else:
                 permanent_ids[_pid] = task.get("title", "UNKNOWN")
