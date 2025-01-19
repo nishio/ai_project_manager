@@ -52,7 +52,7 @@ def check_expired_tasks(
             try:
                 if isinstance(due_date, str):
                     task_due = datetime.datetime.strptime(due_date, "%Y-%m-%d").date()
-                    if task_due < target_date:
+                    if task_due < target_date and task.get("status") != "done":
                         expired.append(task)
                         continue
             except ValueError:
