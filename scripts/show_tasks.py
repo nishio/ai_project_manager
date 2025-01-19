@@ -37,7 +37,7 @@ def main():
     )
     args = parser.parse_args()
 
-    tasks = load_tasks("/home/ubuntu/repos/ai_project_manager_data/tasks/backlog.json")
+    tasks = load_tasks("ai_project_manager_data/tasks/backlog.json")
     selected_tasks = filter_tasks_by_ids(tasks, args.ids)
 
     for task in selected_tasks:

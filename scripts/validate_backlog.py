@@ -446,7 +446,7 @@ def main():
     Main entry point for validate_json.py
     """
     if len(sys.argv) < 2:
-        filepath = "/home/ubuntu/repos/ai_project_manager_data/tasks/backlog.json"
+        filepath = "ai_project_manager_data/tasks/backlog.json"
     else:
         filepath = sys.argv[1]
     success = validate_tasks_json(filepath)
