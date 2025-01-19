@@ -48,7 +48,6 @@ This script validates the structure and content of backlog.json.
   Validates entire backlog consistency
 - ID重複を自動的に検出
   Automatically detects ID duplicates
-"""
 
 ## スクリプトの概要
 
