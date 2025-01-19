@@ -5,6 +5,9 @@
 リモートにプッシュします。
 """
 
+import os
+import subprocess
+
 
 def update_or_clone_repo():
     repo_path = "ai_project_manager_data"

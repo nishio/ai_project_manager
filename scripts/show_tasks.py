@@ -1,5 +1,6 @@
 import argparse
 import json
+from util_human_id_match import human_id_match
 
 
 def load_tasks(file_path):
@@ -9,7 +10,7 @@ def load_tasks(file_path):
 
 
 def filter_tasks_by_ids(tasks, ids):
-    return [task for task in tasks if task["id"] in ids]
+    return [task for task in tasks if any(human_id_match(task["id"], id) for id in ids)]
 
 
 def format_task(task, format_type):

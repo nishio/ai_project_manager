@@ -14,7 +14,7 @@ def save_tasks(filepath, data):
 
 
 def generate_unique_id(existing_ids):
-    find_next_available_id(existing_ids)
+    return find_next_available_id(existing_ids)
 
 
 def replace_duplicate_ids(filepath):

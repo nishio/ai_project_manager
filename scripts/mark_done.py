@@ -1,20 +1,8 @@
 import sys
 import json
+from util_human_id_match import human_id_match
 
 BACKLOG_FILE = "ai_project_manager_data/tasks/backlog.json"  # タスクファイルのパス
-
-
-def human_id_match(target, given):
-    """
-    >>> human_id_match("T0014", "14")
-    True
-    """
-    if target == "":
-        return False
-    if target == given:
-        return True
-    if target[1:].lstrip("0") == given:
-        return True
 
 
 def mark_done(talk_ids):
