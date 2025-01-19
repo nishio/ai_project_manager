@@ -4,6 +4,9 @@
 リポジトリのパスが存在しない場合は、`git clone`を実行してリポジトリを新たにクローンします。
 """
 
+import os
+import subprocess
+
 
 def update_or_clone_repo():
     repo_path = "ai_project_manager_data"
