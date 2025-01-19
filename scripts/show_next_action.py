@@ -49,8 +49,8 @@ def main():
     # システムプロンプトを設定
     system_prompt = call_chatgpt_api.role_system(SYSTEM)
 
-    # backlog.yamlの内容を取得
-    backlog_data = read_backlog("ai_project_manager_data/tasks/backlog.json")
+    # backlog.jsonの内容を取得
+    backlog_data = read_backlog("/home/ubuntu/repos/ai_project_manager_data/tasks/backlog.json")
 
     # メッセージを構築
     messages = [system_prompt, {"role": "user", "content": str(backlog_data)}]

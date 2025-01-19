@@ -37,13 +37,13 @@
 ### 3.2 タスクの構造
 ```json
 {
-  "T0016": {
+  "T0000": {
     "status": "Open",
     "type": "task",
-    "description": "タスクの詳細な説明",
+    "description": "Example task description",
     "labels": [
-      "カテゴリ",
-      "重要度"
+      "category",
+      "priority"
     ],
     "assignable_to": [
       "ai",

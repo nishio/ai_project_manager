@@ -21,12 +21,12 @@
 ```json
 {
   "tasks": [{
-    "id": "TXXXX",
-    "permanent_id": "550e8400-e29b-41d4-a716-446655440000",
-    "title": "タスクのタイトル",
+    "id": "T0000",
+    "permanent_id": "550e8400-e29b-41d4-a716-000000000000",
+    "title": "Example Task Title",
     "status": "Open", 
     "type": "task",
-    "description": "タスクの詳細な説明。\n複数行可能。",
+    "description": "Example task description.\nCan be multiple lines.",
     "labels": [],
     "assignable_to": [
       "human",
@@ -37,35 +37,35 @@
     "dependencies": {
       "must": [
         {
-          "task_id": "TYYYY",
-          "reason": "このタスクが必要な理由"
+          "task_id": "T0001",
+          "reason": "Required prerequisite task"
         }
       ],
       "nice_to_have": [
         {
-          "task_id": "TZZZZ",
-          "reason": "このタスクがあると便利な理由"
+          "task_id": "T0002",
+          "reason": "Optional enhancement task"
         }
       ],
       "human": [
         {
-          "action": "データのレビュー",
-          "assignee": "nishio",
+          "action": "Review data",
+          "assignee": "reviewer",
           "status": "waiting",
-          "reason": "人間による確認が必要",
-          "last_check_time": "2025-01-09T10:30:00"
+          "reason": "Human verification required",
+          "last_check_time": "2024-01-01T10:00:00"
         }
       ]
     },
     "similar_tasks": [
       {
-        "task_id": "TAAAA",
+        "task_id": "T0003",
         "similarity_score": 0.8,
-        "note": "一部の内容が重複"
+        "note": "Partial content overlap"
       }
     ],
-    "due_date": "2024-01-15",
-    "appointment_date": "2024-01-16",
+    "due_date": "2024-12-31",
+    "appointment_date": "2024-12-30",
     "visibility": "private",
     "security_level": "normal"
   }]
