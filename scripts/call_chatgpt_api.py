@@ -16,11 +16,44 @@ client = OpenAI(
 )
 
 
-def call_chatgpt_api(messages, model="gpt-4o"):
-    # v1 以降は chat.completions.create(...) を呼ぶ
-    response = client.chat.completions.create(model=model, messages=messages)
-    # 返ってくるオブジェクトの構造は同じようなイメージ
-    return response.choices[0].message.content
+def count_tokens(messages):
+    # 簡易的なトークン数推定（日本語は1文字2トークン程度として概算）
+    total = 0
+    for msg in messages:
+        content = msg.get("content", "")
+        # 日本語文字数 * 2 + 英数字文字数 * 1 で概算
+        jp_chars = sum(1 for c in content if ord(c) > 127)
+        en_chars = sum(1 for c in content if ord(c) <= 127)
+        total += (jp_chars * 2) + en_chars
+    return total
+
+def call_chatgpt_api(messages, model="gpt-4"):
+    try:
+        # トークン数を推定
+        estimated_tokens = count_tokens(messages)
+        print(f"推定トークン数: {estimated_tokens}")
+        if estimated_tokens > 6000:  # 8192の75%を上限に
+            raise ValueError(f"推定トークン数が多すぎます: {estimated_tokens}")
+            
+        print("OpenAI APIリクエストを開始します...")
+        print("モデル:", model)
+        # 各呼び出しごとに新しいクライアントを作成（タイムアウト設定付き）
+        client = OpenAI(
+            api_key=api_key,
+            timeout=60.0  # 60秒タイムアウト
+        )
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0.7,
+        )
+        print("OpenAI APIレスポンスを受信しました")
+        content = response.choices[0].message.content
+        print("レスポンス長:", len(content), "文字")
+        return content
+    except Exception as e:
+        print(f"OpenAI API Error: {str(e)}")
+        raise
 
 
 def role_system(prompt):
