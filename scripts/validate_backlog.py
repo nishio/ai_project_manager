@@ -141,6 +141,7 @@ def validate_security_level(value: str) -> bool:
 
 
 def validate_status(value: str) -> bool:
+    # "In Progress" と "Blocked" は現時点で未使用
     return value in ["Open", "In Progress", "Done", "Blocked"]
 
 

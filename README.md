@@ -41,13 +41,10 @@ Macユーザーは追加の設定が必要です。
 ```bash
 # 1. リポジトリのクローン
 git clone https://github.com/nishio/ai_project_manager.git
-git clone https://github.com/nishio/ai_project_manager_data.git
 cd ai_project_manager
 
 # 2. 環境のセットアップ
 ## Ubuntu/Debian の場合
-sudo apt-get update
-sudo apt-get install -y graphviz
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -58,9 +55,8 @@ pip install -r requirements.txt
 # 3. OpenAI APIキーの設定
 export OPENAI_API_KEY=your_api_key
 
-# 4. タスクデータの確認
-cd ../ai_project_manager_data
-ls tasks/backlog.json
+# 4. タスクデータの取得と確認
+python scripts/upkeep_data.py
 ```
 
 #### 2. AI開発者（AI Developer）
@@ -72,9 +68,6 @@ ls tasks/backlog.json
 ```bash
 # 1. リポジトリのクローン
 git clone https://github.com/nishio/ai_project_manager.git
-
-# 2. パッケージのインストール
-pip install networkx openai
 
 # 4. 開発用環境変数の設定
 export OPENAI_API_KEY=your_api_key
@@ -90,52 +83,21 @@ export USE_TEST_DATA=true  # テストデータを使用
 ```bash
 # 1. リポジトリのクローン
 git clone https://github.com/nishio/ai_project_manager.git
-cd ai_project_manager  # 単一のVSCodeウィンドウで開きたいため
-git clone https://github.com/nishio/ai_project_manager_data.git
+cd ai_project_manager
+python scripts/upkeep_data.py
 ```
 
 ## 使用方法
 
-### 1. タスクの収集と分析
-```bash
-# タスクの収集と整理
-python scripts/gather_tasks.py
-```
-実行結果：
-- タスクの読み込みと整理：backlog.jsonからタスクを読み込み、構造を分析
-- プロジェクトの分解：大きなプロジェクトを管理可能なサブタスクに分解
-- 類似タスクの検出：重複や関連するタスクを自動的に特定
-- 依存関係の分析：タスク間の依存関係をグラフとして可視化（task_graph.pngが生成）
-
-### 2. AIによるタスク分析と支援
-```bash
-python scripts/ai_support.py
-```
-実行結果：
-- タスクの複雑さと工数の分析：各タスクの規模と必要な作業量を推定
-- プロジェクトの自動分解：大規模タスクを実行可能な単位に分割
-- タスク説明の多言語対応：必要に応じて説明を他言語に翻訳
-- 依存関係の最適化提案：タスクの実行順序や並列化の可能性を提案
 
 ### 3. タスクの検証とアーカイブ
 ```bash
 # タスク構造の検証
-python scripts/validate_json.py tasks/backlog.json
-
-# 依存関係の可視化
-python scripts/visualize_graph.py
+python scripts/validate_json.py ai_project_manager_data/tasks/backlog.json
 
 # 完了タスクのアーカイブ（手動実行）
 python scripts/archive_tasks.py [--date YYYY-MM-DD]
 ```
-実行結果：
-- タスク構造の検証：YAMLファイルの形式と必須フィールドを確認
-- 依存関係の可視化：タスク間の関係をグラフとして表示
-- 完了タスクのアーカイブ：
-  - 完了タスク（status: Done）を日付別ファイルに移動
-  - バックアップの自動作成（tasks/backup/）
-  - 期限切れタスクの検出と通知
-  - アーカイブファイル生成（tasks/archive/YYYY-MM-DD.json）
 
 注：完了タスクは毎朝5時（JST）に自動的にアーカイブされます。手動実行時は --date オプションで日付を指定できます。
 
@@ -144,8 +106,9 @@ python scripts/archive_tasks.py [--date YYYY-MM-DD]
 ### 役割別ガイド
 
 #### AIタスク管理者向け
-- [タスク形式ガイドライン](docs/task_format.md) - タスクの構造と必須フィールドの説明
+- [AIタスク管理者向けガイド](docs/for_manager.md)
 - [タスク管理ガイドライン](docs/task_management.md) - タスク管理の基本原則と運用方法
+- [タスク形式ガイドライン](docs/task_format.md) - タスクの構造と必須フィールドの説明
 - [スクリプト説明](docs/scripts.md) - 利用可能なスクリプトの一覧と使用方法
 
 #### 開発者向け
@@ -154,7 +117,8 @@ python scripts/archive_tasks.py [--date YYYY-MM-DD]
 - [タスク形式ガイドライン](docs/task_format.md) - タスクデータ構造の詳細
 
 #### 人間向け
-- [タスク管理ガイドライン](docs/task_management.md) - タスク管理の基本的な考え方
+- [人間向けガイド](docs/for_human.md)
+- [タスク管理ガイドライン](docs/task_management.md) - タスク管理の基本原則と運用方法
 - [タスク形式ガイドライン](docs/task_format.md) - タスクの作成方法
 - [システムの知見](docs/knowledge_base.md) - システム全体の理解
 
