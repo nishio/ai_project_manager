@@ -41,6 +41,7 @@ def replace_duplicate_ids(filepath):
                     f"Replacing duplicate temporary ID {_tid} with {new_id} for task '{task.get('title', 'UNKNOWN')}'"
                 )
                 task["id"] = new_id
+                existing_ids.add(new_id)
             else:
                 temp_ids[_tid] = task.get("title", "UNKNOWN")
                 existing_ids.add(_tid)
