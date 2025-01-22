@@ -130,7 +130,18 @@ def get_next_available_id() -> str:
     """Get the next available ID from the pool"""
     used_ids, _ = get_used_ids()
     
-    # Try IDs sequentially until we find an unused one
+    if not used_ids:
+        return f"{ID_PREFIX}0001"  # Start with T0001 if no IDs are used
+        
+    # Find the highest used ID number
+    max_id = max(int(id_str[1:]) for id_str in used_ids if id_str.startswith(ID_PREFIX) and id_str[1:].isdigit())
+    
+    # Try the next number after the highest used ID
+    next_id = f"{ID_PREFIX}{(max_id + 1):04d}"
+    if next_id not in used_ids:
+        return next_id
+        
+    # If that's taken, try sequentially from the beginning
     for i in range(ID_MIN, ID_MAX + 1):
         candidate = f"{ID_PREFIX}{i:04d}"
         if candidate not in used_ids:
