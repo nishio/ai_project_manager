@@ -1,27 +1,44 @@
+import os
 import json
 import jsonpatch
 
 
 def apply_json_patch(original_data_path, patch_path, output_path):
-    # 元のデータを読み込む
+    """Apply JSON patch to original data and save the result.
+    
+    Args:
+        original_data_path (str): Path to original JSON file
+        patch_path (str): Path to patch file
+        output_path (str): Path to save patched result
+    """
+    print(f"Reading original data from: {original_data_path}")
+    print(f"Reading patch from: {patch_path}")
+    print(f"Will save output to: {output_path}")
+    
+    # Load original data
     with open(original_data_path, "r", encoding="utf-8") as original_file:
         original_data = json.load(original_file)
 
-    # patch.jsonを読み込む
+    # Load patch
     with open(patch_path, "r", encoding="utf-8") as patch_file:
         patch = json.load(patch_file)
 
-    # パッチを適用
+    # Apply patch
     patched_data = jsonpatch.apply_patch(original_data, patch)
 
-    # 結果を保存
+    # Save result
     with open(output_path, "w", encoding="utf-8") as output_file:
         json.dump(patched_data, output_file, ensure_ascii=False, indent=2)
+    print("Patch applied successfully")
 
 
-# スクリプトの実行
-apply_json_patch(
-    "ai_project_manager_data/tasks/backlog.json",
-    "ai_project_manager_data/tasks/patch.json",
-    "ai_project_manager_data/tasks/backlog.json",
-)
+# Get repository root and data root paths
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_ROOT = os.path.join(REPO_ROOT, "..", "ai_project_manager_data")
+
+# Define paths
+BACKLOG_PATH = os.path.join(DATA_ROOT, "tasks", "backlog.json")
+PATCH_PATH = os.path.join(DATA_ROOT, "tasks", "patch.json")
+
+# Execute script
+apply_json_patch(BACKLOG_PATH, PATCH_PATH, BACKLOG_PATH)

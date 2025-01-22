@@ -30,16 +30,11 @@ import manage_4digit_ids
 
 # Constants
 DEFAULT_INPUT = "tmp_chatlog.txt"
-BACKLOG_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "tasks",
-    "backlog.json"
-)
-PATCH_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "tasks",
-    "patch.json"
-)
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_ROOT = os.path.join(REPO_ROOT, "..", "ai_project_manager_data")
+
+BACKLOG_PATH = os.path.join(DATA_ROOT, "tasks", "backlog.json")
+PATCH_PATH = os.path.join(DATA_ROOT, "tasks", "patch.json")
 
 def parse_chat_segment(text: str) -> List[Dict[str, str]]:
     """
@@ -190,8 +185,7 @@ def assign_task_ids(patches: List[Dict]) -> List[Dict]:
     """
     updated_patches = []
     assigned_ids = set()  # Track assigned IDs for verification
-    script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    manage_ids_path = os.path.join(script_dir, "scripts", "manage_4digit_ids.py")
+    manage_ids_path = os.path.join(REPO_ROOT, "scripts", "manage_4digit_ids.py")
     
     print("\nAssigning task IDs...")
     for i, patch in enumerate(patches, 1):
@@ -208,7 +202,7 @@ def assign_task_ids(patches: List[Dict]) -> List[Dict]:
                         [sys.executable, manage_ids_path, "next"],
                         capture_output=True,
                         text=True,
-                        cwd=script_dir,
+                        cwd=REPO_ROOT,
                         check=True  # Raise CalledProcessError if return code is non-zero
                     )
                     
