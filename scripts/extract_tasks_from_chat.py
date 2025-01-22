@@ -20,6 +20,7 @@ import os
 import sys
 import json
 import re
+import subprocess
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple
 
@@ -100,7 +101,7 @@ def create_task_extraction_prompt(segment: Dict[str, str]) -> str:
     """
     return f"""
 あなたは会話ログからタスクを抽出するAIアシスタントです。
-以下の会話セグメントからタスクを抽出し、JSONPatch形式で出力してください。
+以下の会話セグメントからタスクを抽出し、厳密なJSONPatch形式で出力してください。
 
 【入力形式】
 - 発話者: {segment['speaker']}
@@ -108,12 +109,14 @@ def create_task_extraction_prompt(segment: Dict[str, str]) -> str:
 - 内容: {segment['content']}
 
 【出力形式】
-JSONPatch形式で、以下の要件を満たすこと:
-1. タスクIDは "ID_PLACEHOLDER" を使用（後で実際のIDに置換）
-2. descriptionは「概要」＋「詳細」の2部構成
-3. 元の発話情報を含める
-4. statusは "Open"
-5. typeは "task"
+厳密なJSONPatch形式で、以下の要件を満たすこと:
+1. タスクIDは必ず "ID_PLACEHOLDER" を使用（システムが後で実際のIDに置換）
+2. descriptionは必ず「概要」＋「詳細」の2部構成
+3. 元の発話情報を必ず含める
+4. statusは必ず "Open"
+5. typeは必ず "task"
+6. 出力は必ず配列 [] で囲む（空配列も可）
+7. 各フィールドの値は必ず文字列型で出力
 
 【出力例】
 [
@@ -132,10 +135,17 @@ JSONPatch形式で、以下の要件を満たすこと:
   }}
 ]
 
-注意:
-- 1つの発話から複数のタスクが抽出可能な場合は、複数のパッチを出力
-- タスクとして意味をなさない場合は空の配列 [] を返す
-- 依存関係は必須ではない（今回は実装しない）
+【重要な注意事項】
+1. 必ず有効なJSON形式で出力すること
+2. 1つの発話から複数のタスクが抽出可能な場合は、配列内に複数のパッチを出力
+3. タスクとして意味をなさない場合は空の配列 [] を返す
+4. 依存関係は必須ではない（今回は実装しない）
+5. 出力は必ず [] で囲まれた配列であること
+6. 各フィールドの値は必ず文字列型で出力すること
+
+あなたの役割は、与えられた会話セグメントから意味のあるタスクを抽出し、
+それを正確なJSONPatch形式で出力することです。
+出力形式の正確性は非常に重要です。
 """
 
 def extract_tasks_from_segment(segment: Dict[str, str]) -> List[Dict]:
@@ -180,6 +190,8 @@ def assign_task_ids(patches: List[Dict]) -> List[Dict]:
     """
     updated_patches = []
     assigned_ids = set()  # Track assigned IDs for verification
+    script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    manage_ids_path = os.path.join(script_dir, "scripts", "manage_4digit_ids.py")
     
     print("\nAssigning task IDs...")
     for i, patch in enumerate(patches, 1):
@@ -188,36 +200,46 @@ def assign_task_ids(patches: List[Dict]) -> List[Dict]:
             and "value" in patch 
             and patch["value"].get("id") == "ID_PLACEHOLDER"
         ):
-            # Get next available ID using manage_4digit_ids.py
-            import subprocess
-            result = subprocess.run(
-                ["python", "scripts/manage_4digit_ids.py", "next"],
-                capture_output=True,
-                text=True,
-                cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            )
-            if result.returncode != 0:
-                print(f"Error getting next ID: {result.stderr}")
-                raise RuntimeError("Failed to get next task ID")
-                
-            new_id = result.stdout.strip()
-            if not new_id.startswith('T') or not new_id[1:].isdigit():
-                print(f"Invalid ID format received: {new_id}")
-                raise ValueError(f"Invalid ID format: {new_id}")
-                
-            if new_id in assigned_ids:
-                print(f"Warning: Duplicate ID {new_id} detected!")
-                raise ValueError(f"Duplicate ID detected: {new_id}")
-                
-            # Update the patch with the new ID
-            patch["value"]["id"] = new_id
-            assigned_ids.add(new_id)
-            print(f"Task {i}: Assigned ID {new_id} (Title: {patch['value'].get('title', 'Untitled')})")
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    # Get next available ID using manage_4digit_ids.py
+                    result = subprocess.run(
+                        [sys.executable, manage_ids_path, "next"],
+                        capture_output=True,
+                        text=True,
+                        cwd=script_dir,
+                        check=True  # Raise CalledProcessError if return code is non-zero
+                    )
+                    
+                    new_id = result.stdout.strip()
+                    if not new_id.startswith('T') or not new_id[1:].isdigit():
+                        print(f"Invalid ID format received: {new_id}")
+                        raise ValueError(f"Invalid ID format: {new_id}")
+                    
+                    if new_id in assigned_ids:
+                        print(f"Warning: Duplicate ID {new_id} detected! Retrying...")
+                        continue
+                    
+                    # Update the patch with the new ID
+                    patch["value"]["id"] = new_id
+                    assigned_ids.add(new_id)
+                    print(f"Task {i}: Assigned ID {new_id} (Title: {patch['value'].get('title', 'Untitled')})")
+                    break
+                    
+                except (subprocess.CalledProcessError, ValueError) as e:
+                    if attempt == max_retries - 1:
+                        print(f"Error getting next ID after {max_retries} attempts: {str(e)}")
+                        raise RuntimeError("Failed to get next task ID") from e
+                    print(f"Attempt {attempt + 1} failed, retrying...")
+                    continue
             
         updated_patches.append(patch)
     
     print(f"\nTotal tasks processed: {len(patches)}")
     print(f"Unique IDs assigned: {len(assigned_ids)}")
+    if len(patches) != len(assigned_ids):
+        print("Warning: Number of patches does not match number of assigned IDs!")
     return updated_patches
 
 def main():
