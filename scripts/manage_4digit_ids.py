@@ -57,7 +57,7 @@ from pathlib import Path
 
 # Constants
 ID_PREFIX = "T"
-ID_MIN = 0
+ID_MIN = 1  # Start from T0001
 ID_MAX = 9999
 # Get repository root and data root paths
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -133,19 +133,16 @@ def get_next_available_id() -> str:
     if not used_ids:
         return f"{ID_PREFIX}0001"  # Start with T0001 if no IDs are used
         
-    # Find the highest used ID number
-    max_id = max(int(id_str[1:]) for id_str in used_ids if id_str.startswith(ID_PREFIX) and id_str[1:].isdigit())
+    # Convert IDs to integers for easier manipulation
+    used_nums = set()
+    for id_str in used_ids:
+        if id_str.startswith(ID_PREFIX) and id_str[1:].isdigit():
+            used_nums.add(int(id_str[1:]))
     
-    # Try the next number after the highest used ID
-    next_id = f"{ID_PREFIX}{(max_id + 1):04d}"
-    if next_id not in used_ids:
-        return next_id
-        
-    # If that's taken, try sequentially from the beginning
+    # Find first available number
     for i in range(ID_MIN, ID_MAX + 1):
-        candidate = f"{ID_PREFIX}{i:04d}"
-        if candidate not in used_ids:
-            return candidate
+        if i not in used_nums:
+            return f"{ID_PREFIX}{i:04d}"
     
     raise ValueError("No available IDs in the pool (all T0000-T9999 are used)")
 

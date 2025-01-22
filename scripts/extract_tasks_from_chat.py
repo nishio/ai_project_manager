@@ -31,10 +31,13 @@ import manage_4digit_ids
 # Constants
 DEFAULT_INPUT = "tmp_chatlog.txt"
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_ROOT = os.path.join(REPO_ROOT, "..", "ai_project_manager_data")
+DATA_ROOT = os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data")
 
 BACKLOG_PATH = os.path.join(DATA_ROOT, "tasks", "backlog.json")
 PATCH_PATH = os.path.join(DATA_ROOT, "tasks", "patch.json")
+
+# Ensure directories exist
+os.makedirs(os.path.dirname(PATCH_PATH), exist_ok=True)
 
 def parse_chat_segment(text: str) -> List[Dict[str, str]]:
     """
@@ -191,36 +194,24 @@ def get_used_task_ids() -> set:
 
 def get_next_task_id(used_ids: set) -> str:
     """Get next available task ID, ensuring it's not in used_ids"""
-    manage_ids_path = os.path.join(REPO_ROOT, "scripts", "manage_4digit_ids.py")
-    max_retries = 3
+    # Update with any new IDs from the system
+    current_used_ids = get_used_task_ids()
+    all_used_ids = used_ids.union(current_used_ids)
     
-    for attempt in range(max_retries):
-        try:
-            result = subprocess.run(
-                [sys.executable, manage_ids_path, "next"],
-                capture_output=True,
-                text=True,
-                cwd=REPO_ROOT,
-                check=True
-            )
-            
-            new_id = result.stdout.strip()
-            if not new_id.startswith('T') or not new_id[1:].isdigit():
-                print(f"Invalid ID format received: {new_id}")
-                raise ValueError(f"Invalid ID format: {new_id}")
-            
-            if new_id not in used_ids:
-                return new_id
-            
-            print(f"Warning: ID {new_id} is already in use! Retrying...")
-            
-        except (subprocess.CalledProcessError, ValueError) as e:
-            if attempt == max_retries - 1:
-                print(f"Error getting next ID after {max_retries} attempts: {str(e)}")
-                raise RuntimeError("Failed to get next task ID") from e
-            print(f"Attempt {attempt + 1} failed, retrying...")
+    # Convert IDs to integers for easier manipulation
+    used_nums = set()
+    for id_str in all_used_ids:
+        if id_str.startswith('T') and id_str[1:].isdigit():
+            used_nums.add(int(id_str[1:]))
     
-    raise RuntimeError("Could not get a unique task ID after multiple attempts")
+    # Find first available number starting from 1
+    for i in range(1, 10000):  # 1 to 9999
+        if i not in used_nums:
+            new_id = f"T{i:04d}"
+            used_ids.add(new_id)  # Add to our tracking set
+            return new_id
+    
+    raise RuntimeError("No available IDs in the pool (all T0001-T9999 are used)")
 
 def assign_task_ids(patches: List[Dict], used_ids: set) -> List[Dict]:
     """
@@ -257,34 +248,101 @@ def assign_task_ids(patches: List[Dict], used_ids: set) -> List[Dict]:
         print("Warning: Number of patches does not match number of assigned IDs!")
     return updated_patches
 
+def load_progress() -> tuple:
+    """Load progress from temporary file if it exists"""
+    progress_file = "extract_tasks_progress.json"
+    if os.path.exists(progress_file):
+        try:
+            with open(progress_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                return data.get("current_segment", 0), data.get("patches", [])
+        except (json.JSONDecodeError, FileNotFoundError):
+            pass
+    return 0, []
+
+def save_progress(current_segment: int, patches: list, total_segments: int):
+    """Save current progress to temporary file with better status tracking"""
+    progress_file = "extract_tasks_progress.json"
+    with open(progress_file, "w", encoding="utf-8") as f:
+        json.dump({
+            "current_segment": current_segment,
+            "total_segments": total_segments,
+            "patches": patches,
+            "last_updated": datetime.now().isoformat(),
+            "completed_percentage": round((current_segment / total_segments) * 100, 2) if total_segments > 0 else 0
+        }, f, ensure_ascii=False, indent=2)
+    print(f"\nProgress saved: {current_segment}/{total_segments} segments processed ({round((current_segment / total_segments) * 100, 2)}%)")
+
 def main():
     """Main entry point"""
     # Get input file path
     input_file = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_INPUT
     
     try:
-        # Read input file
+        # Load any existing progress
+        start_segment, unassigned_patches = load_progress()
+        if start_segment > 0:
+            print(f"\nResuming from segment {start_segment + 1}")
+            print(f"Found {len(unassigned_patches)} previously extracted tasks")
+        
+        print(f"\nReading chat log from: {input_file}")
         with open(input_file, "r", encoding="utf-8") as f:
             content = f.read()
         
         # Parse chat segments
+        print("\nParsing chat segments...")
         segments = parse_chat_segment(content)
+        total_segments = len(segments)
+        print(f"Found {total_segments} chat segments")
         
         # Get initial set of used IDs
+        print("\nFetching current task IDs...")
         used_ids = get_used_task_ids()
         print(f"Found {len(used_ids)} existing task IDs")
         
         # First collect all tasks without assigning IDs
-        unassigned_patches = []
-        for segment in segments:
-            patches = extract_tasks_from_segment(segment)
-            if patches:
-                unassigned_patches.extend(patches)
+        print("\nExtracting tasks from chat segments...")
+        if not unassigned_patches:
+            unassigned_patches = []
+        for i, segment in enumerate(segments[start_segment:], start_segment + 1):
+            print(f"\nProcessing segment {i}/{total_segments}")
+            print(f"Speaker: {segment['speaker']}")
+            print(f"Timestamp: {segment.get('timestamp', 'N/A')}")
+            print("Content preview:", segment['content'][:100] + "..." if len(segment['content']) > 100 else segment['content'])
+            print("Extracting tasks...")
+            
+            max_segment_retries = 3
+            for segment_attempt in range(max_segment_retries):
+                try:
+                    print(f"\nAttempting to process segment {i} (attempt {segment_attempt + 1}/{max_segment_retries})")
+                    patches = extract_tasks_from_segment(segment)
+                    if patches:
+                        print(f"Found {len(patches)} tasks in segment")
+                        unassigned_patches.extend(patches)
+                        # Save progress after each successful extraction
+                        save_progress(i, unassigned_patches, total_segments)
+                        break  # Success, exit retry loop
+                    else:
+                        print("No tasks found in this segment")
+                        # Save progress even when no tasks found
+                        save_progress(i, unassigned_patches, total_segments)
+                        break  # No tasks is a valid result, exit retry loop
+                        
+                except Exception as e:
+                    print(f"Error processing segment {i} (attempt {segment_attempt + 1}): {str(e)}")
+                    if segment_attempt == max_segment_retries - 1:
+                        print(f"Failed to process segment {i} after {max_segment_retries} attempts")
+                        continue  # Move to next segment
+                    print("Retrying segment...")
+                    continue
         
         if not unassigned_patches:
-            print("No tasks extracted from the chat log.")
+            print("\nNo tasks extracted from the chat log.")
             return
             
+        print(f"\nTotal tasks found: {len(unassigned_patches)}")
+        print("Assigning IDs to tasks...")
+        
         # Now assign IDs to all tasks at once
         all_patches = assign_task_ids(unassigned_patches, used_ids)
         

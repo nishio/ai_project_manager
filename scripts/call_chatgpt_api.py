@@ -31,30 +31,51 @@ def call_chatgpt_api(messages, model="gpt-4"):
     """
     import httpx
     
-    try:
-        # Set timeout to 30 seconds
-        client.timeout = httpx.Timeout(30.0)
-        
-        # Print API key status (without revealing the key)
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY environment variable is not set")
-        print(f"Using API key: {'*' * (len(api_key) - 4) + api_key[-4:]}")
-        
-        print(f"Calling ChatGPT API with model: {model}")
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=0.7,
-            max_tokens=1000
-        )
-        return response.choices[0].message.content
-    except httpx.TimeoutException:
-        print("Error: API call timed out after 30 seconds")
-        raise
-    except Exception as e:
-        print(f"Error calling ChatGPT API: {str(e)}")
-        raise
+    base_timeout = 120.0  # Base timeout of 120 seconds
+    max_retries = 3
+    last_error = None
+    
+    for attempt in range(max_retries):
+        # Exponential backoff for timeout
+        timeout = base_timeout * (2 ** attempt)
+        try:
+            # Set timeout for this attempt
+            client.timeout = httpx.Timeout(timeout)
+            
+            # Print API key status (without revealing the key)
+            api_key = os.getenv("OPENAI_API_KEY")
+            if not api_key:
+                raise ValueError("OPENAI_API_KEY environment variable is not set")
+            print(f"Using API key: {'*' * (len(api_key) - 4) + api_key[-4:]}")
+            
+            print(f"Calling ChatGPT API with model: {model} (attempt {attempt + 1}/{max_retries}, timeout: {timeout}s)")
+            response = client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=0.7,
+                max_tokens=1000
+            )
+            return response.choices[0].message.content
+            
+        except httpx.TimeoutException as e:
+            last_error = e
+            print(f"Warning: API call timed out after {timeout} seconds (attempt {attempt + 1}/{max_retries})")
+            if attempt == max_retries - 1:
+                print("Error: All retry attempts failed")
+                raise
+            print(f"Retrying with increased timeout ({timeout * 2}s)...")
+            continue
+        except Exception as e:
+            last_error = e
+            print(f"Error calling ChatGPT API: {str(e)}")
+            if attempt == max_retries - 1:
+                raise
+            print("Retrying due to error...")
+            continue
+    
+    # If we get here, all retries failed
+    if last_error:
+        raise last_error
 
 
 def role_system(prompt):
