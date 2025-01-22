@@ -173,21 +173,9 @@ def extract_tasks_from_segment(segment: Dict[str, str]) -> List[Dict]:
         print(f"Error: Invalid JSON response for segment: {segment['timestamp']}")
         return []
 
-def assign_task_ids(patches: List[Dict]) -> List[Dict]:
-    """
-    Replace ID_PLACEHOLDER with actual task IDs.
-    
-    Args:
-        patches (List[Dict]): List of JSONPatch operations
-        
-    Returns:
-        List[Dict]: Updated patches with real task IDs
-    """
-    updated_patches = []
-    assigned_ids = set()  # Track assigned IDs for verification
+def get_used_task_ids() -> set:
+    """Get all currently used task IDs from the system"""
     manage_ids_path = os.path.join(REPO_ROOT, "scripts", "manage_4digit_ids.py")
-    
-    # First, get all currently used IDs to avoid conflicts
     try:
         result = subprocess.run(
             [sys.executable, manage_ids_path, "list"],
@@ -196,10 +184,57 @@ def assign_task_ids(patches: List[Dict]) -> List[Dict]:
             cwd=REPO_ROOT,
             check=True
         )
-        used_ids = {line.split(":")[0].strip() for line in result.stdout.splitlines() if ":" in line}
+        return {line.split(":")[0].strip() for line in result.stdout.splitlines() if ":" in line}
     except subprocess.CalledProcessError as e:
         print(f"Warning: Could not get list of used IDs: {e}")
-        used_ids = set()
+        return set()
+
+def get_next_task_id(used_ids: set) -> str:
+    """Get next available task ID, ensuring it's not in used_ids"""
+    manage_ids_path = os.path.join(REPO_ROOT, "scripts", "manage_4digit_ids.py")
+    max_retries = 3
+    
+    for attempt in range(max_retries):
+        try:
+            result = subprocess.run(
+                [sys.executable, manage_ids_path, "next"],
+                capture_output=True,
+                text=True,
+                cwd=REPO_ROOT,
+                check=True
+            )
+            
+            new_id = result.stdout.strip()
+            if not new_id.startswith('T') or not new_id[1:].isdigit():
+                print(f"Invalid ID format received: {new_id}")
+                raise ValueError(f"Invalid ID format: {new_id}")
+            
+            if new_id not in used_ids:
+                return new_id
+            
+            print(f"Warning: ID {new_id} is already in use! Retrying...")
+            
+        except (subprocess.CalledProcessError, ValueError) as e:
+            if attempt == max_retries - 1:
+                print(f"Error getting next ID after {max_retries} attempts: {str(e)}")
+                raise RuntimeError("Failed to get next task ID") from e
+            print(f"Attempt {attempt + 1} failed, retrying...")
+    
+    raise RuntimeError("Could not get a unique task ID after multiple attempts")
+
+def assign_task_ids(patches: List[Dict], used_ids: set) -> List[Dict]:
+    """
+    Replace ID_PLACEHOLDER with actual task IDs.
+    
+    Args:
+        patches (List[Dict]): List of JSONPatch operations
+        used_ids (set): Set of already used task IDs
+        
+    Returns:
+        List[Dict]: Updated patches with real task IDs
+    """
+    updated_patches = []
+    assigned_ids = set()
     
     print("\nAssigning task IDs...")
     for i, patch in enumerate(patches, 1):
@@ -208,41 +243,11 @@ def assign_task_ids(patches: List[Dict]) -> List[Dict]:
             and "value" in patch 
             and patch["value"].get("id") == "ID_PLACEHOLDER"
         ):
-            max_retries = 3
-            for attempt in range(max_retries):
-                try:
-                    # Get next available ID
-                    result = subprocess.run(
-                        [sys.executable, manage_ids_path, "next"],
-                        capture_output=True,
-                        text=True,
-                        cwd=REPO_ROOT,
-                        check=True
-                    )
-                    
-                    new_id = result.stdout.strip()
-                    if not new_id.startswith('T') or not new_id[1:].isdigit():
-                        print(f"Invalid ID format received: {new_id}")
-                        raise ValueError(f"Invalid ID format: {new_id}")
-                    
-                    # Check against both used and assigned IDs
-                    if new_id in used_ids or new_id in assigned_ids:
-                        print(f"Warning: ID {new_id} is already in use! Retrying...")
-                        continue
-                    
-                    # Update the patch with the new ID
-                    patch["value"]["id"] = new_id
-                    assigned_ids.add(new_id)
-                    used_ids.add(new_id)  # Add to used_ids to prevent reuse
-                    print(f"Task {i}: Assigned ID {new_id} (Title: {patch['value'].get('title', 'Untitled')})")
-                    break
-                    
-                except (subprocess.CalledProcessError, ValueError) as e:
-                    if attempt == max_retries - 1:
-                        print(f"Error getting next ID after {max_retries} attempts: {str(e)}")
-                        raise RuntimeError("Failed to get next task ID") from e
-                    print(f"Attempt {attempt + 1} failed, retrying...")
-                    continue
+            new_id = get_next_task_id(used_ids)
+            patch["value"]["id"] = new_id
+            assigned_ids.add(new_id)
+            used_ids.add(new_id)
+            print(f"Task {i}: Assigned ID {new_id} (Title: {patch['value'].get('title', 'Untitled')})")
             
         updated_patches.append(patch)
     
@@ -265,18 +270,23 @@ def main():
         # Parse chat segments
         segments = parse_chat_segment(content)
         
-        # Extract tasks from each segment
-        all_patches = []
+        # Get initial set of used IDs
+        used_ids = get_used_task_ids()
+        print(f"Found {len(used_ids)} existing task IDs")
+        
+        # First collect all tasks without assigning IDs
+        unassigned_patches = []
         for segment in segments:
             patches = extract_tasks_from_segment(segment)
             if patches:
-                # Assign real task IDs
-                patches = assign_task_ids(patches)
-                all_patches.extend(patches)
+                unassigned_patches.extend(patches)
         
-        if not all_patches:
+        if not unassigned_patches:
             print("No tasks extracted from the chat log.")
             return
+            
+        # Now assign IDs to all tasks at once
+        all_patches = assign_task_ids(unassigned_patches, used_ids)
         
         # Save patches to file
         with open(PATCH_PATH, "w", encoding="utf-8") as f:
