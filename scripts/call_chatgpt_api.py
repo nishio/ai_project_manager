@@ -16,11 +16,30 @@ client = OpenAI(
 )
 
 
-def call_chatgpt_api(messages, model="gpt-4o"):
-    # v1 以降は chat.completions.create(...) を呼ぶ
-    response = client.chat.completions.create(model=model, messages=messages)
-    # 返ってくるオブジェクトの構造は同じようなイメージ
-    return response.choices[0].message.content
+def call_chatgpt_api(messages, model="gpt-4"):
+    """Call ChatGPT API with error handling.
+    
+    Args:
+        messages (List[Dict]): List of message objects
+        model (str): Model name (default: gpt-4)
+        
+    Returns:
+        str: Response content from ChatGPT
+        
+    Raises:
+        Exception: If API call fails
+    """
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0.7,
+            max_tokens=1000
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"Error calling ChatGPT API: {str(e)}")
+        raise
 
 
 def role_system(prompt):
