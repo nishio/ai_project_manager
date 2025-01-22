@@ -187,6 +187,20 @@ def assign_task_ids(patches: List[Dict]) -> List[Dict]:
     assigned_ids = set()  # Track assigned IDs for verification
     manage_ids_path = os.path.join(REPO_ROOT, "scripts", "manage_4digit_ids.py")
     
+    # First, get all currently used IDs to avoid conflicts
+    try:
+        result = subprocess.run(
+            [sys.executable, manage_ids_path, "list"],
+            capture_output=True,
+            text=True,
+            cwd=REPO_ROOT,
+            check=True
+        )
+        used_ids = {line.split(":")[0].strip() for line in result.stdout.splitlines() if ":" in line}
+    except subprocess.CalledProcessError as e:
+        print(f"Warning: Could not get list of used IDs: {e}")
+        used_ids = set()
+    
     print("\nAssigning task IDs...")
     for i, patch in enumerate(patches, 1):
         if (
@@ -197,13 +211,13 @@ def assign_task_ids(patches: List[Dict]) -> List[Dict]:
             max_retries = 3
             for attempt in range(max_retries):
                 try:
-                    # Get next available ID using manage_4digit_ids.py
+                    # Get next available ID
                     result = subprocess.run(
                         [sys.executable, manage_ids_path, "next"],
                         capture_output=True,
                         text=True,
                         cwd=REPO_ROOT,
-                        check=True  # Raise CalledProcessError if return code is non-zero
+                        check=True
                     )
                     
                     new_id = result.stdout.strip()
@@ -211,13 +225,15 @@ def assign_task_ids(patches: List[Dict]) -> List[Dict]:
                         print(f"Invalid ID format received: {new_id}")
                         raise ValueError(f"Invalid ID format: {new_id}")
                     
-                    if new_id in assigned_ids:
-                        print(f"Warning: Duplicate ID {new_id} detected! Retrying...")
+                    # Check against both used and assigned IDs
+                    if new_id in used_ids or new_id in assigned_ids:
+                        print(f"Warning: ID {new_id} is already in use! Retrying...")
                         continue
                     
                     # Update the patch with the new ID
                     patch["value"]["id"] = new_id
                     assigned_ids.add(new_id)
+                    used_ids.add(new_id)  # Add to used_ids to prevent reuse
                     print(f"Task {i}: Assigned ID {new_id} (Title: {patch['value'].get('title', 'Untitled')})")
                     break
                     
