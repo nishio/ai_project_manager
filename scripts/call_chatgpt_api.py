@@ -17,7 +17,7 @@ client = OpenAI(
 
 
 def call_chatgpt_api(messages, model="gpt-4"):
-    """Call ChatGPT API with error handling.
+    """Call ChatGPT API with error handling and timeout.
     
     Args:
         messages (List[Dict]): List of message objects
@@ -27,9 +27,21 @@ def call_chatgpt_api(messages, model="gpt-4"):
         str: Response content from ChatGPT
         
     Raises:
-        Exception: If API call fails
+        Exception: If API call fails or times out
     """
+    import httpx
+    
     try:
+        # Set timeout to 30 seconds
+        client.timeout = httpx.Timeout(30.0)
+        
+        # Print API key status (without revealing the key)
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is not set")
+        print(f"Using API key: {'*' * (len(api_key) - 4) + api_key[-4:]}")
+        
+        print(f"Calling ChatGPT API with model: {model}")
         response = client.chat.completions.create(
             model=model,
             messages=messages,
@@ -37,6 +49,9 @@ def call_chatgpt_api(messages, model="gpt-4"):
             max_tokens=1000
         )
         return response.choices[0].message.content
+    except httpx.TimeoutException:
+        print("Error: API call timed out after 30 seconds")
+        raise
     except Exception as e:
         print(f"Error calling ChatGPT API: {str(e)}")
         raise
