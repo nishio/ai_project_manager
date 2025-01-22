@@ -59,16 +59,13 @@ from pathlib import Path
 ID_PREFIX = "T"
 ID_MIN = 0
 ID_MAX = 9999
-BACKLOG_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "tasks",
-    "backlog.json"
-)
-ARCHIVE_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "tasks",
-    "archive"
-)
+# Get repository root and data root paths
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_ROOT = os.path.join(REPO_ROOT, "..", "ai_project_manager_data")
+
+# Define paths
+BACKLOG_PATH = os.path.join(DATA_ROOT, "tasks", "backlog.json")
+ARCHIVE_DIR = os.path.join(DATA_ROOT, "tasks", "archive")
 
 
 def load_backlog() -> Dict:
