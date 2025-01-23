@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 from util_human_id_match import human_id_match
 
-BACKLOG_FILE = "ai_project_manager_data/tasks/backlog.json"  # タスクファイルのパス
+BACKLOG_FILE = "../ai_project_manager_data/tasks/backlog.json"  # タスクファイルのパス
 
 
 def mark_done(talk_ids):
