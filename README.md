@@ -52,8 +52,13 @@ pip install -r requirements.txt
 ## Mac の場合
 ./setup_mac.sh  # graphvizのインストールとvenv環境のセットアップを行います
 
-# 3. OpenAI APIキーの設定
+# 3. 環境変数の設定
+## OpenAI APIキーの設定
 export OPENAI_API_KEY=your_api_key
+
+## データディレクトリの設定
+# ai_project_manager_dataをクローンした絶対パスを指定
+export DATA_ROOT=/path/to/ai_project_manager_data  # 例: /home/user/repos/ai_project_manager_data
 
 # 4. タスクデータの取得と確認
 python scripts/upkeep_data.py
@@ -72,6 +77,7 @@ git clone https://github.com/nishio/ai_project_manager.git
 # 4. 開発用環境変数の設定
 export OPENAI_API_KEY=your_api_key
 export USE_TEST_DATA=true  # テストデータを使用
+export DATA_ROOT=/path/to/ai_project_manager_data  # ai_project_manager_dataの絶対パス
 ```
 
 #### 3. 人間（Human）
@@ -84,6 +90,11 @@ export USE_TEST_DATA=true  # テストデータを使用
 # 1. リポジトリのクローン
 git clone https://github.com/nishio/ai_project_manager.git
 cd ai_project_manager
+
+# 2. データディレクトリの設定
+export DATA_ROOT=/path/to/ai_project_manager_data  # ai_project_manager_dataの絶対パス
+
+# 3. タスクデータの取得と確認
 python scripts/upkeep_data.py
 ```
 

@@ -83,6 +83,10 @@ import uuid
 import re
 from datetime import datetime
 from typing import Dict, List, Any
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # ---------------------------------
 # ユーティリティ関数
@@ -446,7 +450,8 @@ def main():
     Main entry point for validate_json.py
     """
     if len(sys.argv) < 2:
-        filepath = "ai_project_manager_data/tasks/backlog.json"
+        data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+        filepath = os.path.join(data_root, "tasks", "backlog.json")
     else:
         filepath = sys.argv[1]
     success = validate_tasks_json(filepath)

@@ -54,6 +54,10 @@ import sys
 import os
 from typing import Set, Dict, List, Optional, Tuple
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Constants
 ID_PREFIX = "T"
@@ -61,7 +65,7 @@ ID_MIN = 1  # Start from T0001
 ID_MAX = 9999
 # Get repository root and data root paths
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_ROOT = os.path.join(REPO_ROOT, "..", "ai_project_manager_data")
+DATA_ROOT = os.getenv("DATA_ROOT", os.path.join(REPO_ROOT, "..", "ai_project_manager_data"))
 
 # Define paths
 BACKLOG_PATH = os.path.join(DATA_ROOT, "tasks", "backlog.json")

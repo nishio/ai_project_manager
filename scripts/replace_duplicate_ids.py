@@ -1,6 +1,11 @@
 import json
 import uuid
+import os
+from dotenv import load_dotenv
 from common_id_utils import find_next_available_id
+
+# Load environment variables
+load_dotenv()
 
 
 def load_tasks(filepath):
@@ -55,4 +60,6 @@ def replace_duplicate_ids(filepath):
 
 
 if __name__ == "__main__":
-    replace_duplicate_ids("ai_project_manager_data/tasks/backlog.json")
+    data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+    backlog_path = os.path.join(data_root, "tasks", "backlog.json")
+    replace_duplicate_ids(backlog_path)

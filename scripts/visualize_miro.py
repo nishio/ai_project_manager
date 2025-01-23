@@ -164,4 +164,5 @@ class MiroVisualizer:
 
 if __name__ == "__main__":
     visualizer = MiroVisualizer()
-    visualizer.visualize("/home/ubuntu/repos/ai_project_manager_data/tasks/backlog.json")
+    data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+    visualizer.visualize(os.path.join(data_root, "tasks", "backlog.json"))

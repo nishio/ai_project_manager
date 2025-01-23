@@ -1,6 +1,11 @@
 import json
 import re
+import os
+from dotenv import load_dotenv
 from common_id_utils import find_next_available_id
+
+# Load environment variables
+load_dotenv()
 
 
 def load_backlog(file_path):
@@ -21,7 +26,8 @@ def find_next_available_id(used_ids):
 
 
 def main():
-    backlog_path = "ai_project_manager_data/tasks/backlog.json"
+    data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+    backlog_path = os.path.join(data_root, "tasks", "backlog.json")
     backlog_data = load_backlog(backlog_path)
     used_ids = extract_ids(backlog_data["tasks"])
 

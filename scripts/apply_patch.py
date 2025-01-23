@@ -1,6 +1,10 @@
 import os
 import json
 import jsonpatch
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 
 def apply_json_patch(original_data_path, patch_path, output_path):
@@ -32,13 +36,12 @@ def apply_json_patch(original_data_path, patch_path, output_path):
     print("Patch applied successfully")
 
 
-# Get repository root and data root paths
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_ROOT = os.path.join(REPO_ROOT, "..", "ai_project_manager_data")
+# Get data root path from environment
+data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
 
 # Define paths
-BACKLOG_PATH = os.path.join(DATA_ROOT, "tasks", "backlog.json")
-PATCH_PATH = os.path.join(DATA_ROOT, "tasks", "patch.json")
+BACKLOG_PATH = os.path.join(data_root, "tasks", "backlog.json")
+PATCH_PATH = os.path.join(data_root, "tasks", "patch.json")
 
 # Execute script
 apply_json_patch(BACKLOG_PATH, PATCH_PATH, BACKLOG_PATH)
