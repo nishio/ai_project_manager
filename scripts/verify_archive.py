@@ -4,9 +4,14 @@ from datetime import datetime
 import os
 
 def verify_archived_completion_time():
+    # Load environment variables
+    from dotenv import load_dotenv
+    load_dotenv()
+    
     # Get today's date in JST
     archive_date = datetime.now().strftime("%Y-%m-%d")
-    archive_file = f"ai_project_manager_data/tasks/archive/{archive_date}.json"
+    data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+    archive_file = os.path.join(data_root, "tasks", "archive", f"{archive_date}.json")
     
     if not os.path.exists(archive_file):
         print(f"Error: Archive file not found: {archive_file}")

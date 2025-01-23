@@ -23,15 +23,19 @@ import re
 import subprocess
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple
+from dotenv import load_dotenv
 
 # Import local modules
 import call_chatgpt_api
 import manage_4digit_ids
 
+# Load environment variables
+load_dotenv()
+
 # Constants
 DEFAULT_INPUT = "tmp_chatlog.txt"
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_ROOT = os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data")
+DATA_ROOT = os.getenv("DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data"))
 
 BACKLOG_PATH = os.path.join(DATA_ROOT, "tasks", "backlog.json")
 PATCH_PATH = os.path.join(DATA_ROOT, "tasks", "patch.json")

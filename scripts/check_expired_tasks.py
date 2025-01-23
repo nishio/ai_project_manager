@@ -11,8 +11,14 @@ import datetime
 import json
 import os
 from typing import Dict, List, Tuple
+from dotenv import load_dotenv
 
-BACKLOG_FILE = "ai_project_manager_data/tasks/backlog.json"  # タスクファイルのパス
+# Load environment variables
+load_dotenv()
+
+# タスクファイルのパス
+data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+BACKLOG_FILE = os.path.join(data_root, "tasks", "backlog.json")
 
 
 def load_json(filepath: str) -> List[Dict]:

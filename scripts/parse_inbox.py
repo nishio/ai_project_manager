@@ -2,8 +2,13 @@
 import re
 import json
 import uuid
+import os
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 def detect_date(text: str) -> Tuple[Optional[str], Optional[str], str]:
     """
@@ -84,11 +89,14 @@ def convert_freeform_to_json(text: str, existing_tasks: List[Dict]) -> Dict:
     
     return task
 
-def load_existing_tasks(backlog_path: str = "/home/ubuntu/repos/ai_project_manager_data/tasks/backlog.json") -> List[Dict]:
+def load_existing_tasks(backlog_path: str = None) -> List[Dict]:
     """
     Load existing tasks from backlog.json
     Returns empty list if file doesn't exist
     """
+    if backlog_path is None:
+        data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+        backlog_path = os.path.join(data_root, "tasks", "backlog.json")
     try:
         with open(backlog_path, "r", encoding="utf-8") as f:
             data = json.load(f)

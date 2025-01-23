@@ -1,9 +1,16 @@
 import sys
 import json
+import os
 from datetime import datetime
 from util_human_id_match import human_id_match
+from dotenv import load_dotenv
 
-BACKLOG_FILE = "ai_project_manager_data/tasks/backlog.json"  # タスクファイルのパス
+# Load environment variables
+load_dotenv()
+
+# タスクファイルのパス
+data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+BACKLOG_FILE = os.path.join(data_root, "tasks", "backlog.json")
 
 
 def mark_done(talk_ids):

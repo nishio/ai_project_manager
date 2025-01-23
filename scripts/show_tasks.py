@@ -1,6 +1,11 @@
 import argparse
 import json
+import os
 from util_human_id_match import human_id_match
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 
 def load_tasks(file_path):
@@ -37,7 +42,8 @@ def main():
     )
     args = parser.parse_args()
 
-    tasks = load_tasks("ai_project_manager_data/tasks/backlog.json")
+    data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+    tasks = load_tasks(os.path.join(data_root, "tasks", "backlog.json"))
     selected_tasks = filter_tasks_by_ids(tasks, args.ids)
 
     for task in selected_tasks:

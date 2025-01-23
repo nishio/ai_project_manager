@@ -1,5 +1,10 @@
 import call_chatgpt_api
 import json
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 
 # backlog.jsonの内容を読み込む
@@ -49,8 +54,9 @@ def main():
     # システムプロンプトを設定
     system_prompt = call_chatgpt_api.role_system(SYSTEM)
 
-    # backlog.yamlの内容を取得
-    backlog_data = read_backlog("ai_project_manager_data/tasks/backlog.json")
+    # backlog.jsonの内容を取得
+    data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+    backlog_data = read_backlog(os.path.join(data_root, "tasks", "backlog.json"))
 
     # メッセージを構築
     messages = [system_prompt, {"role": "user", "content": str(backlog_data)}]

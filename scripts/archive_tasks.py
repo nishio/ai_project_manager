@@ -13,10 +13,15 @@ import sys
 import json
 from typing import Dict, List, Optional, Tuple
 
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
 # 設定
-BACKLOG_FILE = "ai_project_manager_data/tasks/backlog.json"  # タスクファイルのパス
-ARCHIVE_DIR = "ai_project_manager_data/tasks/archive"  # アーカイブディレクトリ
-BACKUP_DIR = "ai_project_manager_data/tasks/backup"  # バックアップディレクトリ
+data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+BACKLOG_FILE = os.path.join(data_root, "tasks", "backlog.json")  # タスクファイルのパス
+ARCHIVE_DIR = os.path.join(data_root, "tasks", "archive")  # アーカイブディレクトリ
+BACKUP_DIR = os.path.join(data_root, "tasks", "backup")  # バックアップディレクトリ
 
 
 def create_backup(filepath: str, backup_dir: str) -> str:

@@ -6,10 +6,15 @@
 
 import os
 import subprocess
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 
 def update_or_clone_repo():
-    repo_path = "ai_project_manager_data"
+    # Get data repository path from environment variable
+    repo_path = os.path.basename(os.getenv("DATA_ROOT", "ai_project_manager_data"))
     repo_url = "git@github.com:nishio/ai_project_manager_data.git"
 
     if os.path.exists(repo_path):

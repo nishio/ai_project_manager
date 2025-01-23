@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 import json
+import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 def verify_completion_time():
-    with open("ai_project_manager_data/tasks/backlog.json", "r") as f:
+    data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+    backlog_path = os.path.join(data_root, "tasks", "backlog.json")
+    
+    with open(backlog_path, "r") as f:
         data = json.load(f)
         for task in data["tasks"]:
             if task.get("id") == "T0026":
