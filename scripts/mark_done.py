@@ -16,7 +16,7 @@ def mark_done(talk_ids):
     for task in data["tasks"]:
         task_id = task["id"]
         if any(human_id_match(task_id, talk_id) for talk_id in talk_ids):
-            task["status"] = "done"
+            task["status"] = "Done"
             task["completion_time"] = datetime.now().isoformat()
             done_tasks.append(task)
 
