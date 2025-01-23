@@ -6,7 +6,7 @@ import os
 def verify_archived_completion_time():
     # Get today's date in JST
     archive_date = datetime.now().strftime("%Y-%m-%d")
-    archive_file = f"../ai_project_manager_data/tasks/archive/{archive_date}.json"
+    archive_file = f"ai_project_manager_data/tasks/archive/{archive_date}.json"
     
     if not os.path.exists(archive_file):
         print(f"Error: Archive file not found: {archive_file}")

@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 def verify_completion_time():
-    with open("../ai_project_manager_data/tasks/backlog.json", "r") as f:
+    with open("ai_project_manager_data/tasks/backlog.json", "r") as f:
         data = json.load(f)
         for task in data["tasks"]:
             if task.get("id") == "T0026":
