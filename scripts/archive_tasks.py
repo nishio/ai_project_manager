@@ -14,9 +14,9 @@ import json
 from typing import Dict, List, Optional, Tuple
 
 # 設定
-BACKLOG_FILE = "ai_project_manager_data/tasks/backlog.json"  # タスクファイルのパス
-ARCHIVE_DIR = "ai_project_manager_data/tasks/archive"  # アーカイブディレクトリ
-BACKUP_DIR = "ai_project_manager_data/tasks/backup"  # バックアップディレクトリ
+BACKLOG_FILE = "../ai_project_manager_data/tasks/backlog.json"  # タスクファイルのパス
+ARCHIVE_DIR = "../ai_project_manager_data/tasks/archive"  # アーカイブディレクトリ
+BACKUP_DIR = "../ai_project_manager_data/tasks/backup"  # バックアップディレクトリ
 
 
 def create_backup(filepath: str, backup_dir: str) -> str:
