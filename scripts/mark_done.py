@@ -1,5 +1,6 @@
 import sys
 import json
+from datetime import datetime
 from util_human_id_match import human_id_match
 
 BACKLOG_FILE = "ai_project_manager_data/tasks/backlog.json"  # タスクファイルのパス
@@ -15,7 +16,8 @@ def mark_done(talk_ids):
     for task in data["tasks"]:
         task_id = task["id"]
         if any(human_id_match(task_id, talk_id) for talk_id in talk_ids):
-            task["status"] = "done"
+            task["status"] = "Done"
+            task["completion_time"] = datetime.now().isoformat()
             done_tasks.append(task)
 
     # 更新されたデータをbacklog.jsonに書き込む
