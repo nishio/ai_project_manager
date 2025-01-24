@@ -192,7 +192,7 @@ def detect_similar_tasks(tasks: List[Dict], threshold: float = 0.7) -> Dict[str,
     
     return similar_tasks
 
-def analyze_task_dependencies(G: nx.DiGraph) -> Tuple[List[str], Dict[str, List[Dict[str, str]]]]:
+def analyze_task_dependencies(G: nx.DiGraph) -> Tuple[List[str], Dict[str, List[Dict[str, str]]], List[Dict[str, str]]]:
     """
     タスクの依存関係を分析する
     
@@ -200,10 +200,11 @@ def analyze_task_dependencies(G: nx.DiGraph) -> Tuple[List[str], Dict[str, List[
         G: タスクの依存関係を表すDAG
         
     Returns:
-        (実行可能なタスク, ブロックされているタスクとその理由)
+        (実行可能なタスク, ブロックされているタスク, 見つからない依存タスク)
     """
     executable_tasks = []
     blocked_tasks = {}
+    missing_dependencies = []
     
     for node in G.nodes():
         task_data = G.nodes[node]
@@ -221,26 +222,35 @@ def analyze_task_dependencies(G: nx.DiGraph) -> Tuple[List[str], Dict[str, List[
                     })
         
         # タスク依存関係のチェック
-        predecessors = list(G.predecessors(node))
-        if predecessors:
-            for pred in predecessors:
-                edge_data = G.get_edge_data(pred, node)
-                if edge_data['dependency_type'] == 'MUST':
-                    pred_status = G.nodes[pred].get('status', 'Open')
-                    if pred_status != 'Done':
-                        blocking_reasons.append({
-                            'type': 'task',
-                            'task_id': pred,
-                            'status': pred_status,
-                            'reason': edge_data.get('reason', '依存タスクが未完了')
-                        })
+        if 'dependencies' in task_data:
+            deps = task_data['dependencies']
+            for dep_type in ['must', 'nice_to_have']:
+                if dep_type in deps:
+                    for dep in deps[dep_type]:
+                        dep_id = dep['task_id']
+                        if dep_id not in G.nodes():
+                            missing_dependencies.append({
+                                'dependent_task': node,
+                                'missing_task': dep_id,
+                                'dependency_type': dep_type.upper(),
+                                'reason': dep.get('reason', '依存関係の理由が未指定')
+                            })
+                        elif dep_type == 'must':
+                            pred_status = G.nodes[dep_id].get('status', 'Open')
+                            if pred_status != 'Done':
+                                blocking_reasons.append({
+                                    'type': 'task',
+                                    'task_id': dep_id,
+                                    'status': pred_status,
+                                    'reason': dep.get('reason', '依存タスクが未完了')
+                                })
         
         if blocking_reasons:
             blocked_tasks[node] = blocking_reasons
         else:
             executable_tasks.append(node)
                 
-    return executable_tasks, blocked_tasks
+    return executable_tasks, blocked_tasks, missing_dependencies
 
 def main():
     # タスクファイルのパス（コマンドライン引数から取得）
@@ -290,19 +300,23 @@ def main():
     # グラフの構築と分析
     try:
         G = build_task_graph(all_tasks)
-        executable_tasks, blocked_tasks = analyze_task_dependencies(G)
+        executable_tasks, blocked_tasks, missing_deps = analyze_task_dependencies(G)
         
         print("\n=== 依存関係の分析 ===")
         print("\n実行可能なタスク:")
         for task_id in executable_tasks:
             task = G.nodes[task_id]
-            print(f"- [{task.get('status', 'Open')}] {task_id}: {task['title']}")
+            if 'title' in task:
+                print(f"- [{task.get('status', 'Open')}] {task_id}: {task['title']}")
+            else:
+                print(f"- [{task.get('status', 'Open')}] {task_id}: (タイトルなし)")
             
         if blocked_tasks:
             print("\nブロックされているタスク:")
             for task_id, blocking_reasons in blocked_tasks.items():
                 task = G.nodes[task_id]
-                print(f"- {task_id}: {task['title']}")
+                title = task.get('title', '(タイトルなし)')
+                print(f"- {task_id}: {title}")
                 for reason in blocking_reasons:
                     if reason['type'] == 'task':
                         print(f"  ブロック要因(タスク): {reason['task_id']} ({reason['reason']})")
@@ -310,6 +324,13 @@ def main():
                         print(f"  ブロック要因(人的): {reason['action']} - 担当: {reason['assignee']}")
                         if reason.get('reason'):
                             print(f"    理由: {reason['reason']}")
+                            
+        if missing_deps:
+            print("\n見つからない依存タスク:")
+            for dep in missing_deps:
+                print(f"- タスク {dep['dependent_task']} が依存するタスク {dep['missing_task']} が見つかりません")
+                print(f"  依存タイプ: {dep['dependency_type']}")
+                print(f"  理由: {dep['reason']}")
     except ValueError as e:
         print(f"\n警告: 依存関係の分析に失敗しました - {str(e)}")
     
