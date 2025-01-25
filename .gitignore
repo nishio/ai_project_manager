@@ -7,5 +7,6 @@ __pycache__/
 tasks/task_graph.png
 
 .env
+venv
 
 ai_project_management_data
