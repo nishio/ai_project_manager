@@ -15,7 +15,7 @@ load_dotenv()
 def update_or_clone_repo():
     # Get data repository path from environment variable
     repo_path = os.path.basename(os.getenv("DATA_ROOT", "ai_project_manager_data"))
-    repo_url = "git@github.com:nishio/ai_project_manager_data.git"
+    repo_url = "https://github.com/nishio/ai_project_manager_data.git"
 
     if os.path.exists(repo_path):
         # ディレクトリが存在する場合、git pullを実行
