@@ -1,6 +1,23 @@
 # AI Project Manager
 
-AIによるタスク管理システム。タスクの自動分類、依存関係の管理、プロジェクトの進捗追跡を行います。
+AIによるタスク管理システムです。
+
+## 役割
+役割には「タスク管理者」「開発者」「ユーザ」の3種類がある。
+あなたが人間ではなく、「開発者だ」と言われていない場合、あなたは「タスク管理者」である。
+あなたの役割を理解し、役割に沿って行動せよ。
+
+## 役割別ネクストアクション
+
+### 1. AIタスク管理者（AI Task Manager）
+
+[docs/for_manager.md](docs/for_manager.md)を読め
+
+
+#### 2. 開発者(AI or Human)
+
+[docs/for_developer.md](docs/for_developer.md)を読め
+
 
 ## システム構成
 
@@ -10,93 +27,18 @@ AIによるタスク管理システム。タスクの自動分類、依存関係
   - AIによるタスク分析・管理機能
 
 - **タスクデータ**: [ai_project_manager_data](https://github.com/nishio/ai_project_manager_data)（プライベートリポジトリ）
-  - 実際のタスクデータ（backlog.json）
-  - プライバシーを考慮し、別リポジトリで管理
+  - 西尾の実際のタスクデータ（backlog.json）
+  - 公開してはいけないタスクが含まれる可能性があるので公開リポジトリに書かないように配慮した運用をせよ
 
 ## スクリプトの説明
 
 LLMで書くよりもPythonで書く方が適しているタスクに関して、小さな機能のPythonスクリプトを使う
 
 ### スクリプト一覧
-docs/scripts.mdを参照
+[docs/scripts.md](docs/scripts.md)を参照
 
 ## セットアップ
 
-### 役割別セットアップガイド
-
-#### 1. AIタスク管理者（AI Task Manager）
-
-この役割はAIがSlackなどで人間からの指示を受けてタスクのデータを更新するものである。
-Pythonソースコードの編集は担当しない。機能追加やバグ修正が必要になった場合は、タスクリストに追加する
-
-必要な設定：
-- システムコードリポジトリのクローン
-- タスクデータリポジトリのクローン（権限必要）
-- OpenAI APIキーの設定
-- Pythonパッケージのインストール
-
-注意：このシステムは Ubuntu 22.04.5 LTS (x86_64) で開発・テストされています。
-Macユーザーは追加の設定が必要です。
-
-```bash
-# 1. リポジトリのクローン
-git clone https://github.com/nishio/ai_project_manager.git
-cd ai_project_manager
-
-# 2. 環境のセットアップ
-## Ubuntu/Debian の場合
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-## Mac の場合
-./setup_mac.sh  # graphvizのインストールとvenv環境のセットアップを行います
-
-# 3. 環境変数の設定
-## OpenAI APIキーの設定
-export OPENAI_API_KEY=your_api_key
-
-## データディレクトリの設定
-# ai_project_manager_dataをクローンした絶対パスを指定
-export DATA_ROOT=/path/to/ai_project_manager_data  # 例: /home/user/repos/ai_project_manager_data
-
-# 4. タスクデータの取得と確認
-python scripts/upkeep_data.py
-```
-
-#### 2. AI開発者（AI Developer）
-必要な設定：
-- システムコードリポジトリのクローン
-- タスクデータリポジトリのクローン（権限必要）
-- 開発環境のセットアップ
-
-```bash
-# 1. リポジトリのクローン
-git clone https://github.com/nishio/ai_project_manager.git
-
-# 4. 開発用環境変数の設定
-export OPENAI_API_KEY=your_api_key
-export USE_TEST_DATA=true  # テストデータを使用
-export DATA_ROOT=/path/to/ai_project_manager_data  # ai_project_manager_dataの絶対パス
-```
-
-#### 3. 人間（Human）
-必要な設定：
-- システムコードリポジトリのクローン
-- タスクデータリポジトリのクローン（権限必要）
-- 開発環境のセットアップ
-
-```bash
-# 1. リポジトリのクローン
-git clone https://github.com/nishio/ai_project_manager.git
-cd ai_project_manager
-
-# 2. データディレクトリの設定
-export DATA_ROOT=/path/to/ai_project_manager_data  # ai_project_manager_dataの絶対パス
-
-# 3. タスクデータの取得と確認
-python scripts/upkeep_data.py
-```
 
 ## 使用方法
 
@@ -133,17 +75,9 @@ python scripts/archive_tasks.py [--date YYYY-MM-DD]
 - [タスク形式ガイドライン](docs/task_format.md) - タスクの作成方法
 - [システムの知見](docs/knowledge_base.md) - システム全体の理解
 
-## 開発ガイドライン
 
-1. システムコードの変更
-   - このリポジトリで管理
-   - PRを作成してレビューを受ける
-
-2. タスクデータの更新
-   - ai_project_manager_dataリポジトリで管理
-   - 公開してはいけないタスクが含まれる可能性があるので公開リポジトリに書かないように配慮した運用をせよ
 
 ## ライセンス
 
-Copyright (c) 2024 Nishio
+Copyright (c) 2024 NISHIO Hirokazu
 MIT License
