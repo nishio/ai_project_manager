@@ -82,7 +82,9 @@ import sys
 import uuid
 import re
 import os
+import argparse
 from datetime import datetime
+from common_id_utils import find_next_available_id
 from typing import Dict, List, Any
 from dotenv import load_dotenv
 
@@ -376,7 +378,7 @@ def validate_task(task: Dict[str, Any]) -> List[str]:
 # ---------------------------------
 
 
-def validate_tasks_json(filepath: str) -> bool:
+def validate_tasks_json(filepath: str, fix: bool = False) -> bool:
     """
     Validate tasks.json structure and each task.
     戻り値：TrueならOK、Falseならエラーあり
@@ -389,6 +391,83 @@ def validate_tasks_json(filepath: str) -> bool:
         return False
     except json.JSONDecodeError as e:
         print(f"Invalid JSON format in {filepath}: {e}")
+        return False
+
+    if not isinstance(data, dict) or "tasks" not in data:
+        print(f"Invalid format: {filepath} must contain a dictionary with 'tasks' key")
+        return False
+
+    tasks = data["tasks"]
+
+    # すべてのIDを収集
+    existing_ids = set()
+    for task in tasks:
+        _tid = task.get("id", None)
+        if _tid:
+            existing_ids.add(_tid)
+
+    if not isinstance(tasks, list):
+        print(f"Invalid format: 'tasks' in {filepath} must be a list")
+        return False
+
+    # IDの重複チェック用
+    temp_ids = {}
+    permanent_ids = {}
+
+    all_errors = []
+    for i, task in enumerate(tasks):
+        if not isinstance(task, dict):
+            all_errors.append(
+                f"{format_task_identifier(task)} - Task at index {i} must be a dictionary"
+            )
+            continue
+
+        # 個別タスクのバリデーション
+        errors = validate_task(task)
+        if errors:
+            all_errors.extend(errors)
+
+        # IDの重複チェック (id, permanent_id)
+        _tid = task.get("id", None)
+        if _tid:
+            if _tid in temp_ids:
+                all_errors.append(
+                    f"Duplicate temporary ID: {_tid} (Task Names: {temp_ids[_tid]}, {format_task_identifier(task)})"
+                )
+            else:
+                temp_ids[_tid] = task.get("title", "UNKNOWN")
+
+        _pid = task.get("permanent_id", None)
+        if _pid:
+            if _pid in permanent_ids:
+                all_errors.append(
+                    f"Duplicate permanent ID: {_pid} (Task Names: {permanent_ids[_pid]}, {format_task_identifier(task)})"
+                )
+            else:
+                permanent_ids[_pid] = task.get("title", "UNKNOWN")
+
+        # 無効なIDを修正
+        if fix:
+            if not is_valid_temp_id(_tid):
+                new_id = find_next_available_id(existing_ids)
+                task["id"] = new_id
+                print("fix ", _tid, new_id)
+                temp_ids[new_id] = task.get("title", "UNKNOWN")
+                existing_ids.add(new_id)
+                print(f"Fixed invalid ID for {format_task_identifier(task)}: {new_id}")
+
+    if fix:
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        print(f"Fixed IDs saved to {filepath}")
+
+        with open(filepath, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+    if all_errors:
+        print("Validation errors:")
+        for err in all_errors:
+            print(f"  - {err}")
         return False
 
     if not isinstance(data, dict) or "tasks" not in data:
@@ -450,13 +529,24 @@ def main():
     """
     Main entry point for validate_json.py
     """
-    if len(sys.argv) < 2:
+    parser = argparse.ArgumentParser(description="Validate backlog.json")
+    parser.add_argument(
+        "filepath", nargs="?", default=None, help="Path to backlog.json"
+    )
+    parser.add_argument("--fix", action="store_true", help="Fix invalid temporary IDs")
+    args = parser.parse_args()
+
+    if args.filepath is None:
         REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        data_root = os.getenv("DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data"))
+        data_root = os.getenv(
+            "DATA_ROOT",
+            os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data"),
+        )
         filepath = os.path.join(data_root, "tasks", "backlog.json")
     else:
-        filepath = sys.argv[1]
-    success = validate_tasks_json(filepath)
+        filepath = args.filepath
+
+    success = validate_tasks_json(filepath, fix=args.fix)
     sys.exit(0 if success else 1)
 
 
