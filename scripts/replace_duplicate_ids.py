@@ -30,6 +30,17 @@ def replace_duplicate_ids(filepath):
     permanent_ids = {}
     existing_ids = set()
 
+    # まず、すべてのIDを収集
+    for task in tasks:
+        _tid = task.get("id", None)
+        _pid = task.get("permanent_id", None)
+
+        if _tid:
+            existing_ids.add(_tid)
+        if _pid:
+            existing_ids.add(_pid)
+
+    # 次に、重複IDを修正
     for task in tasks:
         _tid = task.get("id", None)
         _pid = task.get("permanent_id", None)
@@ -62,6 +73,8 @@ def replace_duplicate_ids(filepath):
 
 if __name__ == "__main__":
     REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_root = os.getenv("DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data"))
+    data_root = os.getenv(
+        "DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data")
+    )
     backlog_path = os.path.join(data_root, "tasks", "backlog.json")
     replace_duplicate_ids(backlog_path)

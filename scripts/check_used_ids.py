@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from common_id_utils import find_next_available_id
 
+
 # Load environment variables
 load_dotenv()
 
@@ -18,22 +19,11 @@ def extract_ids(tasks):
     return [task["id"] for task in tasks if id_pattern.match(task["id"])]
 
 
-def find_next_available_id(used_ids, request=1):
-    used_numbers = sorted(int(id[1:]) for id in used_ids)
-    result = []
-    for i in range(1, used_numbers[-1] + 2):
-        if i not in used_numbers:
-            if request == 1:
-                return f"T{i:04}"
-            result.append(f"T{i:04}")
-            if len(result) == request:
-                break
-    return result
-
-
 def main():
     REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_root = os.getenv("DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data"))
+    data_root = os.getenv(
+        "DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data")
+    )
     backlog_path = os.path.join(data_root, "tasks", "backlog.json")
     backlog_data = load_backlog(backlog_path)
     used_ids = extract_ids(backlog_data["tasks"])
