@@ -10,7 +10,8 @@ def verify_archived_completion_time():
     
     # Get today's date in JST
     archive_date = datetime.now().strftime("%Y-%m-%d")
-    data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+    REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_root = os.getenv("DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data"))
     archive_file = os.path.join(data_root, "tasks", "archive", f"{archive_date}.json")
     
     if not os.path.exists(archive_file):

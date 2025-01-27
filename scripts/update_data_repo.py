@@ -14,7 +14,7 @@ load_dotenv()
 
 def update_or_clone_repo():
     # Get data repository path from environment variable
-    repo_path = os.path.basename(os.getenv("DATA_ROOT", "ai_project_manager_data"))
+    repo_path = os.getenv("DATA_ROOT", "../ai_project_manager_data")
     os.chdir(repo_path)
     subprocess.run(["git", "status"], check=True)
     subprocess.run(["git", "add", "-u"], check=True)

@@ -32,7 +32,8 @@ def find_next_available_id(used_ids, request=1):
 
 
 def main():
-    data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+    REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_root = os.getenv("DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data"))
     backlog_path = os.path.join(data_root, "tasks", "backlog.json")
     backlog_data = load_backlog(backlog_path)
     used_ids = extract_ids(backlog_data["tasks"])

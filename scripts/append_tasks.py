@@ -23,7 +23,8 @@ def append_new_tasks_to_backlog(new_tasks_path, backlog_path):
 
 
 # スクリプトの実行
-data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+data_root = os.getenv("DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data"))
 append_new_tasks_to_backlog(
     os.path.join(data_root, "tasks", "new_task.json"),
     os.path.join(data_root, "tasks", "backlog.json"),

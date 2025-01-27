@@ -451,7 +451,8 @@ def main():
     Main entry point for validate_json.py
     """
     if len(sys.argv) < 2:
-        data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+        REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        data_root = os.getenv("DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data"))
         filepath = os.path.join(data_root, "tasks", "backlog.json")
     else:
         filepath = sys.argv[1]

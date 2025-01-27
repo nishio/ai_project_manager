@@ -95,7 +95,8 @@ def load_existing_tasks(backlog_path: str = None) -> List[Dict]:
     Returns empty list if file doesn't exist
     """
     if backlog_path is None:
-        data_root = os.getenv("DATA_ROOT", "/home/ubuntu/repos/ai_project_manager_data")
+        REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        data_root = os.getenv("DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data"))
         backlog_path = os.path.join(data_root, "tasks", "backlog.json")
     try:
         with open(backlog_path, "r", encoding="utf-8") as f:
