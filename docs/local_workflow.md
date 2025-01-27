@@ -6,13 +6,22 @@
 
 1. リポジトリのクローン
 ```bash
-# システムコードのクローン
-git clone https://github.com/nishio/ai_project_manager.git
-cd ai_project_manager
+# ~/repos ディレクトリ（または任意の作業ディレクトリ）に移動
+cd ~/repos
 
-# タスクデータのクローン（アクセス権が必要）
+# システムコードとタスクデータを同じディレクトリレベルにクローン
+git clone https://github.com/nishio/ai_project_manager.git
 git clone https://github.com/nishio/ai_project_manager_data.git
 ```
+
+注意事項：
+- デフォルトでは、ai_project_manager_dataはai_project_managerと同じディレクトリレベルに配置されることを想定しています
+- 異なるディレクトリ構造を使用する場合は、DATA_ROOT環境変数を設定してください：
+  ```bash
+  export DATA_ROOT=/path/to/ai_project_manager_data
+  ```
+- VSCodeなどのIDEを使用する場合、ワークスペースのルートディレクトリを適切に設定してください
+  （例：両方のリポジトリを含むディレクトリをワークスペースのルートとして設定）
 
 2. 依存関係のインストール
 ```bash
