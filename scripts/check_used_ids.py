@@ -18,11 +18,17 @@ def extract_ids(tasks):
     return [task["id"] for task in tasks if id_pattern.match(task["id"])]
 
 
-def find_next_available_id(used_ids):
+def find_next_available_id(used_ids, request=1):
     used_numbers = sorted(int(id[1:]) for id in used_ids)
+    result = []
     for i in range(1, used_numbers[-1] + 2):
         if i not in used_numbers:
-            return f"T{i:04}"
+            if request == 1:
+                return f"T{i:04}"
+            result.append(f"T{i:04}")
+            if len(result) == request:
+                break
+    return result
 
 
 def main():
@@ -32,10 +38,12 @@ def main():
     used_ids = extract_ids(backlog_data["tasks"])
 
     used_count = len(used_ids)
-    next_available_id = find_next_available_id(used_ids)
+    next_available_ids = find_next_available_id(used_ids, 10)
 
     print(f"Used IDs count: {used_count}")
-    print(f"Next available ID: {next_available_id}")
+    if used_count > 5000:
+        print("Warning: half of ids are used")
+    print(f"Next available ID: {next_available_ids}")
 
 
 if __name__ == "__main__":
