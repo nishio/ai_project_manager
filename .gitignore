@@ -10,3 +10,6 @@ tasks/task_graph.png
 venv
 
 ai_project_management_data
+
+
+.DS_Store
