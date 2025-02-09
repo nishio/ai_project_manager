@@ -15,11 +15,14 @@ from typing import Dict, List, Optional, Tuple
 
 # Load environment variables
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # 設定
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-data_root = os.getenv("DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data"))
+data_root = os.getenv(
+    "DATA_ROOT", os.path.join(os.path.dirname(REPO_ROOT), "ai_project_manager_data")
+)
 BACKLOG_FILE = os.path.join(data_root, "tasks", "backlog.json")  # タスクファイルのパス
 ARCHIVE_DIR = os.path.join(data_root, "tasks", "archive")  # アーカイブディレクトリ
 BACKUP_DIR = os.path.join(data_root, "tasks", "backup")  # バックアップディレクトリ
@@ -91,6 +94,8 @@ def check_expired_tasks(
     valid = []
 
     for task in tasks:
+        if task.get("status").lower() == "done":
+            continue
         due_date = task.get("due_date")
         if due_date:
             try:
@@ -123,9 +128,9 @@ def move_done_tasks(target_date: Optional[str] = None) -> None:
         ARCHIVE_DIR, f"{archive_date.strftime('%Y-%m-%d')}.json"
     )
 
-    # バックアップ作成
-    backup_path = create_backup(BACKLOG_FILE, BACKUP_DIR)
-    print(f"Created backup: {backup_path}")
+    # # バックアップ作成
+    # backup_path = create_backup(BACKLOG_FILE, BACKUP_DIR)
+    # print(f"Created backup: {backup_path}")
 
     # タスクの読み込みと分類
     tasks = load_json(BACKLOG_FILE)
