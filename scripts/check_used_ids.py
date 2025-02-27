@@ -1,8 +1,7 @@
 import json
-import re
 import os
 from dotenv import load_dotenv
-from common_id_utils import find_next_available_id
+from common_id_utils import find_next_available_id, extract_ids
 
 
 # Load environment variables
@@ -12,11 +11,6 @@ load_dotenv()
 def load_backlog(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         return json.load(file)
-
-
-def extract_ids(tasks):
-    id_pattern = re.compile(r"^T\d{4}$")
-    return [task["id"] for task in tasks if id_pattern.match(task["id"])]
 
 
 def main():
