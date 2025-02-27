@@ -284,7 +284,7 @@ def validate_task(task: Dict[str, Any]) -> List[str]:
     errors = []
 
     # --- 必須フィールドチェック
-    required_fields = ["id", "title", "status", "type", "description"]
+    required_fields = ["id", "title", "status", "description"]
     for field in required_fields:
         if field not in task:
             errors.append(
@@ -313,11 +313,11 @@ def validate_task(task: Dict[str, Any]) -> List[str]:
             f"{format_task_identifier(task)} - invalid status '{task['status']}' (must be Open/In Progress/Done/Blocked)"
         )
 
-    # --- type
-    if "type" in task and not validate_type(task["type"]):
-        errors.append(
-            f"{format_task_identifier(task)} - invalid type '{task.get('type', 'UNKNOWN')}' (must be task/project)"
-        )
+    # # --- type
+    # if "type" in task and not validate_type(task["type"]):
+    #     errors.append(
+    #         f"{format_task_identifier(task)} - invalid type '{task.get('type', 'UNKNOWN')}' (must be task/project)"
+    #     )
 
     # --- permanent_id (オプション)
     if "permanent_id" in task:
