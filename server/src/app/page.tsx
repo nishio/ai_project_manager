@@ -58,7 +58,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-8">
-      <h1 className="text-3xl font-bold mb-8">プロジェクトバックログ</h1>
+      <h1 className="text-3xl font-bold mb-8">AIPM<span className="text-sm font-bold mb-8">あいぽん</span></h1>
 
       <div className="w-full max-w-5xl">
         <TaskFilter
@@ -93,29 +93,22 @@ function TaskCard({ task }: { task: Task }) {
       onClick={toggleExpand}
     >
       <div className="flex justify-between items-start">
-        <h2 className="text-xl font-semibold">{task.title}</h2>
-        <div className="flex space-x-2">
-          <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+        <h2 className="text-xl font-semibold">
+          <span className="px-2 mx-1 bg-blue-100 text-blue-800">
             {task.id}
           </span>
-          <span className={`px-2 py-1 text-xs rounded-full ${task.status === 'Open' ? 'bg-green-100 text-green-800' :
-            task.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
-              task.status === 'Done' ? 'bg-gray-100 text-gray-800' :
-                'bg-gray-100 text-gray-800'
-            }`}>
-            {task.status}
-          </span>
-        </div>
+
+          {task.title}</h2>
       </div>
 
       {expanded && (
         <>
-          <p className="mt-4 text-gray-700 whitespace-pre-line">{task.description}</p>
+          <p className="mt-4 text-gray-100 whitespace-pre-line">{task.description}</p>
 
           <div className="mt-4">
             <div className="flex flex-wrap gap-2">
               {task.labels && task.labels.map((label, index) => (
-                <span key={index} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                <span key={index} className="px-2 py-1 bg-gray-300 text-gray-600 text-xs rounded-full">
                   {label}
                 </span>
               ))}
