@@ -170,7 +170,7 @@ def move_done_tasks(target_date: Optional[str] = None) -> None:
     print(f"- アーカイブ済み: {len(valid_done_tasks)}")
     print(f"- 期限切れ: {len(expired_tasks)}")
     print(f"- アーカイブファイル: {archive_file}")
-    print(f"- バックアップファイル: {backup_path}")
+    # print(f"- バックアップファイル: {backup_path}")
 
 
 def main():
