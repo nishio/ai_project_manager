@@ -64,8 +64,9 @@ export default function TaskFilter({ tasks, onFilterChange }: TaskFilterProps) {
 
   return (
     <div className="w-full mb-6 p-4 bg-gray-50 rounded-lg">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
+      <div className="grid grid-cols-1 gap-4">
+        {/* ステータスとラベルのフィルターを非表示にする */}
+        <div className="hidden">
           <label htmlFor="status-filter" className="block text-sm font-medium text-gray-700 mb-1">
             ステータス
           </label>
@@ -83,7 +84,7 @@ export default function TaskFilter({ tasks, onFilterChange }: TaskFilterProps) {
           </select>
         </div>
 
-        <div>
+        <div className="hidden">
           <label htmlFor="label-filter" className="block text-sm font-medium text-gray-700 mb-1">
             ラベル
           </label>
@@ -108,7 +109,7 @@ export default function TaskFilter({ tasks, onFilterChange }: TaskFilterProps) {
           <input
             id="search-query"
             type="text"
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-black"
             placeholder="タスク名、説明、IDで検索..."
             value={searchQuery}
             onChange={handleSearchChange}

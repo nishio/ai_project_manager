@@ -109,12 +109,12 @@ function TaskCard({ task }: { task: Task }) {
       
       {expanded && (
         <>
-          <p className="mt-4 text-gray-700 whitespace-pre-line">{task.description}</p>
+          <p className="mt-4 text-black whitespace-pre-line">{task.description}</p>
           
           <div className="mt-4">
             <div className="flex flex-wrap gap-2">
               {task.labels && task.labels.map((label, index) => (
-                <span key={index} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+                <span key={index} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
                   {label}
                 </span>
               ))}
