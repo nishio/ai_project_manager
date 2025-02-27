@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { loadBacklogData, Backlog } from '@/utils/backlogLoader';
+import { loadBacklogData, Backlog } from '../../../utils/backlogLoader';
 
 export async function GET() {
   try {
