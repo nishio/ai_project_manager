@@ -5,8 +5,9 @@ def add_task(title, description):
     tasks = load_tasks()
     obj = {
         "id": find_next_available_id(),
+        "status": "Open",
         "title": title,
-        "descriotion": description,
+        "description": description,
     }
     tasks.append(obj)
     save_tasks(tasks)
