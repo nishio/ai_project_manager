@@ -19,6 +19,8 @@ export default function Home() {
         }
         const data = await response.json();
         setBacklog(data);
+        // @ts-expect-error: for debug
+        globalThis.backlog = data;
         setFilteredTasks(data.tasks || []);
         setLoading(false);
       } catch (err) {
@@ -57,17 +59,17 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center p-8">
       <h1 className="text-3xl font-bold mb-8">プロジェクトバックログ</h1>
-      
+
       <div className="w-full max-w-5xl">
-        <TaskFilter 
-          tasks={backlog.tasks} 
-          onFilterChange={setFilteredTasks} 
+        <TaskFilter
+          tasks={backlog.tasks}
+          onFilterChange={setFilteredTasks}
         />
-        
+
         <div className="mb-4 text-sm text-gray-500">
           {filteredTasks.length} 件のタスクが表示されています（全 {backlog.tasks.length} 件中）
         </div>
-        
+
         <div className="grid grid-cols-1 gap-4">
           {filteredTasks.map((task: Task) => (
             <TaskCard key={task.id} task={task} />
@@ -80,13 +82,13 @@ export default function Home() {
 
 function TaskCard({ task }: { task: Task }) {
   const [expanded, setExpanded] = useState(false);
-  
+
   const toggleExpand = () => {
     setExpanded(!expanded);
   };
-  
+
   return (
-    <div 
+    <div
       className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
       onClick={toggleExpand}
     >
@@ -96,21 +98,20 @@ function TaskCard({ task }: { task: Task }) {
           <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
             {task.id}
           </span>
-          <span className={`px-2 py-1 text-xs rounded-full ${
-            task.status === 'Open' ? 'bg-green-100 text-green-800' : 
-            task.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : 
-            task.status === 'Done' ? 'bg-gray-100 text-gray-800' :
-            'bg-gray-100 text-gray-800'
-          }`}>
+          <span className={`px-2 py-1 text-xs rounded-full ${task.status === 'Open' ? 'bg-green-100 text-green-800' :
+            task.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
+              task.status === 'Done' ? 'bg-gray-100 text-gray-800' :
+                'bg-gray-100 text-gray-800'
+            }`}>
             {task.status}
           </span>
         </div>
       </div>
-      
+
       {expanded && (
         <>
-          <p className="mt-4 text-black whitespace-pre-line">{task.description}</p>
-          
+          <p className="mt-4 text-gray-700 whitespace-pre-line">{task.description}</p>
+
           <div className="mt-4">
             <div className="flex flex-wrap gap-2">
               {task.labels && task.labels.map((label, index) => (
@@ -120,7 +121,7 @@ function TaskCard({ task }: { task: Task }) {
               ))}
             </div>
           </div>
-          
+
           <div className="mt-4">
             <p className="text-sm text-gray-500">担当可能: {task.assignable_to.join(', ')}</p>
           </div>
