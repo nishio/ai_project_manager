@@ -2,6 +2,18 @@
 
 このディレクトリには、サーバーコンポーネントのテストが含まれています。テストはPlaywrightを使用して実装されています。
 
+## インストール方法
+
+Playwrightをインストールするには、以下のコマンドを実行します：
+
+```bash
+# Playwrightパッケージのインストール
+npm install --save-dev @playwright/test
+
+# ブラウザのインストール
+npx playwright install
+```
+
 ## テストの構成
 
 テストは以下のディレクトリに分かれています：
