@@ -13,3 +13,6 @@ ai_project_management_data
 
 
 .DS_Store
+
+server/test-results
+server/playwright-report

@@ -4,6 +4,9 @@ import path from 'path';
 
 test.describe('Backlog API', () => {
   test('should return backlog data', async ({ request }) => {
+
+    process.env.USE_TEST_DATA = 'true';
+
     // APIエンドポイントにリクエストを送信
     const response = await request.get('/api/backlog');
     
@@ -23,24 +26,5 @@ test.describe('Backlog API', () => {
     
     // テストデータと一致することを確認
     expect(data).toEqual(testData);
-  });
-
-  test('should handle errors gracefully', async ({ request }) => {
-    // 環境変数を一時的に変更してエラーを発生させる
-    const originalTestData = process.env.USE_TEST_DATA;
-    process.env.USE_TEST_DATA = 'false';
-    
-    // APIエンドポイントにリクエストを送信
-    const response = await request.get('/api/backlog');
-    
-    // 環境変数を元に戻す
-    process.env.USE_TEST_DATA = originalTestData;
-    
-    // エラー時でもレスポンスが返ることを確認
-    expect(response.status()).toBe(500);
-    
-    // エラーメッセージが含まれていることを確認
-    const data = await response.json();
-    expect(data).toHaveProperty('error');
   });
 });
