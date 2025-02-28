@@ -72,14 +72,14 @@ export default function TaskCard({ task, onStatusChange, onTaskUpdate }: TaskCar
               {task.status !== 'Done' && (
                 <button
                   onClick={handleMarkDone}
-                  className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                  className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
                 >
                   完了
                 </button>
               )}
               <button
                 onClick={handleEdit}
-                className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
               >
                 編集
               </button>
@@ -135,13 +135,13 @@ export default function TaskCard({ task, onStatusChange, onTaskUpdate }: TaskCar
           <div className="flex justify-end space-x-2">
             <button
               onClick={handleCancel}
-              className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
+              className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
             >
               キャンセル
             </button>
             <button
               onClick={handleSave}
-              className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-3 py-1 bg-gray-400 text-gray-800 rounded hover:bg-gray-500"
             >
               保存
             </button>
