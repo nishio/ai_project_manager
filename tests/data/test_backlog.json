@@ -1,53 +1,18 @@
 {
   "tasks": [
     {
-      "id": "PROJ-001",
+      "id": "T0001",
       "title": "ウェブサイトリニューアル",
       "type": "project",
       "status": "Open",
       "description": "企業ウェブサイトのデザインとコンテンツを刷新するプロジェクト",
-      "subtasks": [
-        {
-          "id": "TASK-001",
-          "title": "現行サイトの分析",
-          "type": "task",
-          "status": "Open",
-          "description": "現行ウェブサイトの問題点と改善点を分析する",
-          "assignable_to": [
-            "human",
-            "ai"
-          ]
-        },
-        {
-          "id": "TASK-002",
-          "title": "新デザインの作成",
-          "type": "task",
-          "status": "Open",
-          "description": "モダンで使いやすい新しいデザインを作成する",
-          "assignable_to": [
-            "human"
-          ],
-          "dependencies": {
-            "must": [
-              {
-                "task_id": "TASK-001",
-                "reason": "現行サイトの分析結果に基づいてデザインを決定する必要がある"
-              }
-            ],
-            "human": [
-              {
-                "assignee": "デザイナー",
-                "action": "デザイン案の承認",
-                "status": "waiting",
-                "reason": "デザイン方針の確認が必要"
-              }
-            ]
-          }
-        }
+      "assignable_to": [
+        "human",
+        "ai"
       ]
     },
     {
-      "id": "TASK-003",
+      "id": "T0002",
       "title": "ウェブサイトの分析レポート作成",
       "type": "task",
       "status": "Open",
@@ -58,7 +23,7 @@
       ]
     },
     {
-      "id": "TASK-004",
+      "id": "T0003",
       "title": "コンテンツ移行",
       "type": "task",
       "status": "Open",
@@ -83,7 +48,7 @@
       }
     },
     {
-      "id": "TASK-005",
+      "id": "T0004",
       "title": "SEO最適化",
       "type": "task",
       "status": "Open",
