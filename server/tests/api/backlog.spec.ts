@@ -18,7 +18,7 @@ test.describe('Backlog API', () => {
     expect(Array.isArray(data.tasks)).toBe(true);
     
     // テストデータを読み込んで比較
-    const testDataPath = path.join(process.cwd(), '..', '..', 'tests', 'data', 'test_backlog.json');
+    const testDataPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_backlog.json');
     const testData = JSON.parse(fs.readFileSync(testDataPath, 'utf8'));
     
     // テストデータと一致することを確認
@@ -29,9 +29,6 @@ test.describe('Backlog API', () => {
     // 環境変数を一時的に変更してエラーを発生させる
     const originalTestData = process.env.USE_TEST_DATA;
     process.env.USE_TEST_DATA = 'false';
-    
-    // 無効なパスを設定（エラーを発生させるため）
-    // NODE_ENVは読み取り専用なので変更しない
     
     // APIエンドポイントにリクエストを送信
     const response = await request.get('/api/backlog');
