@@ -40,7 +40,7 @@ export async function loadBacklogData(): Promise<Backlog> {
     
     // テスト環境の場合はテストデータを使用
     if (process.env.USE_TEST_DATA === 'true') {
-      backlogPath = path.join(process.cwd(), '..', '..', 'tests', 'data', 'test_backlog.json');
+      backlogPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_backlog.json');
     }
 
     // ファイルの存在確認

@@ -25,20 +25,19 @@ test.describe('Backlog API', () => {
     expect(data).toEqual(testData);
   });
 
-  test('should handle errors gracefully', async ({ request, page }) => {
+  test('should handle errors gracefully', async ({ request }) => {
     // 環境変数を一時的に変更してエラーを発生させる
+    const originalTestData = process.env.USE_TEST_DATA;
     process.env.USE_TEST_DATA = 'false';
     
     // 無効なパスを設定（エラーを発生させるため）
-    const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'test_error';
+    // NODE_ENVは読み取り専用なので変更しない
     
     // APIエンドポイントにリクエストを送信
     const response = await request.get('/api/backlog');
     
     // 環境変数を元に戻す
-    process.env.USE_TEST_DATA = 'true';
-    process.env.NODE_ENV = originalEnv;
+    process.env.USE_TEST_DATA = originalTestData;
     
     // エラー時でもレスポンスが返ることを確認
     expect(response.status()).toBe(500);
