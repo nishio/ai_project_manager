@@ -68,23 +68,21 @@ export default function TaskCard({ task, onStatusChange, onTaskUpdate }: TaskCar
               </span>
               {task.title}
             </h2>
-            <div className="flex space-x-2">
-              {task.status !== 'Done' && (
-                <button
-                  onClick={handleMarkDone}
-                  className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                >
-                  完了
-                </button>
-              )}
-              <button
-                onClick={handleEdit}
-                className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-              >
-                編集
-              </button>
-            </div>
           </div>
+          {task.status !== 'Done' && (
+            <button
+              onClick={handleMarkDone}
+              className="mx-1 px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+            >
+              完了
+            </button>
+          )}
+          <button
+            onClick={handleEdit}
+            className="mx-1 px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+          >
+            編集
+          </button>
 
           {expanded && (
             <>
@@ -115,7 +113,7 @@ export default function TaskCard({ task, onStatusChange, onTaskUpdate }: TaskCar
             <input
               id="task-title"
               type="text"
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-black"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-white"
               value={editedTitle}
               onChange={(e) => setEditedTitle(e.target.value)}
             />
@@ -126,7 +124,7 @@ export default function TaskCard({ task, onStatusChange, onTaskUpdate }: TaskCar
             </label>
             <textarea
               id="task-description"
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-black"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-white"
               rows={5}
               value={editedDescription}
               onChange={(e) => setEditedDescription(e.target.value)}
