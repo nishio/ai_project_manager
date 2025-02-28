@@ -28,7 +28,7 @@ export default function TaskFilter({ tasks, onFilterChange }: TaskFilterProps) {
 
     // ラベルでフィルタリング
     if (labelFilter !== 'all') {
-      filteredTasks = filteredTasks.filter(task => 
+      filteredTasks = filteredTasks.filter(task =>
         task.labels && task.labels.includes(labelFilter)
       );
     }
@@ -36,8 +36,8 @@ export default function TaskFilter({ tasks, onFilterChange }: TaskFilterProps) {
     // 検索クエリでフィルタリング
     if (searchQuery.trim() !== '') {
       const query = searchQuery.toLowerCase();
-      filteredTasks = filteredTasks.filter(task => 
-        task.title.toLowerCase().includes(query) || 
+      filteredTasks = filteredTasks.filter(task =>
+        task.title.toLowerCase().includes(query) ||
         task.description.toLowerCase().includes(query) ||
         task.id.toLowerCase().includes(query)
       );
@@ -63,7 +63,7 @@ export default function TaskFilter({ tasks, onFilterChange }: TaskFilterProps) {
   };
 
   return (
-    <div className="w-full mb-6 p-4 bg-gray-50 rounded-lg">
+    <div className="w-full mb-6 p-4 bg-black border rounded-lg">
       <div className="grid grid-cols-1 gap-4">
         {/* ステータスとラベルのフィルターを非表示にする */}
         <div className="hidden">
@@ -103,13 +103,13 @@ export default function TaskFilter({ tasks, onFilterChange }: TaskFilterProps) {
         </div>
 
         <div>
-          <label htmlFor="search-query" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="search-query" className="block text-sm font-medium text-gray-300 mb-1">
             検索
           </label>
           <input
             id="search-query"
             type="text"
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-black"
+            className="w-full rounded-md border-gray-500 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-black"
             placeholder="タスク名、説明、IDで検索..."
             value={searchQuery}
             onChange={handleSearchChange}

@@ -3,12 +3,14 @@
 import React, { useEffect, useState } from 'react';
 import { Task, Backlog } from '../utils/backlogLoader';
 import TaskFilter from '../components/TaskFilter';
+import TaskCard from '../components/task/TaskCard';
 
 export default function Home() {
   const [backlog, setBacklog] = useState<Backlog | null>(null);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [updateLoading, setUpdateLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchBacklog = async () => {
@@ -31,6 +33,85 @@ export default function Home() {
 
     fetchBacklog();
   }, []);
+
+  const handleTaskStatusChange = async (taskId: string, newStatus: string) => {
+    try {
+      setUpdateLoading(true);
+      const response = await fetch('/api/backlog/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          taskId,
+          updates: { status: newStatus },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      // 成功したら、バックログを再取得する
+      const updatedBacklogResponse = await fetch('/api/backlog');
+      if (!updatedBacklogResponse.ok) {
+        throw new Error(`Error: ${updatedBacklogResponse.status}`);
+      }
+      const updatedData = await updatedBacklogResponse.json();
+      setBacklog(updatedData);
+      setFilteredTasks(prevTasks => {
+        // 現在のフィルタリング条件を維持するために、更新されたタスクデータでフィルタリングを再適用
+        const updatedTask = updatedData.tasks.find((t: Task) => t.id === taskId);
+        return prevTasks.map((t: Task) => t.id === taskId ? updatedTask : t);
+      });
+    } catch (err) {
+      console.error('Error updating task status:', err);
+      alert('タスクの更新に失敗しました。');
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  const handleTaskUpdate = async (updatedTask: Task) => {
+    try {
+      setUpdateLoading(true);
+      const response = await fetch('/api/backlog/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          taskId: updatedTask.id,
+          updates: {
+            title: updatedTask.title,
+            description: updatedTask.description,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      // 成功したら、バックログを再取得する
+      const updatedBacklogResponse = await fetch('/api/backlog');
+      if (!updatedBacklogResponse.ok) {
+        throw new Error(`Error: ${updatedBacklogResponse.status}`);
+      }
+      const updatedData = await updatedBacklogResponse.json();
+      setBacklog(updatedData);
+      setFilteredTasks(prevTasks => {
+        // 現在のフィルタリング条件を維持するために、更新されたタスクデータでフィルタリングを再適用
+        const updatedTaskData = updatedData.tasks.find((t: Task) => t.id === updatedTask.id);
+        return prevTasks.map((t: Task) => t.id === updatedTask.id ? updatedTaskData : t);
+      });
+    } catch (err) {
+      console.error('Error updating task:', err);
+      alert('タスクの更新に失敗しました。');
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -70,56 +151,23 @@ export default function Home() {
           {filteredTasks.length} 件のタスクが表示されています（全 {backlog.tasks.length} 件中）
         </div>
 
+        {updateLoading && (
+          <div className="mb-4 text-sm text-blue-500">
+            タスクを更新中...
+          </div>
+        )}
+
         <div className="grid grid-cols-1 gap-4">
           {filteredTasks.map((task: Task) => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard 
+              key={task.id} 
+              task={task} 
+              onStatusChange={handleTaskStatusChange}
+              onTaskUpdate={handleTaskUpdate}
+            />
           ))}
         </div>
       </div>
     </main>
-  );
-}
-
-function TaskCard({ task }: { task: Task }) {
-  const [expanded, setExpanded] = useState(false);
-
-  const toggleExpand = () => {
-    setExpanded(!expanded);
-  };
-
-  return (
-    <div
-      className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-      onClick={toggleExpand}
-    >
-      <div className="flex justify-between items-start">
-        <h2 className="text-xl font-semibold">
-          <span className="px-2 mx-1 bg-blue-100 text-blue-800">
-            {task.id}
-          </span>
-
-          {task.title}</h2>
-      </div>
-
-      {expanded && (
-        <>
-          <p className="mt-4 text-gray-100 whitespace-pre-line">{task.description}</p>
-
-          <div className="mt-4">
-            <div className="flex flex-wrap gap-2">
-              {task.labels && task.labels.map((label, index) => (
-                <span key={index} className="px-2 py-1 bg-gray-300 text-gray-600 text-xs rounded-full">
-                  {label}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <p className="text-sm text-gray-500">担当可能: {task.assignable_to.join(', ')}</p>
-          </div>
-        </>
-      )}
-    </div>
   );
 }
