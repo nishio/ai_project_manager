@@ -169,7 +169,7 @@ export default function TaskMarkdown({ markdown, tasks }: TaskMarkdownProps) {
     if (React.isValidElement(content)) {
       // TypeScriptの型アサーションを追加して、content.propsがオブジェクト型であることを明示
       const props = content.props as Record<string, unknown>;
-      const children = React.Children.toArray(props.children);
+      const children = React.Children.toArray(props.children as React.ReactNode);
       if (children.length > 0) {
         return React.cloneElement(
           content,
