@@ -135,7 +135,7 @@ export default function TaskMarkdown({ markdown, tasks }: TaskMarkdownProps) {
           <span
             key={`${taskId}-${match.index}`}
             className={`inline-block px-1 rounded cursor-pointer ${
-              task ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              task ? 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800' : 'bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700'
             }`}
             onClick={(e) => task && handleTaskClick(e, taskId)}
             onMouseEnter={(e) => task && handleTaskHover(e, taskId)}
@@ -257,60 +257,26 @@ export default function TaskMarkdown({ markdown, tasks }: TaskMarkdownProps) {
       {/* ホバー時のツールチップ */}
       {hoveredTaskInfo && (
         <div
-          className="fixed z-50 bg-white shadow-lg rounded p-3 max-w-xs border border-gray-200"
+          className="fixed z-50 bg-white dark:bg-gray-800 shadow-lg rounded p-3 max-w-xs border border-gray-200 dark:border-gray-700"
           style={{
             top: mousePosition.y + 20,
             left: mousePosition.x,
             pointerEvents: 'none', // ツールチップがマウスイベントを妨げないようにする
           }}
         >
-          <h3 className="font-bold text-blue-800">{hoveredTaskInfo.title}</h3>
-          <p className="text-sm mt-1">{hoveredTaskInfo.description?.substring(0, 100) || '説明なし'}...</p>
-          <p className="text-xs text-gray-500 mt-1">クリックでサイドバーに追加</p>
+          <h3 className="font-bold text-blue-800 dark:text-blue-300">{hoveredTaskInfo.title}</h3>
+          <p className="text-sm mt-1 dark:text-gray-300">{hoveredTaskInfo.description?.substring(0, 100) || '説明なし'}...</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">クリックでサイドバーに追加</p>
         </div>
       )}
 
-      {/* サイドバー - 常に表示し、タスクがない場合は幅を0にする */}
-      <div 
-        className={`fixed right-0 top-0 h-full bg-gray-100 shadow-lg overflow-y-auto transition-all duration-300 ease-in-out z-40 ${
-          sidebarTasks.length > 0 ? 'w-80 p-4' : 'w-0 p-0'
-        }`}
-      >
-        {sidebarTasks.length > 0 && (
-          <>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">タスク情報</h2>
-              <div>
-                <button
-                  onClick={handleCloseSidebar}
-                  className="px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                  aria-label="全て閉じる"
-                >
-                  全て閉じる
-                </button>
-              </div>
-            </div>
-            <div className="space-y-4">
-              {sidebarTasks.map(task => (
-                <div key={task.id} className="relative bg-white p-3 rounded shadow">
-                  <button
-                    onClick={() => handleCloseTask(task.id)}
-                    className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400"
-                    aria-label={`${task.id}を閉じる`}
-                  >
-                    ×
-                  </button>
-                  <h3 className="font-bold text-blue-800 mb-1">{task.id} {task.title}</h3>
-                  <p className="text-sm">{task.description || '説明なし'}</p>
-                  <div className="mt-2 text-xs text-gray-500">
-                    ステータス: {task.status === 'todo' ? '未着手' : task.status === 'in_progress' ? '進行中' : '完了'}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
+      {/* サイドバー */}
+      <TaskSidebar
+        tasks={sidebarTasks}
+        onClose={handleCloseSidebar}
+        onCloseAll={handleCloseSidebar}
+        onCloseTask={handleCloseTask}
+      />
     </div>
   );
 }
