@@ -13,7 +13,7 @@ test.describe('Main Page', () => {
     
     // タスクカードが表示されることを確認
     const taskCards = page.locator('.border.rounded-lg.p-4');
-    await expect(taskCards).toHaveCount(4); // テストデータには5つのタスクがある
+    await expect(taskCards).toHaveCount(5); // テストデータには5つのタスクがある
     
     // タスクIDが表示されることを確認
     await expect(page.locator('text=T0001')).toBeVisible();
