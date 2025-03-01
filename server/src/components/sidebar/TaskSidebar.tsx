@@ -9,9 +9,10 @@ interface TaskSidebarProps {
   onClose: () => void;
   onCloseAll: () => void;
   onCloseTask?: (taskId: string) => void;
+  onStatusChange?: (taskId: string, newStatus: string) => void;
 }
 
-export default function TaskSidebar({ tasks, onClose, onCloseAll, onCloseTask }: TaskSidebarProps) {
+export default function TaskSidebar({ tasks, onClose, onCloseAll, onCloseTask, onStatusChange }: TaskSidebarProps) {
   if (tasks.length === 0) {
     return null;
   }
@@ -44,6 +45,14 @@ export default function TaskSidebar({ tasks, onClose, onCloseAll, onCloseTask }:
             >
               ×
             </button>
+            {task.status !== 'Done' && onStatusChange && (
+              <button
+                onClick={() => onStatusChange(task.id, 'Done')}
+                className="absolute top-2 right-10 px-2 py-1 bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-200 rounded text-xs hover:bg-green-300 dark:hover:bg-green-700"
+              >
+                完了
+              </button>
+            )}
             <TaskCard task={task} initialExpanded={true} />
           </div>
         ))}

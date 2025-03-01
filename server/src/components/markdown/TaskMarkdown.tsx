@@ -110,6 +110,34 @@ export default function TaskMarkdown({ markdown, tasks }: TaskMarkdownProps) {
     });
   };
 
+  const handleTaskStatusChange = async (taskId: string, newStatus: string) => {
+    console.log(`Marking task ${taskId} as ${newStatus}`);
+    try {
+      const response = await fetch('/api/backlog/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          taskId,
+          updates: { status: newStatus },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      // タスクが完了としてマークされたら、サイドバーから削除する
+      if (newStatus === 'Done') {
+        handleCloseTask(taskId);
+      }
+    } catch (err) {
+      console.error('Error updating task status:', err);
+      alert('タスクの更新に失敗しました。');
+    }
+  };
+
   // タスクIDを処理して強調表示する
   const processTaskIds = (content: React.ReactNode): React.ReactNode => {
     // 文字列の場合は現在の処理を適用
@@ -276,6 +304,7 @@ export default function TaskMarkdown({ markdown, tasks }: TaskMarkdownProps) {
         onClose={handleCloseSidebar}
         onCloseAll={handleCloseSidebar}
         onCloseTask={handleCloseTask}
+        onStatusChange={handleTaskStatusChange}
       />
     </div>
   );
