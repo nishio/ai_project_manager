@@ -31,8 +31,11 @@ test.describe('Main Page', () => {
     // 最初のタスクカードをクリック
     await page.locator('.border.rounded-lg.p-4').first().click();
     
-    // タスクの詳細が表示されることを確認
-    await expect(page.locator('text=企業ウェブサイトのデザインとコンテンツを刷新するプロジェクト')).toBeVisible();
+    // タスクの詳細が表示されることを確認（詳細セクションが表示されることを確認）
+    await expect(page.locator('.task-details')).toBeVisible();
+    
+    // タスクIDが表示されていることを確認（より堅牢なテスト）
+    await expect(page.locator('text=T0001')).toBeVisible();
   });
   
   test('should handle error state', async ({ page }) => {
