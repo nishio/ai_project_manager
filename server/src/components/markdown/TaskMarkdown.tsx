@@ -167,11 +167,13 @@ export default function TaskMarkdown({ markdown, tasks }: TaskMarkdownProps) {
     
     // Reactエレメントの場合はchildrenを再帰的に処理
     if (React.isValidElement(content)) {
-      const children = React.Children.toArray(content.props.children);
+      // TypeScriptの型アサーションを追加して、content.propsがオブジェクト型であることを明示
+      const props = content.props as Record<string, unknown>;
+      const children = React.Children.toArray(props.children);
       if (children.length > 0) {
         return React.cloneElement(
           content,
-          { ...content.props },
+          { ...props },
           ...React.Children.map(children, child => processTaskIds(child))
         );
       }
