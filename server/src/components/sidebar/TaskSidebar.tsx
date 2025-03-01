@@ -9,9 +9,11 @@ interface TaskSidebarProps {
   onClose: () => void;
   onCloseAll: () => void;
   onCloseTask?: (taskId: string) => void;
+  onStatusChange?: (taskId: string, newStatus: string) => void;
+  onTaskUpdate?: (updatedTask: Task) => void;
 }
 
-export default function TaskSidebar({ tasks, onClose, onCloseAll, onCloseTask }: TaskSidebarProps) {
+export default function TaskSidebar({ tasks, onClose, onCloseAll, onCloseTask, onStatusChange, onTaskUpdate }: TaskSidebarProps) {
   if (tasks.length === 0) {
     return null;
   }
@@ -44,7 +46,12 @@ export default function TaskSidebar({ tasks, onClose, onCloseAll, onCloseTask }:
             >
               ×
             </button>
-            <TaskCard task={task} initialExpanded={true} />
+            <TaskCard 
+              task={task} 
+              initialExpanded={true} 
+              onStatusChange={onStatusChange}
+              onTaskUpdate={onTaskUpdate}
+            />
           </div>
         ))}
       </div>
