@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Task, Backlog } from '../utils/backlogLoader';
 import TaskFilter from '../components/TaskFilter';
 import TaskCard from '../components/task/TaskCard';
+import MarkdownEditor from '../components/MarkdownEditor';
 
 export default function Home() {
   const [backlog, setBacklog] = useState<Backlog | null>(null);
@@ -11,6 +12,7 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [updateLoading, setUpdateLoading] = useState<boolean>(false);
+  const [showMarkdownEditor, setShowMarkdownEditor] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchBacklog = async () => {
@@ -142,6 +144,21 @@ export default function Home() {
       <h1 className="text-3xl font-bold mb-8">AIPM<span className="text-sm font-bold mb-8">あいぽん</span></h1>
 
       <div className="w-full max-w-5xl">
+        <div className="mb-4 flex justify-between items-center">
+          <button
+            onClick={() => setShowMarkdownEditor(!showMarkdownEditor)}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            {showMarkdownEditor ? 'Markdownエディタを閉じる' : 'Markdownエディタを開く'}
+          </button>
+        </div>
+
+        {showMarkdownEditor && (
+          <div className="mb-8">
+            <MarkdownEditor tasks={backlog.tasks} />
+          </div>
+        )}
+
         <TaskFilter
           tasks={backlog.tasks}
           onFilterChange={setFilteredTasks}

@@ -7,10 +7,11 @@ interface TaskCardProps {
   task: Task;
   onStatusChange?: (taskId: string, newStatus: string) => void;
   onTaskUpdate?: (updatedTask: Task) => void;
+  initialExpanded?: boolean;
 }
 
-export default function TaskCard({ task, onStatusChange, onTaskUpdate }: TaskCardProps) {
-  const [expanded, setExpanded] = useState(false);
+export default function TaskCard({ task, onStatusChange, onTaskUpdate, initialExpanded = false }: TaskCardProps) {
+  const [expanded, setExpanded] = useState(initialExpanded);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(task.title);
   const [editedDescription, setEditedDescription] = useState(task.description);
@@ -86,7 +87,7 @@ export default function TaskCard({ task, onStatusChange, onTaskUpdate }: TaskCar
 
           {expanded && (
             <>
-              <p className="mt-4 text-gray-100 whitespace-pre-line">{task.description}</p>
+              <p className="mt-4 text-gray-700 dark:text-gray-300 whitespace-pre-line">{task.description}</p>
 
               <div className="mt-4">
                 <div className="flex flex-wrap gap-2">

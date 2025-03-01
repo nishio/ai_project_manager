@@ -5,6 +5,7 @@ module.exports = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: 'media', // 'media'はprefers-color-schemeに基づいてダークモードを適用
   theme: {
     extend: {},
   },
