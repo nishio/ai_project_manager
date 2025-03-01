@@ -3,8 +3,6 @@ import fs from 'fs';
 import path from 'path';
 import { loadBacklogData, Backlog, Task } from '../../../../utils/backlogLoader';
 
-const BACKLOG_PATH = path.join(process.cwd(), '..', '..', 'ai_project_manager_data', 'tasks', 'backlog.json');
-
 export async function POST(request: Request) {
   try {
     const { taskId, updates } = await request.json();
@@ -43,8 +41,14 @@ export async function POST(request: Request) {
     // 更新されたタスクをバックログに反映
     backlogData.tasks[taskIndex] = updatedTask;
 
+    // テスト環境の場合はテストデータを使用
+    let backlogPath = path.join(process.cwd(), '..', '..', 'ai_project_manager_data', 'tasks', 'backlog.json');
+    if (process.env.USE_TEST_DATA === 'true') {
+      backlogPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_backlog.json');
+    }
+
     // 更新されたデータをファイルに書き込む
-    fs.writeFileSync(BACKLOG_PATH, JSON.stringify(backlogData, null, 2), 'utf8');
+    fs.writeFileSync(backlogPath, JSON.stringify(backlogData, null, 2), 'utf8');
 
     return NextResponse.json({ success: true, task: updatedTask });
   } catch (error) {
