@@ -111,84 +111,107 @@ export default function TaskMarkdown({ markdown, tasks }: TaskMarkdownProps) {
   };
 
   // タスクIDを処理して強調表示する
-  const processTaskIds = (content: string) => {
-    if (!content || typeof content !== 'string') return content;
-    
-    const parts: React.ReactNode[] = [];
-    let lastIndex = 0;
-    let match;
-    
-    // 正規表現で一致するすべてのタスクIDを検索
-    const regex = new RegExp(TASK_ID_PATTERN, 'g');
-    while ((match = regex.exec(content)) !== null) {
-      const taskId = match[0];
-      const task = findTaskById(taskId, tasks);
+  const processTaskIds = (content: React.ReactNode): React.ReactNode => {
+    // 文字列の場合は現在の処理を適用
+    if (typeof content === 'string') {
+      const parts: React.ReactNode[] = [];
+      let lastIndex = 0;
+      let match;
       
-      // タスクIDの前のテキストを追加
-      if (match.index > lastIndex) {
-        parts.push(content.substring(lastIndex, match.index));
+      // 正規表現で一致するすべてのタスクIDを検索
+      const regex = new RegExp(TASK_ID_PATTERN, 'g');
+      while ((match = regex.exec(content)) !== null) {
+        const taskId = match[0];
+        const task = findTaskById(taskId, tasks);
+        
+        // タスクIDの前のテキストを追加
+        if (match.index > lastIndex) {
+          parts.push(content.substring(lastIndex, match.index));
+        }
+        
+        // タスクが見つかるかどうかに関わらず、すべてのタスクIDをハイライト表示
+        // タスクが見つからない場合は、クリック時の動作を無効にする
+        parts.push(
+          <span
+            key={`${taskId}-${match.index}`}
+            className={`inline-block px-1 rounded cursor-pointer ${
+              task ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+            }`}
+            onClick={(e) => task && handleTaskClick(e, taskId)}
+            onMouseEnter={(e) => task && handleTaskHover(e, taskId)}
+            onMouseLeave={handleTaskLeave}
+            data-task-id={taskId}
+            title={task ? `${task.title} - クリックでサイドバーに追加` : 'タスクが見つかりません'}
+          >
+            {taskId}
+          </span>
+        );
+        
+        lastIndex = match.index + taskId.length;
       }
       
-      // タスクが見つかるかどうかに関わらず、すべてのタスクIDをハイライト表示
-      // タスクが見つからない場合は、クリック時の動作を無効にする
-      parts.push(
-        <span
-          key={`${taskId}-${match.index}`}
-          className={`inline-block px-1 rounded cursor-pointer ${
-            task ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-          }`}
-          onClick={(e) => task && handleTaskClick(e, taskId)}
-          onMouseEnter={(e) => task && handleTaskHover(e, taskId)}
-          onMouseLeave={handleTaskLeave}
-          data-task-id={taskId}
-          title={task ? `${task.title} - クリックでサイドバーに追加` : 'タスクが見つかりません'}
-        >
-          {taskId}
-        </span>
-      );
+      // 残りのテキストを追加
+      if (lastIndex < content.length) {
+        parts.push(content.substring(lastIndex));
+      }
       
-      lastIndex = match.index + taskId.length;
+      return parts.length > 0 ? parts : content;
     }
     
-    // 残りのテキストを追加
-    if (lastIndex < content.length) {
-      parts.push(content.substring(lastIndex));
+    // 配列の場合は各要素を再帰的に処理
+    if (Array.isArray(content)) {
+      return content.map((child, index) => (
+        <React.Fragment key={index}>{processTaskIds(child)}</React.Fragment>
+      ));
     }
     
-    return parts.length > 0 ? parts : content;
+    // Reactエレメントの場合はchildrenを再帰的に処理
+    if (React.isValidElement(content)) {
+      const children = React.Children.toArray(content.props.children);
+      if (children.length > 0) {
+        return React.cloneElement(
+          content,
+          { ...content.props },
+          ...React.Children.map(children, child => processTaskIds(child))
+        );
+      }
+    }
+    
+    // その他の場合はそのまま返す
+    return content;
   };
 
   // タスクIDをハイライトするためのカスタムレンダラー
   const customRenderers = {
     p: ({ children }: { children: React.ReactNode }) => {
-      return <p>{processTaskIds(children as string)}</p>;
+      return <p>{processTaskIds(children)}</p>;
     },
     li: ({ children }: { children: React.ReactNode }) => {
-      return <li>{processTaskIds(children as string)}</li>;
+      return <li>{processTaskIds(children)}</li>;
     },
     h1: ({ children }: { children: React.ReactNode }) => {
-      return <h1>{processTaskIds(children as string)}</h1>;
+      return <h1>{processTaskIds(children)}</h1>;
     },
     h2: ({ children }: { children: React.ReactNode }) => {
-      return <h2>{processTaskIds(children as string)}</h2>;
+      return <h2>{processTaskIds(children)}</h2>;
     },
     h3: ({ children }: { children: React.ReactNode }) => {
-      return <h3>{processTaskIds(children as string)}</h3>;
+      return <h3>{processTaskIds(children)}</h3>;
     },
     h4: ({ children }: { children: React.ReactNode }) => {
-      return <h4>{processTaskIds(children as string)}</h4>;
+      return <h4>{processTaskIds(children)}</h4>;
     },
     h5: ({ children }: { children: React.ReactNode }) => {
-      return <h5>{processTaskIds(children as string)}</h5>;
+      return <h5>{processTaskIds(children)}</h5>;
     },
     h6: ({ children }: { children: React.ReactNode }) => {
-      return <h6>{processTaskIds(children as string)}</h6>;
+      return <h6>{processTaskIds(children)}</h6>;
     },
     strong: ({ children }: { children: React.ReactNode }) => {
-      return <strong>{processTaskIds(children as string)}</strong>;
+      return <strong>{processTaskIds(children)}</strong>;
     },
     em: ({ children }: { children: React.ReactNode }) => {
-      return <em>{processTaskIds(children as string)}</em>;
+      return <em>{processTaskIds(children)}</em>;
     },
     code: ({ children }: { children: React.ReactNode }) => {
       return <code>{children}</code>;
@@ -216,6 +239,12 @@ export default function TaskMarkdown({ markdown, tasks }: TaskMarkdownProps) {
   React.useEffect(() => {
     console.log('Rendering with sidebar tasks:', sidebarTasks);
   }, [sidebarTasks]);
+  
+  // Debug: Log when task IDs are detected in nested elements
+  React.useEffect(() => {
+    console.log('TaskMarkdown component rendered with markdown:', markdown);
+    console.log('Detected task IDs:', detectTaskIds(markdown));
+  }, [markdown]);
 
   return (
     <div className="relative">
