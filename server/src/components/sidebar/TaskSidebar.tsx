@@ -17,19 +17,19 @@ export default function TaskSidebar({ tasks, onClose, onCloseAll, onCloseTask }:
   }
 
   return (
-    <div className="fixed right-0 top-0 h-full w-80 bg-gray-100 shadow-lg overflow-y-auto p-4">
+    <div className="fixed right-0 top-0 h-full w-80 bg-gray-100 dark:bg-gray-800 shadow-lg overflow-y-auto p-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">タスク情報</h2>
+        <h2 className="text-xl font-semibold dark:text-white">タスク情報</h2>
         <div>
           <button
             onClick={onCloseAll}
-            className="px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 mr-2"
+            className="px-2 py-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500 mr-2"
           >
             全て閉じる
           </button>
           <button
             onClick={onClose}
-            className="px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+            className="px-2 py-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500"
           >
             閉じる
           </button>
@@ -40,11 +40,11 @@ export default function TaskSidebar({ tasks, onClose, onCloseAll, onCloseTask }:
           <div key={task.id} className="relative">
             <button
               onClick={() => onCloseTask && onCloseTask(task.id)}
-              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-full hover:bg-gray-400 dark:hover:bg-gray-500"
             >
               ×
             </button>
-            <TaskCard task={task} />
+            <TaskCard task={task} initialExpanded={true} />
           </div>
         ))}
       </div>
