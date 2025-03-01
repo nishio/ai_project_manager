@@ -33,7 +33,82 @@ jobs:
     - name: Create test data directory
       run: |
         mkdir -p ../tests/data
-        echo '{"tasks":[]}' > ../tests/data/test_backlog.json
+        cat > ../tests/data/test_backlog.json << 'EOL'
+        {
+          "tasks": [
+            {
+              "id": "T0001",
+              "title": "ウェブサイトリニューアル",
+              "type": "project",
+              "status": "Open",
+              "description": "企業ウェブサイトのデザインとコンテンツを刷新するプロジェクト",
+              "assignable_to": [
+                "human",
+                "ai"
+              ]
+            },
+            {
+              "id": "T0002",
+              "title": "ウェブサイトの分析レポート作成",
+              "type": "task",
+              "status": "Open",
+              "description": "現行ウェブサイトの問題点と改善点を文書化する",
+              "assignable_to": [
+                "human",
+                "ai"
+              ]
+            },
+            {
+              "id": "T0003",
+              "title": "コンテンツ移行",
+              "type": "task",
+              "status": "Open",
+              "description": "既存コンテンツを新サイトに移行する",
+              "assignable_to": [
+                "human",
+                "ai"
+              ],
+              "dependencies": {
+                "must": [
+                  {
+                    "task_id": "TASK-002",
+                    "reason": "新デザインが確定してから移行作業を開始する"
+                  }
+                ],
+                "nice_to_have": [
+                  {
+                    "task_id": "TASK-003",
+                    "reason": "分析レポートを参考にしてコンテンツを改善できる"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "T0004",
+              "title": "SEO最適化",
+              "type": "task",
+              "status": "Open",
+              "description": "新サイトのSEO対策を実施する。メタタグの最適化、構造化データの実装、パフォーマンス改善などを含む。",
+              "assignable_to": [
+                "human",
+                "ai"
+              ],
+              "labels": [
+                "technical",
+                "high-priority"
+              ],
+              "dependencies": {
+                "must": [
+                  {
+                    "task_id": "TASK-004",
+                    "reason": "コンテンツ移行後にSEO最適化を行う"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+        EOL
 
     - name: Run tests
       run: npm test
