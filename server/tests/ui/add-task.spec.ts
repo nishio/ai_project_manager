@@ -90,11 +90,15 @@ test.describe('Add Task UI', () => {
     // 説明のみを入力
     await page.locator('textarea#task-description').fill('タイトルなしのタスク');
     
+    // タイトル入力欄を空にする（念のため）
+    await page.locator('input#task-title').fill('');
+    
     // 追加ボタンをクリック（フォーム内のsubmitボタンを特定）
     await page.locator('button[type="submit"]:has-text("追加")').click();
     
-    // エラーメッセージが表示されることを確認
-    await expect(page.locator('text=タイトルは必須です')).toBeVisible();
+    // エラーメッセージが表示されることを確認（クラス名を使用してより具体的に特定）
+    await expect(page.locator('.bg-red-100.text-red-700')).toBeVisible();
+    await expect(page.locator('.bg-red-100.text-red-700:has-text("タイトルは必須です")')).toBeVisible();
   });
   
   test('should close form when cancel button is clicked', async ({ page }) => {
