@@ -70,8 +70,8 @@ test.describe('Add Task UI', () => {
     await page.locator('input#task-title').fill('UIテストタスク');
     await page.locator('textarea#task-description').fill('これはUIテスト用のタスクです。');
     
-    // 追加ボタンをクリック
-    await page.locator('button:has-text("追加")').click();
+    // 追加ボタンをクリック（フォーム内のsubmitボタンを特定）
+    await page.locator('button[type="submit"]:has-text("追加")').click();
     
     // タスクが追加されたことを確認（フォームが閉じられ、タスクが表示される）
     await expect(page.locator('text=UIテストタスク')).toBeVisible();
@@ -90,8 +90,8 @@ test.describe('Add Task UI', () => {
     // 説明のみを入力
     await page.locator('textarea#task-description').fill('タイトルなしのタスク');
     
-    // 追加ボタンをクリック
-    await page.locator('button:has-text("追加")').click();
+    // 追加ボタンをクリック（フォーム内のsubmitボタンを特定）
+    await page.locator('button[type="submit"]:has-text("追加")').click();
     
     // エラーメッセージが表示されることを確認
     await expect(page.locator('text=タイトルは必須です')).toBeVisible();
