@@ -1,0 +1,37 @@
+{
+  "proposals": [
+    {
+      "id": "proposal-test-1",
+      "type": "new",
+      "task": {
+        "id": "T9999",
+        "title": "テスト用新規タスク",
+        "description": "これはテスト用の新規タスクです",
+        "status": "Todo",
+        "type": "task"
+      },
+      "created_at": "2025-03-03T05:47:38.764Z",
+      "status": "pending"
+    },
+    {
+      "id": "proposal-test-2",
+      "type": "update",
+      "task": {
+        "id": "T0001",
+        "title": "更新されたタスク",
+        "description": "これは更新されたタスクの説明です",
+        "status": "In Progress",
+        "type": "task"
+      },
+      "original_task": {
+        "id": "T0001",
+        "title": "元のタスク",
+        "description": "元のタスクの説明",
+        "status": "Todo",
+        "type": "task"
+      },
+      "created_at": "2025-03-03T05:47:38.764Z",
+      "status": "pending"
+    }
+  ]
+}
