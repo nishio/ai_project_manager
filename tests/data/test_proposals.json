@@ -1,0 +1,17 @@
+{
+  "proposals": [
+    {
+      "id": "proposal-1740976719544-873",
+      "type": "new",
+      "task": {
+        "id": "T9996",
+        "title": "修正後のタスク",
+        "description": "これは修正後のタスクです",
+        "status": "In Progress",
+        "type": "task"
+      },
+      "created_at": "2025-03-03T04:38:39.544Z",
+      "status": "pending"
+    }
+  ]
+}
