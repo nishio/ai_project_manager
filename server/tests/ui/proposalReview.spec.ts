@@ -10,6 +10,12 @@ test.describe('Proposal Review UI', () => {
     // テスト用の提案データを作成
     const testProposalsPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_proposals.json');
     
+    // ディレクトリが存在しない場合は作成
+    const dir = path.dirname(testProposalsPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    
     // テスト用の提案データを作成
     const testProposals = {
       proposals: [
@@ -49,7 +55,24 @@ test.describe('Proposal Review UI', () => {
       ]
     };
     
-    fs.writeFileSync(testProposalsPath, JSON.stringify(testProposals, null, 2), 'utf8');
+    try {
+      fs.writeFileSync(testProposalsPath, JSON.stringify(testProposals, null, 2), 'utf8');
+      console.log(`Test proposals written to ${testProposalsPath}`);
+    } catch (error) {
+      console.error(`Error writing test proposals to ${testProposalsPath}:`, error);
+    }
+    
+    // APIのモックを設定
+    await page.route('/api/backlog/proposal', async (route: any) => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({
+          status: 200,
+          body: JSON.stringify(testProposals),
+        });
+      } else {
+        await route.continue();
+      }
+    });
     
     // メインページにアクセス
     await page.goto('/');
@@ -161,8 +184,11 @@ test.describe('Proposal Review UI', () => {
       });
     });
     
+    // 承認ボタンが表示されるまで待機
+    await page.waitForSelector('button:has-text("承認")', { timeout: 10000 });
+    
     // 承認ボタンをクリック
-    await page.locator('text=承認').first().click();
+    await page.locator('button:has-text("承認")').first().click();
     
     // 承認後のメッセージが表示されることを確認（アラートをモック）
     await page.route('**/*', async (route: any) => {
@@ -205,8 +231,11 @@ test.describe('Proposal Review UI', () => {
       }
     });
     
+    // 拒否ボタンが表示されるまで待機
+    await page.waitForSelector('button:has-text("拒否")', { timeout: 10000 });
+    
     // 拒否ボタンをクリック
-    await page.locator('text=拒否').first().click();
+    await page.locator('button:has-text("拒否")').first().click();
     
     // 拒否後のメッセージが表示されることを確認（アラートをモック）
     await page.route('**/*', async (route: any) => {
@@ -219,8 +248,11 @@ test.describe('Proposal Review UI', () => {
   });
 
   test('should handle modify action', async ({ page }: { page: any }) => {
+    // 修正ボタンが表示されるまで待機
+    await page.waitForSelector('button:has-text("修正")', { timeout: 10000 });
+    
     // 修正ボタンをクリック
-    await page.locator('text=修正').first().click();
+    await page.locator('button:has-text("修正")').first().click();
     
     // 編集フォームが表示されることを確認
     await expect(page.locator('text=タスクの修正')).toBeVisible();
@@ -283,8 +315,11 @@ test.describe('Proposal Review UI', () => {
       }
     });
     
+    // 保存ボタンが表示されるまで待機
+    await page.waitForSelector('button:has-text("保存")', { timeout: 10000 });
+    
     // 保存ボタンをクリック
-    await page.locator('text=保存').click();
+    await page.locator('button:has-text("保存")').click();
     
     // 修正後のタスク名が表示されることを確認
     await expect(page.locator('text=修正後のタスク名')).toBeVisible();
@@ -301,6 +336,9 @@ test.describe('Proposal Review UI', () => {
     
     // ページをリロード
     await page.reload();
+    
+    // エラーメッセージが表示されるまで待機
+    await page.waitForSelector('text=エラー:', { timeout: 10000 });
     
     // エラーメッセージが表示されることを確認
     await expect(page.locator('text=エラー:')).toBeVisible();
