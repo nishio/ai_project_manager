@@ -44,7 +44,9 @@ export async function loadProposals(): Promise<ProposalList> {
                 title: 'テスト用新規タスク',
                 description: 'これはテスト用の新規タスクです',
                 status: 'Todo',
-                type: 'task'
+                type: 'task',
+                labels: [],
+                assignable_to: []
               },
               created_at: new Date().toISOString(),
               status: 'pending'
@@ -57,14 +59,18 @@ export async function loadProposals(): Promise<ProposalList> {
                 title: '更新されたタスク',
                 description: 'これは更新されたタスクの説明です',
                 status: 'In Progress',
-                type: 'task'
+                type: 'task',
+                labels: [],
+                assignable_to: []
               },
               original_task: {
                 id: 'T0001',
                 title: '元のタスク',
                 description: '元のタスクの説明',
                 status: 'Todo',
-                type: 'task'
+                type: 'task',
+                labels: [],
+                assignable_to: []
               },
               created_at: new Date().toISOString(),
               status: 'pending'
