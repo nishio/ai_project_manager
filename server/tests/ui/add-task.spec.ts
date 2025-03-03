@@ -74,10 +74,10 @@ test.describe('Add Task UI', () => {
     await page.locator('button[type="submit"]:has-text("追加")').click();
     
     // タスクが追加されたことを確認（フォームが閉じられ、タスクが表示される）
-    await expect(page.locator('text=UIテストタスク')).toBeVisible();
+    await expect(page.locator('[data-testid="task-card"]:has-text("UIテストタスク")')).toBeVisible();
     
     // タスクをクリックして詳細を表示
-    await page.locator('text=UIテストタスク').click();
+    await page.locator('[data-testid="task-card"]:has-text("UIテストタスク")').first().click();
     
     // 説明が表示されることを確認（タスクカード内の説明テキストを特定）
     await expect(page.locator('[data-testid="task-card"]:has-text("UIテストタスク") p:has-text("これはUIテスト用のタスクです。")')).toBeVisible();
