@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Main Page', () => {
-  test('should load and display backlog data', async ({ page }) => {
+  test('should load and display backlog data', async ({ page }: { page: any }) => {
     // メインページにアクセス
     await page.goto('/');
     
@@ -24,7 +24,7 @@ test.describe('Main Page', () => {
     await expect(page.locator('text=ウェブサイトの分析レポート作成')).toBeVisible();
   });
     
-  test('should expand task details on click', async ({ page }) => {
+  test('should expand task details on click', async ({ page }: { page: any }) => {
     // メインページにアクセス
     await page.goto('/');
     
@@ -38,9 +38,9 @@ test.describe('Main Page', () => {
     await expect(page.locator('text=T0001')).toBeVisible();
   });
   
-  test('should handle error state', async ({ page }) => {
+  test('should handle error state', async ({ page }: { page: any }) => {
     // エラー状態をシミュレートするためにAPIをモック
-    await page.route('/api/backlog', async (route) => {
+    await page.route('/api/backlog', async (route: any) => {
       await route.fulfill({
         status: 500,
         body: JSON.stringify({ error: 'Failed to fetch backlog data' }),

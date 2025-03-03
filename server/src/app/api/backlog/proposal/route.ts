@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { loadBacklogData, Task } from '../../../../utils/backlogLoader';
 
 // 提案タイプの定義

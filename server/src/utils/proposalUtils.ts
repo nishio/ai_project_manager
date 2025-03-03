@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { Task } from './backlogLoader';
 import { Proposal, ProposalList } from '../app/api/backlog/proposal/route';

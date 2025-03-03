@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 
 test.describe('Proposal API', () => {
   // テスト前にテストデータを準備
@@ -20,7 +20,7 @@ test.describe('Proposal API', () => {
     }
   });
 
-  test('should return empty proposals list initially', async ({ request }) => {
+  test('should return empty proposals list initially', async ({ request }: { request: any }) => {
     // APIエンドポイントにリクエストを送信
     const response = await request.get('/api/backlog/proposal');
     
@@ -36,7 +36,7 @@ test.describe('Proposal API', () => {
     expect(data.proposals.length).toBe(0);
   });
 
-  test('should create a new proposal', async ({ request }) => {
+  test('should create a new proposal', async ({ request }: { request: any }) => {
     // 新しい提案を作成
     const newProposal = {
       type: 'new',
@@ -77,7 +77,7 @@ test.describe('Proposal API', () => {
     expect(listData.proposals[0].task.title).toBe('テスト用タスク');
   });
 
-  test('should create an update proposal', async ({ request }) => {
+  test('should create an update proposal', async ({ request }: { request: any }) => {
     // 更新提案を作成
     const updateProposal = {
       type: 'update',
@@ -119,7 +119,7 @@ test.describe('Proposal API', () => {
     expect(data.proposal).toHaveProperty('status', 'pending');
   });
 
-  test('should approve a proposal', async ({ request }) => {
+  test('should approve a proposal', async ({ request }: { request: any }) => {
     // 新しい提案を作成
     const newProposal = {
       type: 'new',
@@ -174,7 +174,7 @@ test.describe('Proposal API', () => {
     expect(addedTask).toBeDefined();
   });
 
-  test('should reject a proposal', async ({ request }) => {
+  test('should reject a proposal', async ({ request }: { request: any }) => {
     // 新しい提案を作成
     const newProposal = {
       type: 'new',
@@ -221,7 +221,7 @@ test.describe('Proposal API', () => {
     expect(updatedProposal.status).toBe('rejected');
   });
 
-  test('should modify a proposal', async ({ request }) => {
+  test('should modify a proposal', async ({ request }: { request: any }) => {
     // 新しい提案を作成
     const newProposal = {
       type: 'new',

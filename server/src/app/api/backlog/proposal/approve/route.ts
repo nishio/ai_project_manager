@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-import { loadBacklogData, Backlog } from '../../../../../utils/backlogLoader';
-import { loadProposals, saveProposals, Proposal } from '../route';
+import * as fs from 'fs';
+import * as path from 'path';
+import { loadBacklogData, Backlog, Task } from '../../../../../utils/backlogLoader';
+import { loadProposals, saveProposals, Proposal, ProposalList } from '../route';
 
 export async function POST(request: Request) {
   try {
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const proposalList = await loadProposals();
     
     // 指定されたIDの提案を検索
-    const proposalIndex = proposalList.proposals.findIndex(proposal => proposal.id === proposalId);
+    const proposalIndex = proposalList.proposals.findIndex((proposal: Proposal) => proposal.id === proposalId);
     
     if (proposalIndex === -1) {
       return NextResponse.json(

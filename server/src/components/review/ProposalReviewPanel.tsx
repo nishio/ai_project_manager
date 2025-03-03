@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useState } from 'react';
 import { Proposal } from '../../app/api/backlog/proposal/route';
 import { Task } from '../../utils/backlogLoader';
 import ProposalDetails from './ProposalDetails';

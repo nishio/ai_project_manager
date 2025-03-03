@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Task, Backlog } from '../utils/backlogLoader';
 import { Proposal } from './api/backlog/proposal/route';
 import TaskFilter from '../components/TaskFilter';
@@ -84,7 +85,7 @@ export default function Home() {
       }
       const updatedData = await updatedBacklogResponse.json();
       setBacklog(updatedData);
-      setFilteredTasks(prevTasks => {
+      setFilteredTasks((prevTasks: Task[]) => {
         // 現在のフィルタリング条件を維持するために、更新されたタスクデータでフィルタリングを再適用
         const updatedTask = updatedData.tasks.find((t: Task) => t.id === taskId);
         return prevTasks.map((t: Task) => t.id === taskId ? updatedTask : t);
@@ -125,7 +126,7 @@ export default function Home() {
       }
       const updatedData = await updatedBacklogResponse.json();
       setBacklog(updatedData);
-      setFilteredTasks(prevTasks => {
+      setFilteredTasks((prevTasks: Task[]) => {
         // 現在のフィルタリング条件を維持するために、更新されたタスクデータでフィルタリングを再適用
         const updatedTaskData = updatedData.tasks.find((t: Task) => t.id === updatedTask.id);
         return prevTasks.map((t: Task) => t.id === updatedTask.id ? updatedTaskData : t);
