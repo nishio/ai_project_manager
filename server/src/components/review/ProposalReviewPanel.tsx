@@ -81,7 +81,7 @@ export default function ProposalReviewPanel({
   };
 
   return (
-    <div className="border rounded-lg p-4 shadow-sm mb-4">
+    <div className="border rounded-lg p-4 shadow-sm mb-4 proposal-review-panel" data-testid="proposal-review-panel">
       {!isEditing ? (
         <>
           <ProposalDetails proposal={proposal} />
@@ -92,6 +92,7 @@ export default function ProposalReviewPanel({
                 onClick={handleApprove}
                 disabled={isProcessing}
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
+                data-testid="approve-button"
               >
                 {isProcessing ? '処理中...' : '承認'}
               </button>
@@ -99,6 +100,7 @@ export default function ProposalReviewPanel({
                 onClick={handleReject}
                 disabled={isProcessing}
                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
+                data-testid="reject-button"
               >
                 {isProcessing ? '処理中...' : '拒否'}
               </button>
@@ -106,6 +108,7 @@ export default function ProposalReviewPanel({
                 onClick={handleModify}
                 disabled={isProcessing}
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                data-testid="modify-button"
               >
                 {isProcessing ? '処理中...' : '修正'}
               </button>
@@ -169,6 +172,7 @@ export default function ProposalReviewPanel({
               onClick={handleCancelModification}
               disabled={isProcessing}
               className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50"
+              data-testid="cancel-button"
             >
               キャンセル
             </button>
@@ -176,6 +180,7 @@ export default function ProposalReviewPanel({
               onClick={handleSaveModification}
               disabled={isProcessing}
               className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+              data-testid="save-button"
             >
               {isProcessing ? '保存中...' : '保存'}
             </button>
