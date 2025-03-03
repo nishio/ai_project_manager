@@ -4,6 +4,16 @@ import * as path from 'path';
 
 test.describe('Proposal API', () => {
   // テスト前にテストデータを準備
+  test.beforeAll(async () => {
+    // テスト用のバックログデータを確認
+    const testBacklogPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_backlog.json');
+    if (!fs.existsSync(testBacklogPath)) {
+      const emptyBacklog = { tasks: [] };
+      fs.writeFileSync(testBacklogPath, JSON.stringify(emptyBacklog, null, 2), 'utf8');
+    }
+  });
+  
+  // 各テスト前にテストデータをクリーンアップ
   test.beforeEach(async () => {
     process.env.USE_TEST_DATA = 'true';
     
@@ -16,16 +26,18 @@ test.describe('Proposal API', () => {
       fs.mkdirSync(dir, { recursive: true });
     }
     
-    // 提案リストを空にする
-    const emptyProposals = { proposals: [] };
-    fs.writeFileSync(testProposalsPath, JSON.stringify(emptyProposals, null, 2), 'utf8');
-    console.log(`Empty proposals written to ${testProposalsPath}`);
-    
-    // テスト用のバックログデータを確認
-    const testBacklogPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_backlog.json');
-    if (!fs.existsSync(testBacklogPath)) {
-      const emptyBacklog = { tasks: [] };
-      fs.writeFileSync(testBacklogPath, JSON.stringify(emptyBacklog, null, 2), 'utf8');
+    try {
+      // 既存のファイルを削除（完全にクリーンな状態にするため）
+      if (fs.existsSync(testProposalsPath)) {
+        fs.unlinkSync(testProposalsPath);
+      }
+      
+      // 提案リストを空にする
+      const emptyProposals = { proposals: [] };
+      fs.writeFileSync(testProposalsPath, JSON.stringify(emptyProposals, null, 2), 'utf8');
+      console.log(`Empty proposals written to ${testProposalsPath}`);
+    } catch (error) {
+      console.error(`Error clearing proposal data: ${error}`);
     }
   });
   
