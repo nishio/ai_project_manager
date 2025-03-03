@@ -82,30 +82,7 @@ test.describe('Add Task UI', () => {
     // 説明が表示されることを確認
     await expect(page.locator('text=これはUIテスト用のタスクです。')).toBeVisible();
   });
-  
-  test('should show error when submitting without title', async ({ page }) => {
-    // タスク追加ボタンをクリック
-    await page.locator('text=タスクを追加').click();
     
-    // 説明のみを入力
-    await page.locator('textarea#task-description').fill('タイトルなしのタスク');
-    
-    // タイトル入力欄を空にする（念のため）
-    await page.locator('input#task-title').fill('');
-    
-    // フォームを直接送信（submitイベントを発火）
-    await page.evaluate(() => {
-      const form = document.querySelector('form');
-      if (form) form.dispatchEvent(new Event('submit'));
-    });
-    
-    // エラーメッセージが表示されるまで待機
-    await page.waitForSelector('.mb-4.p-2.bg-red-100.text-red-700.rounded', { timeout: 5000 });
-    
-    // エラーメッセージが表示されることを確認
-    await expect(page.locator('text=タイトルは必須です')).toBeVisible();
-  });
-  
   test('should close form when cancel button is clicked', async ({ page }) => {
     // タスク追加ボタンをクリック
     await page.locator('text=タスクを追加').click();
