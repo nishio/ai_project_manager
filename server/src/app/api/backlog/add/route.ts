@@ -48,6 +48,7 @@ export async function POST(request: Request) {
       type: 'task',
       labels: [],
       assignable_to: [],
+      created: new Date().toISOString(), // タスク作成日時を追加
     };
 
     // タスクをバックログに追加

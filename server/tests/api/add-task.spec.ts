@@ -56,6 +56,8 @@ test.describe('Add Task API', () => {
     expect(addData.task.title).toBe('テストタスク');
     expect(addData.task.description).toBe('これはテスト用のタスクです。');
     expect(addData.task.status).toBe('Open');
+    expect(addData.task.created).toBeDefined();
+    expect(new Date(addData.task.created)).toBeInstanceOf(Date);
     
     // バックログを取得して、タスクが追加されていることを確認
     const backlogResponse = await request.get('/api/backlog');
@@ -83,6 +85,8 @@ test.describe('Add Task API', () => {
     expect(addData.task).toBeDefined();
     expect(addData.task.title).toBe('タイトルのみのタスク');
     expect(addData.task.description).toBe('');
+    expect(addData.task.created).toBeDefined();
+    expect(new Date(addData.task.created)).toBeInstanceOf(Date);
     
     // バックログを取得して、タスクが追加されていることを確認
     const backlogResponse = await request.get('/api/backlog');
