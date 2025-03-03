@@ -10,6 +10,7 @@ export interface Task {
   description: string;
   labels: string[];
   assignable_to: string[];
+  created?: string; // タスク作成日時
   subtasks?: Task[];
   dependencies?: {
     must?: Array<{

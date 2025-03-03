@@ -8,6 +8,7 @@ import TaskFilter from '../components/TaskFilter';
 import TaskCard from '../components/task/TaskCard';
 import MarkdownEditor from '../components/MarkdownEditor';
 import ProposalReviewPanel from '../components/review/ProposalReviewPanel';
+import AddTaskForm from '../components/task/AddTaskForm';
 
 export default function Home() {
   const [backlog, setBacklog] = useState<Backlog | null>(null);
@@ -20,6 +21,7 @@ export default function Home() {
   const [proposalsLoading, setProposalsLoading] = useState<boolean>(false);
   const [proposalsError, setProposalsError] = useState<string | null>(null);
   const [showProposals, setShowProposals] = useState<boolean>(true);
+  const [showAddTaskForm, setShowAddTaskForm] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchBacklog = async () => {
@@ -314,17 +316,51 @@ export default function Home() {
 
         {/* 既存のMarkdownエディタセクション */}
         <div className="mb-4 flex justify-between items-center">
-          <button
-            onClick={() => setShowMarkdownEditor(!showMarkdownEditor)}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            {showMarkdownEditor ? 'Markdownエディタを閉じる' : 'Markdownエディタを開く'}
-          </button>
+          <div>
+            <button
+              onClick={() => setShowMarkdownEditor(!showMarkdownEditor)}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
+            >
+              {showMarkdownEditor ? 'Markdownエディタを閉じる' : 'Markdownエディタを開く'}
+            </button>
+            <button
+              onClick={() => setShowAddTaskForm(!showAddTaskForm)}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              {showAddTaskForm ? 'タスク追加フォームを閉じる' : 'タスクを追加'}
+            </button>
+          </div>
         </div>
 
         {showMarkdownEditor && (
           <div className="mb-8">
             <MarkdownEditor tasks={backlog.tasks} />
+          </div>
+        )}
+        
+        {showAddTaskForm && (
+          <div className="mb-8">
+            <AddTaskForm 
+              onTaskAdded={async () => {
+                // タスクが追加されたら、バックログを再取得する
+                try {
+                  setUpdateLoading(true);
+                  const response = await fetch('/api/backlog');
+                  if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                  }
+                  const data = await response.json();
+                  setBacklog(data);
+                  setFilteredTasks(data.tasks || []);
+                } catch (err) {
+                  console.error('Error refreshing backlog:', err);
+                  alert('バックログの更新に失敗しました。');
+                } finally {
+                  setUpdateLoading(false);
+                }
+              }}
+              onCancel={() => setShowAddTaskForm(false)}
+            />
           </div>
         )}
 
