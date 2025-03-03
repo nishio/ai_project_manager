@@ -1,0 +1,39 @@
+{
+  "tasks": [
+    {
+      "id": "T0001",
+      "title": "ウェブサイトリニューアル",
+      "description": "企業ウェブサイトのデザインと機能を刷新する",
+      "status": "In Progress",
+      "type": "task"
+    },
+    {
+      "id": "T0002",
+      "title": "モバイルアプリ開発",
+      "description": "iOSとAndroid向けのモバイルアプリを開発する",
+      "status": "Todo",
+      "type": "task"
+    },
+    {
+      "id": "T0003",
+      "title": "ウェブサイトの分析レポート作成",
+      "description": "現在のウェブサイトのユーザー行動と改善点を分析する",
+      "status": "Done",
+      "type": "task"
+    },
+    {
+      "id": "T0004",
+      "title": "SNSマーケティング戦略",
+      "description": "TwitterとInstagramを活用したマーケティング戦略を立案する",
+      "status": "Todo",
+      "type": "task"
+    },
+    {
+      "id": "T0005",
+      "title": "顧客フィードバックの収集と分析",
+      "description": "製品に関する顧客からのフィードバックを収集し、改善点を特定する",
+      "status": "Todo",
+      "type": "task"
+    }
+  ]
+}
