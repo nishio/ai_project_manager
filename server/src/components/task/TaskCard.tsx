@@ -59,6 +59,7 @@ export default function TaskCard({ task, onStatusChange, onTaskUpdate, initialEx
     <div
       className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
       onClick={toggleExpand}
+      data-testid="task-card"
     >
       {!isEditing ? (
         <>

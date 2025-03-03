@@ -96,6 +96,19 @@ test.describe('Proposal Review UI', () => {
     await page.goto('/', { waitUntil: 'networkidle' });
     console.log('Page loaded, waiting for content to render...');
   });
+
+  // テスト後にテストデータをクリーンアップ
+  test.afterEach(async () => {
+    // テスト用の提案データをクリーンアップ
+    const testProposalsPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_proposals.json');
+    if (fs.existsSync(testProposalsPath)) {
+      const emptyProposals = { proposals: [] };
+      fs.writeFileSync(testProposalsPath, JSON.stringify(emptyProposals, null, 2), 'utf8');
+      console.log(`Test proposals cleaned up at ${testProposalsPath}`);
+    }
+    
+    process.env.USE_TEST_DATA = undefined;
+  });
   
   test('should display proposal review section when proposals exist', async ({ page }: { page: any }) => {
     // 提案セクションが表示されることを確認

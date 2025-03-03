@@ -67,7 +67,7 @@ export default function AddTaskForm({ onTaskAdded, onCancel }: AddTaskFormProps)
       
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="task-title" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="task-title" className="block text-sm font-medium text-gray-700 mb-1" data-testid="task-form-title-label">
             タイトル <span className="text-red-500">*</span>
           </label>
           <input
@@ -77,11 +77,12 @@ export default function AddTaskForm({ onTaskAdded, onCancel }: AddTaskFormProps)
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
+            data-testid="task-form-title-input"
           />
         </div>
         
         <div className="mb-4">
-          <label htmlFor="task-description" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="task-description" className="block text-sm font-medium text-gray-700 mb-1" data-testid="task-form-description-label">
             説明
           </label>
           <textarea
@@ -90,6 +91,7 @@ export default function AddTaskForm({ onTaskAdded, onCancel }: AddTaskFormProps)
             rows={5}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            data-testid="task-form-description-input"
           />
         </div>
         

@@ -9,8 +9,17 @@ test.describe('Proposal API', () => {
     
     // テスト用の提案データを作成
     const testProposalsPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_proposals.json');
+    
+    // ディレクトリが存在しない場合は作成
+    const dir = path.dirname(testProposalsPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    
+    // 提案リストを空にする
     const emptyProposals = { proposals: [] };
     fs.writeFileSync(testProposalsPath, JSON.stringify(emptyProposals, null, 2), 'utf8');
+    console.log(`Empty proposals written to ${testProposalsPath}`);
     
     // テスト用のバックログデータを確認
     const testBacklogPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_backlog.json');
@@ -18,6 +27,19 @@ test.describe('Proposal API', () => {
       const emptyBacklog = { tasks: [] };
       fs.writeFileSync(testBacklogPath, JSON.stringify(emptyBacklog, null, 2), 'utf8');
     }
+  });
+  
+  // テスト後にテストデータをクリーンアップ
+  test.afterEach(async () => {
+    // テスト用の提案データをクリーンアップ
+    const testProposalsPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_proposals.json');
+    if (fs.existsSync(testProposalsPath)) {
+      const emptyProposals = { proposals: [] };
+      fs.writeFileSync(testProposalsPath, JSON.stringify(emptyProposals, null, 2), 'utf8');
+      console.log(`Test proposals cleaned up at ${testProposalsPath}`);
+    }
+    
+    process.env.USE_TEST_DATA = undefined;
   });
 
   test('should return empty proposals list initially', async ({ request }: { request: any }) => {
