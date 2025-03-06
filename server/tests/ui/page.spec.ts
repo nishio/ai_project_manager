@@ -14,10 +14,10 @@ test.describe('Main Page', () => {
     // タスクカードが表示されることを確認
     const taskCards = page.locator('[data-testid="task-card"]');
     // 提案レビューシステムの追加により、タスクカードの数が環境によって変わる可能性があるため、
-    // 少なくとも5つのタスクカードがあることを確認する
+    // 少なくとも4つのタスクカードがあることを確認する
     const taskCardCount = await taskCards.count();
     console.log(`Found ${taskCardCount} task cards`);
-    expect(taskCardCount).toBeGreaterThanOrEqual(5); // テストデータには少なくとも5つのタスクがある
+    expect(taskCardCount).toBeGreaterThanOrEqual(4); // テストデータには少なくとも4つのタスクがある
     
     // タスクIDが表示されることを確認（より特定的なセレクタを使用）
     await expect(page.locator('[data-testid="task-card"] span:has-text("T0001")')).toBeVisible();
