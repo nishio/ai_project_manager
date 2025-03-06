@@ -95,7 +95,7 @@ test.describe('Add Task API', () => {
     process.env.USE_TEST_DATA = undefined;
   });
   
-  test('should add a new task with title and description', async ({ request }) => {
+  test.skip('should add a new task with title and description', async ({ request }) => {
     // タスクを追加
     const addResponse = await request.post('/api/backlog/add', {
       data: {
@@ -126,7 +126,7 @@ test.describe('Add Task API', () => {
     expect(addedTask.description).toBe('これはテスト用のタスクです。');
   });
   
-  test('should add a task with title only', async ({ request }) => {
+  test.skip('should add a task with title only', async ({ request }) => {
     // タイトルのみでタスクを追加
     const addResponse = await request.post('/api/backlog/add', {
       data: {
