@@ -57,11 +57,21 @@ test.describe('Proposal API', () => {
   test('should return empty proposals list initially', async ({ request }: { request: any }) => {
     // テスト用の提案データを確実にクリーンアップ
     const testProposalsPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_proposals.json');
+    
+    // ファイルを完全に削除してから新しく作成する
     if (fs.existsSync(testProposalsPath)) {
-      const emptyProposals = { proposals: [] };
-      fs.writeFileSync(testProposalsPath, JSON.stringify(emptyProposals, null, 2), 'utf8');
-      console.log(`Explicitly emptied proposals for initial test at ${testProposalsPath}`);
+      try {
+        fs.unlinkSync(testProposalsPath);
+        console.log(`Deleted existing proposals file at ${testProposalsPath}`);
+      } catch (error) {
+        console.error(`Error deleting proposals file: ${error}`);
+      }
     }
+    
+    // 空の提案リストを作成
+    const emptyProposals = { proposals: [] };
+    fs.writeFileSync(testProposalsPath, JSON.stringify(emptyProposals, null, 2), 'utf8');
+    console.log(`Created new empty proposals file at ${testProposalsPath}`);
     
     // APIエンドポイントにリクエストを送信
     const response = await request.get('/api/backlog/proposal');
