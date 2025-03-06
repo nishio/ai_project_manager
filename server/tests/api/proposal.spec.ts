@@ -43,6 +43,8 @@ test.describe('Proposal API', () => {
     
     // 環境変数を設定
     process.env.USE_TEST_DATA = 'true';
+    // デフォルトの提案データを作成しないように設定
+    process.env.SKIP_DEFAULT_PROPOSALS = 'true';
   });
   
   // テスト後にテストデータをクリーンアップ
@@ -55,7 +57,9 @@ test.describe('Proposal API', () => {
       console.log(`Test proposals cleaned up at ${testProposalsPath}`);
     }
     
+    // 環境変数をリセット
     process.env.USE_TEST_DATA = undefined;
+    process.env.SKIP_DEFAULT_PROPOSALS = undefined;
   });
 
   test('should return empty proposals list initially', async ({ request }: { request: any }) => {
