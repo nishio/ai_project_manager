@@ -81,6 +81,9 @@ test.describe('Proposal API', () => {
     fs.writeFileSync(testProposalsPath, JSON.stringify(emptyProposals, null, 2), 'utf8');
     console.log(`Created new empty proposals file at ${testProposalsPath}`);
     
+    // 環境変数を設定（デフォルトの提案データを作成しないように）
+    process.env.SKIP_DEFAULT_PROPOSALS = 'true';
+    
     // APIエンドポイントにリクエストを送信
     const response = await request.get('/api/backlog/proposal');
     
@@ -97,6 +100,9 @@ test.describe('Proposal API', () => {
     
     // 提案リストが空であることを確認
     expect(data.proposals.length).toBe(0);
+    
+    // 環境変数をリセット
+    process.env.SKIP_DEFAULT_PROPOSALS = undefined;
   });
 
   test('should create a new proposal', async ({ request }: { request: any }) => {

@@ -98,13 +98,10 @@ test.describe('Add Task API', () => {
   test('should add a new task with title and description', async ({ request }) => {
     // タスクを追加
     const addResponse = await request.post('/api/backlog/add', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      data: {
         title: 'テストタスク',
         description: 'これはテスト用のタスクです。',
-      }),
+      }
     });
     
     // レスポンスを確認
@@ -132,12 +129,9 @@ test.describe('Add Task API', () => {
   test('should add a task with title only', async ({ request }) => {
     // タイトルのみでタスクを追加
     const addResponse = await request.post('/api/backlog/add', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      data: {
         title: 'タイトルのみのタスク',
-      }),
+      }
     });
     
     // レスポンスを確認
@@ -164,12 +158,9 @@ test.describe('Add Task API', () => {
   test('should return error when title is missing', async ({ request }) => {
     // タイトルなしでタスクを追加しようとする
     const addResponse = await request.post('/api/backlog/add', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      data: {
         description: 'タイトルなしのタスク',
-      }),
+      }
     });
     
     // エラーレスポンスを確認
