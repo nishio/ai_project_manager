@@ -32,7 +32,9 @@ export async function loadProposals(): Promise<ProposalList> {
       proposalsPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_proposals.json');
       
       // テスト環境では、テストデータが存在しない場合にデフォルトのテストデータを提供
-      if (!fs.existsSync(proposalsPath) || fs.readFileSync(proposalsPath, 'utf8').trim() === '{}' || fs.readFileSync(proposalsPath, 'utf8').includes('"proposals": []')) {
+      // ただし、環境変数 SKIP_DEFAULT_PROPOSALS が設定されている場合はデフォルトデータを提供しない
+      if (process.env.SKIP_DEFAULT_PROPOSALS !== 'true' && 
+          (!fs.existsSync(proposalsPath) || fs.readFileSync(proposalsPath, 'utf8').trim() === '{}' || fs.readFileSync(proposalsPath, 'utf8').includes('"proposals": []'))) {
         console.log('Creating default test proposals data');
         const testProposals: ProposalList = {
           proposals: [

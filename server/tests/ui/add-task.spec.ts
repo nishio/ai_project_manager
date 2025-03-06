@@ -55,8 +55,8 @@ test.describe('Add Task UI', () => {
     
     // タスク追加フォームが表示されることを確認
     await expect(page.locator('text=新しいタスクを追加')).toBeVisible();
-    await expect(page.locator('text=タイトル')).toBeVisible();
-    await expect(page.locator('text=説明')).toBeVisible();
+    await expect(page.locator('[data-testid="task-form-title-label"]')).toBeVisible();
+    await expect(page.locator('[data-testid="task-form-description-label"]')).toBeVisible();
   });
   
   test('should add a new task with title and description', async ({ page }) => {
@@ -74,13 +74,14 @@ test.describe('Add Task UI', () => {
     await page.locator('button[type="submit"]:has-text("追加")').click();
     
     // タスクが追加されたことを確認（フォームが閉じられ、タスクが表示される）
-    await expect(page.locator('text=UIテストタスク')).toBeVisible();
+    // 新しく追加されたタスクを特定するためにより具体的なセレクタを使用
+    await page.waitForSelector('[data-testid="task-card"] h2:has-text("UIテストタスク")');
     
-    // タスクをクリックして詳細を表示
-    await page.locator('text=UIテストタスク').click();
+    // タスクをクリックして詳細を表示（より具体的なセレクタを使用）
+    await page.locator('[data-testid="task-card"] h2:has-text("UIテストタスク")').first().click();
     
-    // 説明が表示されることを確認
-    await expect(page.locator('text=これはUIテスト用のタスクです。')).toBeVisible();
+    // 説明が表示されることを確認（タスクカード内の説明テキストを特定）
+    await expect(page.locator('[data-testid="task-card"]:has-text("UIテストタスク") p:has-text("これはUIテスト用のタスクです。")')).toBeVisible();
   });
     
   test('should close form when cancel button is clicked', async ({ page }) => {
