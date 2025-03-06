@@ -101,10 +101,10 @@ test.describe('Add Task API', () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      data: {
+      body: JSON.stringify({
         title: 'テストタスク',
         description: 'これはテスト用のタスクです。',
-      },
+      }),
     });
     
     // レスポンスを確認
@@ -135,9 +135,9 @@ test.describe('Add Task API', () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      data: {
+      body: JSON.stringify({
         title: 'タイトルのみのタスク',
-      },
+      }),
     });
     
     // レスポンスを確認
@@ -167,9 +167,9 @@ test.describe('Add Task API', () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      data: {
+      body: JSON.stringify({
         description: 'タイトルなしのタスク',
-      },
+      }),
     });
     
     // エラーレスポンスを確認

@@ -15,9 +15,7 @@ test.describe('Proposal API', () => {
   
   // 各テスト前にテストデータをクリーンアップ
   test.beforeEach(async () => {
-    process.env.USE_TEST_DATA = 'true';
-    
-    // テスト用の提案データを作成
+    // 環境変数を設定する前に、テスト用の提案データを作成
     const testProposalsPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_proposals.json');
     
     // ディレクトリが存在しない場合は作成
@@ -36,9 +34,15 @@ test.describe('Proposal API', () => {
       const emptyProposals = { proposals: [] };
       fs.writeFileSync(testProposalsPath, JSON.stringify(emptyProposals, null, 2), 'utf8');
       console.log(`Empty proposals written to ${testProposalsPath}`);
+      
+      // ファイルが確実に書き込まれるのを待つ
+      await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {
       console.error(`Error clearing proposal data: ${error}`);
     }
+    
+    // 環境変数を設定
+    process.env.USE_TEST_DATA = 'true';
   });
   
   // テスト後にテストデータをクリーンアップ
