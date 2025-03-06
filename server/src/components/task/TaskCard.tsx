@@ -99,9 +99,11 @@ export default function TaskCard({ task, onStatusChange, onTaskUpdate, initialEx
                 </div>
               </div>
 
-              <div className="mt-4">
-                <p className="text-sm text-gray-500">担当可能: {task.assignable_to.join(', ')}</p>
-              </div>
+              {task.assignable_to ?
+                <div className="mt-4">
+                  <p className="text-sm text-gray-500">担当可能: {task.assignable_to.join(', ')}</p>
+                </div>
+                : null}
             </>
           )}
         </>
