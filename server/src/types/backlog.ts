@@ -1,11 +1,11 @@
 export interface Task {
-  id: string;
+  id?: string;
   title: string;
-  status: string;
-  type: string;
-  description: string;
-  labels: string[];
-  assignable_to: string[];
+  status?: string;
+  type?: string;
+  description?: string;
+  labels?: string[];
+  assignable_to?: string[];
 }
 
 export interface Backlog {

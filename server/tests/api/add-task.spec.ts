@@ -1,3 +1,4 @@
+import { Task } from '@/types/backlog';
 import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
@@ -33,7 +34,7 @@ test.describe('Add Task API', () => {
     // テスト用のバックログデータを初期化
     const testBacklogPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_backlog.json');
     // テスト用のバックログデータを読み込む
-    let backlogData = { tasks: [] };
+    let backlogData = { tasks: [] as Task[]};
     if (fs.existsSync(testBacklogPath)) {
       try {
         const data = fs.readFileSync(testBacklogPath, 'utf8');
@@ -121,7 +122,7 @@ test.describe('Add Task API', () => {
     const backlogData = await backlogResponse.json();
     
     // 追加したタスクを検索
-    const addedTask = backlogData.tasks.find((task: any) => task.title === 'テストタスク');
+    const addedTask = backlogData.tasks.find((task: Task) => task.title === 'テストタスク');
     expect(addedTask).toBeDefined();
     expect(addedTask.description).toBe('これはテスト用のタスクです。');
   });
@@ -150,7 +151,7 @@ test.describe('Add Task API', () => {
     const backlogData = await backlogResponse.json();
     
     // 追加したタスクを検索
-    const addedTask = backlogData.tasks.find((task: any) => task.title === 'タイトルのみのタスク');
+    const addedTask = backlogData.tasks.find((task: Task) => task.title === 'タイトルのみのタスク');
     expect(addedTask).toBeDefined();
     expect(addedTask.description).toBe('');
   });
