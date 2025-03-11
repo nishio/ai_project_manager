@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { loadBacklogData, Task } from '../../../../utils/backlogLoader';
+import { loadBacklogFromFirestore, saveBacklogToFirestore, addTaskToFirestore } from '../../../../utils/firebaseBacklogLoader';
+import { getCurrentUser } from '../../../../firebase/auth';
 
 // タスクIDの生成関数
 function findNextAvailableId(tasks: Task[]): string {
@@ -36,8 +38,17 @@ export async function POST(request: Request) {
       );
     }
 
-    // バックログデータを読み込む
-    const backlogData = await loadBacklogData();
+    // Check if user is authenticated
+    const user = getCurrentUser();
+    let backlogData;
+    
+    if (user) {
+      // User is authenticated, load from Firestore
+      backlogData = await loadBacklogFromFirestore();
+    } else {
+      // User is not authenticated, load from local file
+      backlogData = await loadBacklogData();
+    }
     
     // 新しいタスクを作成
     const newTask: Task = {
@@ -54,14 +65,20 @@ export async function POST(request: Request) {
     // タスクをバックログに追加
     backlogData.tasks.push(newTask);
 
-    // テスト環境の場合はテストデータを使用
-    let backlogPath = path.join(process.cwd(), '..', '..', 'ai_project_manager_data', 'tasks', 'backlog.json');
-    if (process.env.USE_TEST_DATA === 'true') {
-      backlogPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_backlog.json');
-    }
+    if (user) {
+      // User is authenticated, save to Firestore
+      await saveBacklogToFirestore(backlogData);
+    } else {
+      // User is not authenticated, save to local file
+      // テスト環境の場合はテストデータを使用
+      let backlogPath = path.join(process.cwd(), '..', '..', 'ai_project_manager_data', 'tasks', 'backlog.json');
+      if (process.env.USE_TEST_DATA === 'true') {
+        backlogPath = path.join(process.cwd(), '..', 'tests', 'data', 'test_backlog.json');
+      }
 
-    // 更新されたデータをファイルに書き込む
-    fs.writeFileSync(backlogPath, JSON.stringify(backlogData, null, 2), 'utf8');
+      // 更新されたデータをファイルに書き込む
+      fs.writeFileSync(backlogPath, JSON.stringify(backlogData, null, 2), 'utf8');
+    }
 
     return NextResponse.json({ success: true, task: newTask });
   } catch (error) {
