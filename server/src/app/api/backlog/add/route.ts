@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { loadBacklogData, Task } from '../../../../utils/backlogLoader';
-import { loadBacklogFromFirestore, saveBacklogToFirestore, addTaskToFirestore } from '../../../../utils/firebaseBacklogLoader';
+import { loadBacklogFromFirestore, saveBacklogToFirestore } from '../../../../utils/firebaseBacklogLoader';
 import { getCurrentUser } from '../../../../firebase/auth';
 
 // タスクIDの生成関数
