@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataMigrationPanel } from '../components/migration/DataMigrationPanel.tsx';
+import { DataMigrationPanel } from '../components/migration/DataMigrationPanel';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import Link from 'next/link';
 
