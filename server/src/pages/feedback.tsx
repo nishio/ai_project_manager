@@ -1,9 +1,9 @@
 import React from 'react';
-import { DataMigrationPanel } from '../components/migration/DataMigrationPanel.tsx';
+import { FeedbackForm } from '../components/feedback/FeedbackForm';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import Link from 'next/link';
 
-export default function MigratePage() {
+export default function FeedbackPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -13,11 +13,11 @@ export default function MigratePage() {
               AIプロジェクトマネージャー
             </h1>
             <h2 className="mt-2 text-xl text-gray-600">
-              データ移行ツール
+              フィードバック
             </h2>
           </div>
 
-          <DataMigrationPanel />
+          <FeedbackForm />
 
           <div className="mt-8 text-center">
             <Link href="/" className="text-blue-600 hover:text-blue-800">
