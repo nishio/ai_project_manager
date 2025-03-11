@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server';
 import * as fs from 'fs';
 import * as path from 'path';
 import { loadBacklogData, Task } from '../../../../utils/backlogLoader';
+import { getCurrentUser } from '../../../../firebase/auth';
+import { 
+  getUserProposals, 
+  storeTaskProposal, 
+  updateProposalStatus 
+} from '../../../../firebase/firestore';
 
 // 提案タイプの定義
 export type ProposalType = 'new' | 'update';
@@ -24,6 +30,35 @@ export interface ProposalList {
 // 提案リストを読み込む関数
 export async function loadProposals(): Promise<ProposalList> {
   try {
+    // 認証済みユーザーの確認
+    const user = getCurrentUser();
+    
+    // 認証済みユーザーの場合はFirestoreから読み込む
+    if (user) {
+      try {
+        const proposalsSnapshot = await getUserProposals(user.uid);
+        const proposals: Proposal[] = [];
+        
+        proposalsSnapshot.forEach(doc => {
+          const data = doc.data();
+          proposals.push({
+            id: doc.id,
+            type: data.type,
+            task: data.task,
+            original_task: data.original_task,
+            created_at: data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString(),
+            status: data.status || 'pending'
+          });
+        });
+        
+        return { proposals };
+      } catch (firestoreError) {
+        console.error('Error loading proposals from Firestore:', firestoreError);
+        // Firestoreからの読み込みに失敗した場合はファイルシステムにフォールバック
+      }
+    }
+    
+    // ファイルシステムからの読み込み（認証なしまたはFirestoreエラー時）
     // デフォルトのパス
     let proposalsPath = path.join(process.cwd(), '..', '..', 'ai_project_manager_data', 'tasks', 'pending_proposals.json');
     
@@ -129,6 +164,21 @@ export async function loadProposals(): Promise<ProposalList> {
 // 提案リストを保存する関数
 export async function saveProposals(proposals: ProposalList): Promise<void> {
   try {
+    // 認証済みユーザーの確認
+    const user = getCurrentUser();
+    
+    // 認証済みユーザーの場合はFirestoreに保存
+    if (user) {
+      try {
+        // 既存の提案を削除して新しい提案を保存する方法もありますが、
+        // ここでは簡単のため、ファイルシステムへのフォールバックを実装します
+        console.log('Firestore proposals saving not implemented in this function, falling back to file system');
+      } catch (firestoreError) {
+        console.error('Error saving to Firestore, falling back to file system:', firestoreError);
+      }
+    }
+    
+    // ファイルシステムへの保存（認証なしまたはFirestoreエラー時）
     // デフォルトのパス
     let proposalsPath = path.join(process.cwd(), '..', '..', 'ai_project_manager_data', 'tasks', 'pending_proposals.json');
     
@@ -199,11 +249,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // 提案リストを読み込む
-    const proposalList = await loadProposals();
-
+    // 認証済みユーザーの確認
+    const user = getCurrentUser();
+    let newProposal: Proposal;
+    
     // 新しい提案を作成
-    const newProposal: Proposal = {
+    newProposal = {
       id: generateProposalId(),
       type,
       task,
@@ -211,6 +262,27 @@ export async function POST(request: Request) {
       created_at: new Date().toISOString(),
       status: 'pending'
     };
+
+    if (user) {
+      // 認証済みユーザーの場合はFirestoreに保存
+      try {
+        await storeTaskProposal(user.uid, task.id, {
+          type,
+          task,
+          original_task: type === 'update' ? original_task : undefined,
+          status: 'pending'
+        });
+        
+        return NextResponse.json({ success: true, proposal: newProposal });
+      } catch (firestoreError) {
+        console.error('Error storing proposal in Firestore:', firestoreError);
+        // Firestoreへの保存に失敗した場合はファイルシステムにフォールバック
+      }
+    }
+    
+    // ファイルシステムへの保存（認証なしまたはFirestoreエラー時）
+    // 提案リストを読み込む
+    const proposalList = await loadProposals();
 
     // 提案リストに追加
     proposalList.proposals.push(newProposal);
