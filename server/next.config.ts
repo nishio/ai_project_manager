@@ -32,7 +32,6 @@ const nextConfig: NextConfig = {
     ],
   },
   reactStrictMode: true,
-  swcMinify: true,
   output: 'standalone',
 };
 
