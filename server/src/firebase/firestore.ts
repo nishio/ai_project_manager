@@ -103,3 +103,16 @@ export const storeFeedback = async (uid: string, feedbackData: any): Promise<Doc
   });
   return docRef;
 };
+
+// Get all feedback (for admin use)
+export const getAllFeedback = async (): Promise<QuerySnapshot<DocumentData>> => {
+  const feedbackRef = collection(db, FEEDBACK_COLLECTION);
+  return getDocs(feedbackRef);
+};
+
+// Get feedback for a specific user
+export const getUserFeedback = async (uid: string): Promise<QuerySnapshot<DocumentData>> => {
+  const feedbackRef = collection(db, FEEDBACK_COLLECTION);
+  const q = query(feedbackRef, where('uid', '==', uid));
+  return getDocs(q);
+};
