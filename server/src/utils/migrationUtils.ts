@@ -1,10 +1,10 @@
 /**
  * Utilities for migrating data from local JSON to Firestore
  */
+"use client";
+
 import { getUserBacklog, storeUserBacklog } from '../firebase/firestore';
 import { getCurrentUser } from '../firebase/auth';
-import { readFileSync } from 'fs';
-import path from 'path';
 
 /**
  * Import backlog data from a local JSON file to Firestore
@@ -18,9 +18,11 @@ export async function importBacklogFromFile(filePath: string) {
       return { success: false, message: 'ユーザーが認証されていません' };
     }
 
-    // Read the local file
-    const fileContent = readFileSync(filePath, 'utf-8');
-    const backlogData = JSON.parse(fileContent);
+    // In browser environment, we can't use fs directly
+    // This function should be called with file content instead of path
+    const backlogData = typeof filePath === 'string' 
+      ? JSON.parse(filePath) // If string is passed, assume it's JSON content
+      : filePath; // If object is passed, use it directly
 
     // Store in Firestore
     await storeUserBacklog(user.uid, backlogData);
@@ -61,16 +63,28 @@ export async function exportBacklogToFile(outputPath: string) {
     // Generate filename with timestamp
     const timestamp = new Date().toISOString().replace(/:/g, '-');
     const filename = `backlog_export_${timestamp}.json`;
-    const fullPath = path.join(outputPath, filename);
     
-    // Write to file (this will only work in Node.js environment, not in browser)
-    // For browser, we would need to use a different approach like Blob and download
-    const fs = require('fs');
-    fs.writeFileSync(fullPath, JSON.stringify(backlogData, null, 2), 'utf-8');
+    // In browser environment, create a Blob and download it
+    const jsonString = JSON.stringify(backlogData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create a download link and trigger it
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 0);
     
     return { 
       success: true, 
-      message: `バックログデータを ${fullPath} に正常にエクスポートしました` 
+      message: `バックログデータを ${filename} としてダウンロードしました` 
     };
   } catch (error) {
     console.error('Error exporting backlog:', error);

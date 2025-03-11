@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState } from 'react';
-import { importBacklogFromFile, hasFirestoreBacklog } from '../../utils/migrationUtils';
+import { hasFirestoreBacklog } from '../../utils/migrationUtils';
 import { useAuth } from '../auth/AuthProvider';
 
 /**
