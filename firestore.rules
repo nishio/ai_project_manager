@@ -1,25 +1,30 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // User profiles
+    // ユーザーごとのデータは本人のみアクセス可能
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
       
-      // User backlog data
+      // バックログ
       match /data/backlog {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
       
-      // User task proposals
+      // タスク
+      match /tasks/{taskId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // タスク提案
       match /proposals/{proposalId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }
     
-    // Feedback collection
+    // フィードバックは認証済みユーザーが作成可能、本人は閲覧可能
     match /feedback/{feedbackId} {
       allow create: if request.auth != null;
-      allow read: if request.auth != null && request.auth.token.admin == true;
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
     }
   }
 }
