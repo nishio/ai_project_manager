@@ -268,11 +268,42 @@ export default function Home() {
           <div className="text-xl">バックログデータを読み込み中...</div>
         ) : (
           <div className="w-full max-w-5xl">
-            <EmptyStateCard
-              onShowAddTaskForm={() => setShowAddTaskForm(true)}
-              onShowImportForm={() => setShowBacklogImport(true)}
-              onShowTextExtractor={() => setShowTextExtractor(true)}
-            />
+            {showBacklogImport && (
+              <BacklogImportForm 
+                onImportComplete={async () => {
+                  // JSONがインポートされたら、バックログを再取得する
+                  try {
+                    setUpdateLoading(true);
+                    const response = await fetch('/api/backlog');
+                    if (!response.ok) {
+                      throw new Error(`Error: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    setBacklog(data);
+                    setFilteredTasks(data.tasks || []);
+                    // フォームを閉じる
+                    setShowBacklogImport(false);
+                  } catch (err) {
+                    console.error('Error refreshing backlog after import:', err);
+                    alert('バックログの更新に失敗しました。');
+                  } finally {
+                    setUpdateLoading(false);
+                  }
+                }}
+                onCancel={() => setShowBacklogImport(false)}
+              />
+            )}
+            
+            {!showBacklogImport && (
+              <EmptyStateCard
+                onShowAddTaskForm={() => setShowAddTaskForm(true)}
+                onShowImportForm={() => {
+                  console.log('Import button clicked');
+                  setShowBacklogImport(true);
+                }}
+                onShowTextExtractor={() => setShowTextExtractor(true)}
+              />
+            )}
           </div>
         )}
       </div>
