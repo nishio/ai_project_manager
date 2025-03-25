@@ -27,7 +27,15 @@ export async function GET() {
     // フィードバックデータの取得
     const feedbackSnapshot = await getAllFeedback();
     
-    const feedbackItems = [];
+    interface FeedbackItem {
+      id: string;
+      content: string;
+      rating: number;
+      createdAt: string;
+      userEmail: string;
+    }
+    
+    const feedbackItems: FeedbackItem[] = [];
     feedbackSnapshot.forEach(doc => {
       const data = doc.data();
       feedbackItems.push({
