@@ -2,7 +2,24 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { Task } from './backlogLoader';
-import { Proposal, ProposalList } from '../app/api/backlog/proposal/route';
+
+// 提案タイプの定義
+export type ProposalType = 'new' | 'update';
+
+// 提案の型定義
+export interface Proposal {
+  id: string;
+  type: ProposalType;
+  task: Task;
+  original_task?: Task;
+  created_at: string;
+  status: 'pending' | 'approved' | 'rejected';
+}
+
+// 提案リストの型定義
+export interface ProposalList {
+  proposals: Proposal[];
+}
 
 /**
  * 提案用の一時IDを生成する

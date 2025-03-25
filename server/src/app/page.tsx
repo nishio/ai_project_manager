@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Task, Backlog } from '../utils/backlogLoader';
-import { Proposal } from './api/backlog/proposal/route';
+import { Proposal } from '../utils/proposalUtils';
 import TaskFilter from '../components/TaskFilter';
 import TaskCard from '../components/task/TaskCard';
 import MarkdownEditor from '../components/MarkdownEditor';

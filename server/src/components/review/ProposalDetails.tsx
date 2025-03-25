@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Task } from '../../utils/backlogLoader';
-import { Proposal } from '../../app/api/backlog/proposal/route';
+import { Proposal } from '../../utils/proposalUtils';
 
 interface ProposalDetailsProps {
   proposal: Proposal;
