@@ -9,6 +9,7 @@ import TaskCard from '../components/task/TaskCard';
 import MarkdownEditor from '../components/MarkdownEditor';
 import ProposalReviewPanel from '../components/review/ProposalReviewPanel';
 import AddTaskForm from '../components/task/AddTaskForm';
+import BacklogImportForm from '../components/import/BacklogImportForm';
 
 export default function Home() {
   const [backlog, setBacklog] = useState<Backlog | null>(null);
@@ -22,6 +23,7 @@ export default function Home() {
   const [proposalsError, setProposalsError] = useState<string | null>(null);
   const [showProposals, setShowProposals] = useState<boolean>(true);
   const [showAddTaskForm, setShowAddTaskForm] = useState<boolean>(false);
+  const [showBacklogImport, setShowBacklogImport] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchBacklog = async () => {
@@ -325,9 +327,15 @@ export default function Home() {
             </button>
             <button
               onClick={() => setShowAddTaskForm(!showAddTaskForm)}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mr-2"
             >
               {showAddTaskForm ? 'タスク追加フォームを閉じる' : 'タスクを追加'}
+            </button>
+            <button
+              onClick={() => setShowBacklogImport(!showBacklogImport)}
+              className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+            >
+              {showBacklogImport ? 'JSONインポートを閉じる' : 'backlog.jsonをインポート'}
             </button>
           </div>
         </div>
@@ -360,6 +368,34 @@ export default function Home() {
                 }
               }}
               onCancel={() => setShowAddTaskForm(false)}
+            />
+          </div>
+        )}
+        
+        {showBacklogImport && (
+          <div className="mb-8">
+            <BacklogImportForm 
+              onImportComplete={async () => {
+                // JSONがインポートされたら、バックログを再取得する
+                try {
+                  setUpdateLoading(true);
+                  const response = await fetch('/api/backlog');
+                  if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                  }
+                  const data = await response.json();
+                  setBacklog(data);
+                  setFilteredTasks(data.tasks || []);
+                  // インポート完了後、フォームを閉じる
+                  setShowBacklogImport(false);
+                } catch (err) {
+                  console.error('Error refreshing backlog after import:', err);
+                  alert('バックログの更新に失敗しました。');
+                } finally {
+                  setUpdateLoading(false);
+                }
+              }}
+              onCancel={() => setShowBacklogImport(false)}
             />
           </div>
         )}
