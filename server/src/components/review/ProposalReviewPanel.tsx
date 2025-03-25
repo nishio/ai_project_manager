@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import { Proposal } from '../../app/api/backlog/proposal/route';
+import { Proposal } from '../../utils/proposalUtils';
 import { Task } from '../../utils/backlogLoader';
 import ProposalDetails from './ProposalDetails';
 

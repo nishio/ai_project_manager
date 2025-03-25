@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { loadProposals, saveProposals } from '../route';
+import { loadProposals, saveProposals } from '../../../../../utils/proposalUtils';
 
 export async function POST(request: Request) {
   try {

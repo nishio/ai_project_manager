@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import * as fs from 'fs';
 import * as path from 'path';
 import { loadBacklogData, Backlog, Task } from '../../../../../utils/backlogLoader';
-import { loadProposals, saveProposals, Proposal, ProposalList } from '../route';
+import { loadProposals, saveProposals, Proposal, ProposalList } from '../../../../../utils/proposalUtils';
 
 export async function POST(request: Request) {
   try {
