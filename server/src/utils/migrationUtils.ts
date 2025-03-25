@@ -4,7 +4,7 @@
 "use client";
 
 import { getUserBacklog, storeUserBacklog } from '../firebase/firestore';
-import { getCurrentUser } from '../firebase/auth';
+import { ensureUser } from '../firebase/auth';
 
 /**
  * Import backlog data from a local JSON file to Firestore
@@ -13,9 +13,9 @@ import { getCurrentUser } from '../firebase/auth';
  */
 export async function importBacklogFromFile(filePath: string) {
   try {
-    const user = getCurrentUser();
+    const user = await ensureUser();
     if (!user) {
-      return { success: false, message: 'ユーザーが認証されていません' };
+      return { success: false, message: 'ユーザー認証に失敗しました' };
     }
 
     // In browser environment, we can't use fs directly
@@ -47,9 +47,9 @@ export async function importBacklogFromFile(filePath: string) {
  */
 export async function exportBacklogToFile(outputPath: string) {
   try {
-    const user = getCurrentUser();
+    const user = await ensureUser();
     if (!user) {
-      return { success: false, message: 'ユーザーが認証されていません' };
+      return { success: false, message: 'ユーザー認証に失敗しました' };
     }
 
     // Get data from Firestore
@@ -101,7 +101,7 @@ export async function exportBacklogToFile(outputPath: string) {
  */
 export async function hasFirestoreBacklog() {
   try {
-    const user = getCurrentUser();
+    const user = await ensureUser();
     if (!user) {
       return false;
     }
