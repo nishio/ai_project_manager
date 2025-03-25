@@ -29,6 +29,7 @@ interface UserData {
   email: string;
   displayName?: string;
   createdAt: number;
+  isAnonymous?: boolean;
 }
 
 // Create a new user document in Firestore
@@ -38,7 +39,8 @@ export const createUserDocument = async (user: User): Promise<void> => {
     uid: user.uid,
     email: user.email || '',
     displayName: user.displayName || '',
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    isAnonymous: user.isAnonymous || false
   };
   
   return setDoc(userRef, userData);

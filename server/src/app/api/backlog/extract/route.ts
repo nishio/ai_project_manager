@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { loadBacklogData, Task } from '../../../../utils/backlogLoader';
 import { loadBacklogFromFirestore, saveBacklogToFirestore } from '../../../../utils/firebaseBacklogLoader';
-import { getCurrentUser } from '../../../../firebase/auth';
+import { ensureUser } from '../../../../firebase/auth';
 import fs from 'fs';
 import path from 'path';
 
@@ -77,15 +77,16 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if user is authenticated
-    const user = getCurrentUser();
+    // Ensure user is authenticated (anonymously if needed)
+    const user = await ensureUser();
     let backlogData;
     
     if (user) {
-      // User is authenticated, load from Firestore
+      // User is authenticated (could be anonymous), load from Firestore
       backlogData = await loadBacklogFromFirestore();
     } else {
-      // User is not authenticated, load from local file
+      // Fallback to local file (should not happen with ensureUser)
+      console.warn('Failed to ensure user authentication, falling back to local file');
       backlogData = await loadBacklogData();
     }
     

@@ -11,6 +11,7 @@ import ProposalReviewPanel from '../components/review/ProposalReviewPanel';
 import AddTaskForm from '../components/task/AddTaskForm';
 import TextTaskExtractor from '../components/task/TextTaskExtractor';
 import BacklogImportForm from '../components/import/BacklogImportForm';
+import EmptyStateCard from '../components/task/EmptyStateCard';
 
 export default function Home() {
   const [backlog, setBacklog] = useState<Backlog | null>(null);
@@ -263,7 +264,17 @@ export default function Home() {
   if (!backlog || !backlog.tasks || backlog.tasks.length === 0) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-24">
-        <div className="text-xl">バックログにタスクが見つかりませんでした。</div>
+        {loading ? (
+          <div className="text-xl">バックログデータを読み込み中...</div>
+        ) : (
+          <div className="w-full max-w-5xl">
+            <EmptyStateCard
+              onShowAddTaskForm={() => setShowAddTaskForm(true)}
+              onShowImportForm={() => setShowBacklogImport(true)}
+              onShowTextExtractor={() => setShowTextExtractor(true)}
+            />
+          </div>
+        )}
       </div>
     );
   }
