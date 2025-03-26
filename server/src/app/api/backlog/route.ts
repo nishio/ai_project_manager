@@ -2,10 +2,27 @@ import { NextResponse } from 'next/server';
 import { loadBacklogData, Backlog } from '../../../utils/backlogLoader';
 import { loadBacklogFromFirestore } from '../../../utils/firebaseBacklogLoader';
 import { ensureUser, getCurrentUser } from '../../../firebase/auth';
+import fs from 'fs';
+import path from 'path';
 
 export async function GET() {
   try {
-    // Ensure user is authenticated (anonymously if needed)
+    // テストモードの場合はテストデータを使用
+    if (process.env.NEXT_PUBLIC_USE_TEST_MODE === 'true') {
+      console.log('Using test data for backlog API');
+      const testDataPath = path.join(process.cwd(), '..', 'test_data', 'sample_tasks.json');
+      
+      if (fs.existsSync(testDataPath)) {
+        const fileContents = fs.readFileSync(testDataPath, 'utf8');
+        const data = JSON.parse(fileContents);
+        return NextResponse.json(data);
+      } else {
+        console.warn('Test data file not found, returning empty backlog');
+        return NextResponse.json({ tasks: [] });
+      }
+    }
+    
+    // 通常のFirebaseロジック（既存のコード）
     const user = await ensureUser();
     
     if (user) {

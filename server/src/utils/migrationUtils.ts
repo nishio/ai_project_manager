@@ -13,6 +13,34 @@ import { ensureUser } from '../firebase/auth';
  */
 export async function importBacklogFromFile(filePath: string) {
   try {
+    // テストモードの場合は認証をスキップ
+    if (process.env.NEXT_PUBLIC_USE_TEST_MODE === 'true') {
+      // In browser environment, we can't use fs directly
+      // This function should be called with file content instead of path
+      const backlogData = typeof filePath === 'string' 
+        ? JSON.parse(filePath) // If string is passed, assume it's JSON content
+        : filePath; // If object is passed, use it directly
+      
+      // APIを使用してデータを保存
+      try {
+        await fetch('/api/test-data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(backlogData),
+        });
+      } catch (err) {
+        console.error('Error saving test data:', err);
+      }
+      
+      return { 
+        success: true, 
+        message: 'バックログデータを正常にインポートしました（テストモード）' 
+      };
+    }
+    
+    // 通常のFirebaseロジック（既存のコード）
     const user = await ensureUser();
     if (!user) {
       return { success: false, message: 'ユーザー認証に失敗しました' };

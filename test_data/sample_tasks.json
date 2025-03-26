@@ -1,0 +1,30 @@
+{
+  "tasks": [
+    {
+      "id": "T0001",
+      "title": "テストタスク1",
+      "status": "planning",
+      "type": "feature",
+      "description": "テスト用のタスク説明1",
+      "labels": [
+        "test"
+      ],
+      "assignable_to": [
+        "developer"
+      ]
+    },
+    {
+      "id": "T0002",
+      "title": "テストタスク2",
+      "status": "in_progress",
+      "type": "bug",
+      "description": "テスト用のタスク説明2",
+      "labels": [
+        "test"
+      ],
+      "assignable_to": [
+        "developer"
+      ]
+    }
+  ]
+}
