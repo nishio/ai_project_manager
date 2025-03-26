@@ -36,6 +36,11 @@ export const signInAnonymousUser = async (): Promise<User | null> => {
 
 // Ensure user is authenticated (anonymously if needed)
 export const ensureUser = async (): Promise<User | null> => {
+  // テストモードの場合は認証をバイパス
+  if (process.env.NEXT_PUBLIC_USE_TEST_MODE === 'true') {
+    return { uid: 'test-user-id' } as User;
+  }
+  
   const currentUser = auth.currentUser;
   if (!currentUser) {
     return await signInAnonymousUser();
