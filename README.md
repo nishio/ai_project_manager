@@ -39,8 +39,118 @@ LLMで書くよりもPythonで書く方が適しているタスクに関して�
 
 ## セットアップ
 
+### 1. リポジトリのクローン
+
+```bash
+# システムコードリポジトリ
+git clone https://github.com/nishio/ai_project_manager.git
+
+# タスクデータリポジトリ（権限が必要です）
+git clone https://github.com/nishio/ai_project_manager_data.git
+```
+
+> **注記**: タスクデータリポジトリはプライベートリポジトリであり、アクセス権限が必要です。
+
+### 2. 開発環境のセットアップ
+
+#### Ubuntu/Debian の場合
+
+```bash
+cd ai_project_manager
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+#### Mac の場合
+
+```bash
+cd ai_project_manager
+./setup_mac.sh  # graphvizのインストールとvenv環境のセットアップを行います
+```
+
+### 3. タスクデータの取得
+
+```bash
+source venv/bin/activate
+python scripts/upkeep_data.py
+```
+
+### 4. 環境変数の設定
+
+環境変数は`.env`ファイルを使用して設定します。以下の内容を含む`.env`ファイルをプロジェクトのルートディレクトリに作成してください。
+
+```
+OPENAI_API_KEY=<your_api_key>
+DATA_ROOT=ai_project_manager_data
+```
+
+> **注記**: `.env`ファイルは機密情報を含むため、バージョン管理システムに含めないように注意してください。
+> `.env.example`ファイルを参考にしてください。
 
 ## 使用方法
+
+### 1. タスクの管理
+
+#### タスクの追加
+
+タスクを追加するには、以下の方法があります：
+
+1. **直接JSONを編集**
+   ```bash
+   # backlog.jsonを開いて編集
+   vim ai_project_manager_data/tasks/backlog.json
+   ```
+
+2. **スクリプトを使用**
+   ```bash
+   # 自由形式のテキストからタスクを追加
+   python scripts/parse_inbox.py < new_tasks.txt >> ai_project_manager_data/tasks/backlog.json
+   ```
+
+#### タスクの検証
+
+```bash
+# タスク構造の検証
+python scripts/validate_backlog.py ai_project_manager_data/tasks/backlog.json
+```
+
+#### タスクの完了マーク
+
+```bash
+# タスクを完了としてマーク
+python scripts/mark_done.py <task_id1> <task_id2> ...
+```
+
+### 2. タスクの可視化
+
+```bash
+# タスクの依存関係をグラフとして可視化
+python scripts/visualize_graph.py
+```
+
+出力されたグラフは`tasks/task_graph.png`に保存されます。
+
+### 3. タスクのアーカイブ
+
+```bash
+# 完了タスクのアーカイブ（手動実行）
+python scripts/archive_tasks.py [--date YYYY-MM-DD]
+```
+
+注：完了タスクは毎朝5時（JST）に自動的にアーカイブされます。手動実行時は --date オプションで日付を指定できます。
+
+### 4. Webインターフェースの使用
+
+Webインターフェースを起動するには：
+
+```bash
+cd server
+npm install
+npm run dev
+```
+
+ブラウザで http://localhost:3000 にアクセスしてWebインターフェースを使用できます。
 
 
 ### 3. タスクの検証とアーカイブ
